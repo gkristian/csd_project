@@ -1,5 +1,11 @@
 import json
 from functools import partial
+import threading
+from cache_exceptions import JsonFormatException
+from cache_exceptions import ModuleNotFoundException
+from cache_exceptions import MonitoringKeyvalueNotFoundException
+
+
 
 
 class NotCache:
@@ -13,9 +19,11 @@ class NotCache:
     dicts of dicts, containing old values.
     """
 
-    # TODO concurrency, apply locks on functions
-    # TODO all functions should return something to communicate failure or success, currently not all of them does that
-    # TODO error handling: currently sends error strings when something goes wrong. What do we want it to do?
+    # Error handling: currently sends error strings when something goes wrong.
+    # What structure do we want to have in the main file for errors?
+
+    # TODO in set values update id of current dict also
+    # cahge naming structure, too many module = module
 
     def __init__(self):
         # current layer of values
@@ -33,25 +41,43 @@ class NotCache:
         hum_old = json.dumps(hum_dict)
         rpm_old = json.dumps(rpm_dict)
 
+        # define a lock for enabling concurrency
+        self.lock = threading.Lock()
+
         # dict listing current and old layers of values
         self.module_caches = {'NFM': nfm_dict, 'HUM': hum_dict, 'RPM': rpm_dict}
         self.module_caches_old = {'NFM': nfm_old, 'HUM': hum_old, 'RPM': rpm_old}
 
-    def print_module_cache_keys(self, module_name):
+    def __print_module_cache_keys(self, module_name):
         """Prints the keys in the cache dictionary with name module_name
         :type module_name: str
         """
-        dict_view = self.module_caches[module_name].viewkeys()
+        dict_view = None
+
+        with self.lock:
+            if module_name in self.module_caches.viewkeys():
+                dict_view = self.module_caches[module_name].viewkeys()
+            else:
+                raise ModuleNotFoundException("module by name %s does not exists" % module_name)
 
         print "Unsorted list of keys in sub-cache for %s" % module_name
+
         for key in dict_view:
             print key
 
-    def print_module_cache_items(self, module_name):
+
+    def __print_module_cache_items(self, module_name):
         """Prints the keys in the cache dictionary with name module_name
         :type module_name: str
         """
-        dict_view = self.module_caches[module_name].viewitems()
+        dict_view = None
+
+        with self.lock:
+            if module_name in self.module_caches.viewkeys():
+                dict_view = self.module_caches[module_name].viewitems()
+            else:
+                raise ModuleNotFoundException("module by name %s does not exists" % module_name)
+
         print dict_view
 
     def __set_value(self, key_value_tuple, module):
@@ -59,6 +85,7 @@ class NotCache:
         :type module: module name
         :type key_value_tuple: tuple containing (key, value)
         """
+
         if module in self.module_caches.viewkeys():
             current_dict = self.module_caches[module]
             key = key_value_tuple[0]
@@ -66,55 +93,66 @@ class NotCache:
             if key in current_dict.viewkeys():
                 current_dict[key] = value
             else:
-                print("No key %s" % key)
+                raise  MonitoringKeyvalueNotFoundException("No key %s" % key)
+
         else:
-            print("No module %s" % module)
+            raise ModuleNotFoundException("module by name %s does not exists" % module)
+
 
     def set_values(self, json_string):
         """Set all the values specified for the specified module, retrieved from a json serialized dict
         :type json_string: json serialized dict
         """
-        json_dict = json.loads(json_string)
+        with self.lock:
+            json_dict = json.loads(json_string)
 
-        if 'module' in json_dict:
-            module = json_dict['module']
-            if module in self.module_caches:
-                # create a list of key value tuples out of the dict
-                json_dict.pop('module')
-                json_dict.pop('id')
-                list_tuples = json_dict.items()
+            if 'module' in json_dict:
+                module = json_dict['module']
+                if module in self.module_caches:
+                    # create a list of key value tuples out of the dict
+                    # to do so remove module name and id, then call items()
+                    json_dict.pop('module')
+                    json_dict.pop('id')
+                    list_tuples = json_dict.items()
 
-                # set previous data to old
-                self.module_caches_old[module] = json.dumps(self.module_caches[module])
+                    # set previous data to old
+                    self.module_caches_old[module] = json.dumps(self.module_caches[module])
 
-                # create a partial function with module name set
-                setsvalues = partial(self.__set_value, module=module)
+                    # create a partial function with module name set
+                    setsvalues = partial(self.__set_value, module=module)
 
-                # set values with according to (key,value)
-                map(setsvalues, list_tuples)
+                    # set values with according to (key,value)
+                    map(setsvalues, list_tuples)
+
+                else:
+                    raise ModuleNotFoundException("module by name %s does not exists" % module)
 
             else:
-                print("No module %s" % module)
-        else:
-            print("json string is of incorrect form")
+                raise JsonFormatException("json string is of incorrect form, refer to monitorformat.txt")
+
 
     def set_all_values(self, json_obj):
         """Converts a json string to a dictionary and adds it to the cache
         :type json_obj: json string of format in format.txt
         """
-        new_dict = json.loads(json_obj)
+        with self.lock:
+            new_dict = json.loads(json_obj)
 
-        if 'module' in new_dict:
-            module = new_dict['module']
+            if 'module' in new_dict:
+                module = new_dict['module']
 
-            if module in self.module_caches:
-                # changes places of pointers
-                self.module_caches_old[module] = json.dumps(self.module_caches[module])  # set previous current to old
-                self.module_caches[module] = new_dict  # set current to the new dict
+                if module in self.module_caches:
+                    # changes places of pointers
+                    self.module_caches_old[module] = json.dumps(
+                        self.module_caches[module])  # set previous current to old
+                    self.module_caches[module] = new_dict  # set current to the new dict
+
+                else:
+                    raise ModuleNotFoundException("No module %s" % module)
+
             else:
-                print("No module %s" % module)
-        else:
-            print("json string is of incorrect form")
+                raise JsonFormatException("json string is of incorrect form, refer to monitorformat.txt")
+
 
     def __get_value(self, key, module):
         """Get a value from the cache given module name and value key,
@@ -128,9 +166,9 @@ class NotCache:
             if key in current_dict.viewkeys():
                 return current_dict.get(key)
             else:
-                return "No key %s" % key
+                raise MonitoringKeyvalueNotFoundException("No key %s" % key)
         else:
-            return "No module %s" % module
+            raise ModuleNotFoundException("No module %s" % module)
 
     def get_values(self, json_string):
         """Get the specified values from the dicts of the given module names,
@@ -143,17 +181,18 @@ class NotCache:
             module = data['module']
             keylist = data['keylist']
 
-            if module in self.module_caches:
-                getsvalues = partial(self.__get_value, module=module, )  # create a partial func with module set
+            with self.lock:
+                if module in self.module_caches:
+                    getsvalues = partial(self.__get_value, module=module, )  # create a partial func with module set
 
-                values = map(getsvalues, keylist)  # apply this function on every name in the list, eg get all values
-                return values
+                    values = map(getsvalues,
+                                 keylist)  # apply this function on every name in the list, eg get all values
+                    return values
 
-            else:
-                return "No module %s" % module
-
+                else:
+                    raise ModuleNotFoundException("No module %s" % module)
         else:
-            return "json string is of incorrect form"
+            raise JsonFormatException("json string is of incorrect form reefer to controllerformat.txt")
 
     def get_all_module_values(self, module):
         """Get all the values from the cache of a given module name,
@@ -161,22 +200,23 @@ class NotCache:
         :param module: module name
         :return: json dict or string"""
 
-        if module in self.module_caches.viewkeys():
-            current_dict = self.module_caches[module]
+        with self.lock:
+            if module in self.module_caches.viewkeys():
+                current_dict = self.module_caches[module]
 
-            return json.dumps(current_dict)
+                return json.dumps(current_dict)
 
-        else:
-            return "No module %s" % module
+            else:
+                raise ModuleNotFoundException("No module %s" % module)
 
     def push(self):
         """push returns the old set of data,
         a json string serializing a dict containing 3 dicts
         :rtype: json string
         """
-        #self.module_caches_old['NFM'] = json.dumps(self.module_caches['NFM'])
-        #self.module_caches_old['HUM'] = json.dumps(self.module_caches['HUM'])
-        #self.module_caches_old['RPM'] = json.dumps(self.module_caches['RPM'])
+        # self.module_caches_old['NFM'] = json.dumps(self.module_caches['NFM'])
+        # self.module_caches_old['HUM'] = json.dumps(self.module_caches['HUM'])
+        # self.module_caches_old['RPM'] = json.dumps(self.module_caches['RPM'])
 
         data = json.dumps(self.module_caches_old)
         return data

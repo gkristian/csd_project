@@ -105,7 +105,7 @@ class NotCache:
         """
         with self.lock:
             json_dict = json.loads(json_string)
-
+            # Fetching monitoring module's values into the module variable
             if 'module' in json_dict:
                 module = json_dict['module']
                 if module in self.module_caches:
@@ -119,9 +119,16 @@ class NotCache:
                     self.module_caches_old[module] = json.dumps(self.module_caches[module])
 
                     # create a partial function with module name set
+
+                    # in setvalues, partial function acts as an "adder"
+                    # to the self.__set_value according to the given module.
+
                     setsvalues = partial(self.__set_value, module=module)
 
                     # set values with according to (key,value)
+                    #List_tuples: key and values that are fetched from json.
+                    # setvalues: the latest added key - & -values
+                    # MAP goes to apply funciton of setvalues to all sequences of list_tuples
                     map(setsvalues, list_tuples)
 
                 else:

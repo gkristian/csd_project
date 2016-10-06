@@ -6,8 +6,6 @@ from cache_exceptions import ModuleNotFoundException
 from cache_exceptions import MonitoringKeyvalueNotFoundException
 
 
-
-
 class NotCache:
     """Our "cache" according to TA instructions:
     Have to be able to hold all the monitored data all the time and when new data comes; change it out, this means that
@@ -50,6 +48,7 @@ class NotCache:
 
     def __print_module_cache_keys(self, module_name):
         """Prints the keys in the cache dictionary with name module_name
+        :rtype: dictview
         :type module_name: str
         """
         dict_view = None
@@ -65,7 +64,6 @@ class NotCache:
         for key in dict_view:
             print key
 
-
     def __print_module_cache_items(self, module_name):
         """Prints the keys in the cache dictionary with name module_name
         :type module_name: str
@@ -80,24 +78,24 @@ class NotCache:
 
         print dict_view
 
-    def __set_value(self, key_value_tuple, module):
+    def __set_value(self, key_value_tuple, module_name):
         """Sets the specified key to value in module module
-        :type module: module name
+        :type module_name: module name
         :type key_value_tuple: tuple containing (key, value)
         """
 
-        if module in self.module_caches.viewkeys():
-            current_dict = self.module_caches[module]
+        if module_name in self.module_caches.viewkeys():
+            current_dict = self.module_caches[module_name]
             key = key_value_tuple[0]
             value = key_value_tuple[1]
             if key in current_dict.viewkeys():
                 current_dict[key] = value
+
             else:
-                raise  MonitoringKeyvalueNotFoundException("No key %s" % key)
+                raise MonitoringKeyvalueNotFoundException("No key %s" % key)
 
         else:
-            raise ModuleNotFoundException("module by name %s does not exists" % module)
-
+            raise ModuleNotFoundException("module by name %s does not exists" % module_name)
 
     def set_values(self, json_string):
         """Set all the values specified for the specified module, retrieved from a json serialized dict
@@ -107,8 +105,9 @@ class NotCache:
             json_dict = json.loads(json_string)
             # Fetching monitoring module's values into the module variable
             if 'module' in json_dict:
-                module = json_dict['module']
-                if module in self.module_caches:
+                module_name = json_dict['module']
+                new_id = json_dict['id']
+                if module_name in self.module_caches:
                     # create a list of key value tuples out of the dict
                     # to do so remove module name and id, then call items()
                     json_dict.pop('module')
@@ -116,27 +115,31 @@ class NotCache:
                     list_tuples = json_dict.items()
 
                     # set previous data to old
-                    self.module_caches_old[module] = json.dumps(self.module_caches[module])
+                    self.module_caches_old[module_name] = json.dumps(self.module_caches[module_name])
+
+                    # update id
+                    current_dict = self.module_caches[module_name]
+                    current_dict['id'] = new_id
 
                     # create a partial function with module name set
-
                     # in setvalues, partial function acts as an "adder"
                     # to the self.__set_value according to the given module.
-
-                    setsvalues = partial(self.__set_value, module=module)
+                    setsvalues = partial(self.__set_value, module_name=module_name)
 
                     # set values with according to (key,value)
-                    #List_tuples: key and values that are fetched from json.
+                    # List_tuples: key and values that are fetched from json.
                     # setvalues: the latest added key - & -values
                     # MAP goes to apply funciton of setvalues to all sequences of list_tuples
                     map(setsvalues, list_tuples)
 
+                    # for testing purposes, return a view  of the changed dict
+                    return json.dumps(self.module_caches[module_name])
+
                 else:
-                    raise ModuleNotFoundException("module by name %s does not exists" % module)
+                    raise ModuleNotFoundException("module by name %s does not exists" % module_name)
 
             else:
                 raise JsonFormatException("json string is of incorrect form, refer to monitorformat.txt")
-
 
     def set_all_values(self, json_obj):
         """Converts a json string to a dictionary and adds it to the cache
@@ -146,36 +149,35 @@ class NotCache:
             new_dict = json.loads(json_obj)
 
             if 'module' in new_dict:
-                module = new_dict['module']
+                module_name = new_dict['module']
 
-                if module in self.module_caches:
+                if module_name in self.module_caches:
                     # changes places of pointers
-                    self.module_caches_old[module] = json.dumps(
-                        self.module_caches[module])  # set previous current to old
-                    self.module_caches[module] = new_dict  # set current to the new dict
+                    self.module_caches_old[module_name] = json.dumps(
+                        self.module_caches[module_name])  # set previous current to old
+                    self.module_caches[module_name] = new_dict  # set current to the new dict
 
                 else:
-                    raise ModuleNotFoundException("No module %s" % module)
+                    raise ModuleNotFoundException("No module %s" % module_name)
 
             else:
                 raise JsonFormatException("json string is of incorrect form, refer to monitorformat.txt")
 
-
-    def __get_value(self, key, module):
+    def __get_value(self, key, module_name):
         """Get a value from the cache given module name and value key,
         if no such module or key exists it returns an error string
-        :param module: module name
+        :param module_name: module name
         :param key: module monitoring value name
-        :return: int or string"""
+        :return: key, value tuple or exception"""
 
-        if module in self.module_caches.viewkeys():
-            current_dict = self.module_caches[module]
+        if module_name in self.module_caches.viewkeys():
+            current_dict = self.module_caches[module_name]
             if key in current_dict.viewkeys():
-                return current_dict.get(key)
+                return key, current_dict.get(key)
             else:
                 raise MonitoringKeyvalueNotFoundException("No key %s" % key)
         else:
-            raise ModuleNotFoundException("No module %s" % module)
+            raise ModuleNotFoundException("No module %s" % module_name)
 
     def get_values(self, json_string):
         """Get the specified values from the dicts of the given module names,
@@ -185,36 +187,38 @@ class NotCache:
         data = json.loads(json_string)
 
         if 'module' and 'keylist' in data:
-            module = data['module']
+            module_name = data['module']
             keylist = data['keylist']
 
             with self.lock:
-                if module in self.module_caches:
-                    getsvalues = partial(self.__get_value, module=module, )  # create a partial func with module set
+                if module_name in self.module_caches:
+                    # create a partial func with module set
+                    getsvalues = partial(self.__get_value, module_name=module_name, )
 
                     values = map(getsvalues,
                                  keylist)  # apply this function on every name in the list, eg get all values
+
                     return values
 
                 else:
-                    raise ModuleNotFoundException("No module %s" % module)
+                    raise ModuleNotFoundException("No module %s" % module_name)
         else:
             raise JsonFormatException("json string is of incorrect form reefer to controllerformat.txt")
 
-    def get_all_module_values(self, module):
+    def get_all_module_values(self, module_name):
         """Get all the values from the cache of a given module name,
         if no such module exists it returns an error string
-        :param module: module name
+        :param module_name: module name
         :return: json dict or string"""
 
         with self.lock:
-            if module in self.module_caches.viewkeys():
-                current_dict = self.module_caches[module]
+            if module_name in self.module_caches.viewkeys():
+                current_dict = self.module_caches[module_name]
 
                 return json.dumps(current_dict)
 
             else:
-                raise ModuleNotFoundException("No module %s" % module)
+                raise ModuleNotFoundException("No module %s" % module_name)
 
     def push(self):
         """push returns the old set of data,

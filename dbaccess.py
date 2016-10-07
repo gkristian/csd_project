@@ -28,9 +28,9 @@ class dbaccess(object):
 	print(inputdict)
 	
 	#Do insertion to db based on module type. Create table first if it doesnt exist
-	nfmdict = json.loads(inputdict['nfm'])
-	rpmdict = json.loads(inputdict['rpm'])
-	humdict = json.loads(inputdict['hum'])
+	nfmdict = inputdict['nfm']
+	rpmdict = inputdict['rpm']
+	humdict = inputdict['hum']
 	
 	print (type(nfmdict) is str)	
 

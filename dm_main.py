@@ -3,8 +3,12 @@ from dbaccess import dbaccess
 import json
 import time
  
+rpm_keys = []
+hum_keys = []
+nfm_keys = ['flow', 'delay']
 
-cache = NotCache()
+
+cache = NotCache(nfm_keys,'nfm', hum_keys,'hum', rpm_keys, 'rpm')
 db = dbaccess()
 
 #for x in range(1, 100, 1):
@@ -13,21 +17,13 @@ db = dbaccess()
 #    filling_cache_data[key] = value
 
 # controller format json
-list_keys = ['nfm%s' % x for x in range(1, 100, 2)]
 controller_json_data = {'module': 'nfm', 'id':000, 'keylist': ['flow','delay']}
-
-# monitor format json
-#monitoringmodule_json_data = {'module': 'NFM', 'id': 222}
-#for x in range(1, 100, 3):
-#    key = 'nfm%s' % x
-#   value = 3
-#    monitoringmodule_json_data[key] = value
-
 
 #START SERVERHANDLER THREAD HERE
 
 #PRETEND WE RECEIVE DATA HERE
-filling_cache_data = {'module': 'nfm', 'id': 000,'flow':77,'delay':3245} #just dummy data
+filling_cache_data = {'module': 'nfm', 'id': 321,'flow':88,'delay':1111} #just dummy data
+filling_cache_data2 = {'module': 'nfm', 'id': 654,'flow':99,'delay':4567}
 start = time.clock()
 
 #TEMPORARY. TO DO : remove hardcoded value
@@ -35,6 +31,9 @@ start = time.clock()
 # not of any correct format, for testing purposes
 try:
 	cache.set_values(json.dumps(filling_cache_data))
+	cache.set_values(json.dumps(filling_cache_data2))
+	cache.set_values(json.dumps(filling_cache_data))
+
 	print "Set values finished"
 except Exception as e:
     print "EXCEPTION SET"

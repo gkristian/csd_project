@@ -17,29 +17,30 @@ class NotCache:
     dicts of dicts, containing old values.
     """
 
-    # Error handling: currently sends error strings when something goes wrong.
-    # What structure do we want to have in the main file for errors?
+    def __init__(self, nfm_keys,nfm_name, hum_keys, hum_name, rpm_keys,rpm_name, *args, **kwargs):
+        self.nfm_keys = nfm_keys
+        self.hum_keys = hum_keys
+        self.rpm_keys = rpm_keys
 
-    # TODO in set values update id of current dict also
-    # cahge naming structure, too many module = module
+        'module', 'id',
 
-    def __init__(self):
         # current layer of values
-        nfm_dict = dict.fromkeys(['module', 'id', 'flow', 'delay']) #all except module is dummy value keys
-        nfm_dict['module'] = 'nfm'
-        nfm_dict['id'] = 111
-        nfm_dict['flow'] = 444
-        nfm_dict['delay'] = 555
-        hum_dict = dict.fromkeys(['module', 'id', 'hum1', 'hum2', 'hum3']) #TODO
-        hum_dict['module'] = 'hum'
-        hum_dict['id'] = 1
-        rpm_dict = dict.fromkeys(['module', 'id', 'rpm1', 'rpm2', 'rpm3']) #TODO
-        rpm_dict['module'] = 'rpm'
-        rpm_dict['id'] = 1
+        nfm_dict = dict.fromkeys(nfm_keys) #all except module is dummy value keys
+        nfm_dict['module'] = nfm_name
+        nfm_dict['id'] = 0
+ 
+        hum_dict = dict.fromkeys(hum_keys) #TODO
+        hum_dict['module'] = hum_name
+        hum_dict['id'] = 0
+    
+        rpm_dict = dict.fromkeys(rpm_keys) #TODO
+        rpm_dict['module'] = rpm_name
+        hum_dict['id'] = 0
+  
         # json string of dicts containing older values
-        nfm_old = json.dumps(nfm_dict)
-        hum_old = json.dumps(hum_dict)
-        rpm_old = json.dumps(rpm_dict)
+        nfm_old = nfm_dict # TODO change to ordinary dicts 
+        hum_old = hum_dict
+        rpm_old = rpm_dict
 
         # define a lock for enabling concurrency
         self.lock = threading.Lock()
@@ -117,7 +118,7 @@ class NotCache:
                     list_tuples = json_dict.items()
 
                     # set previous data to old
-                    self.module_caches_old[module_name] = json.dumps(self.module_caches[module_name])
+                    self.module_caches_old[module_name] = self.module_caches[module_name]
 
                     # update id
                     current_dict = self.module_caches[module_name]
@@ -155,8 +156,7 @@ class NotCache:
 
                 if module_name in self.module_caches:
                     # changes places of pointers
-                    self.module_caches_old[module_name] = json.dumps(
-                        self.module_caches[module_name])  # set previous current to old
+                    self.module_caches_old[module_name] = self.module_caches[module_name]  # set previous current to old
                     self.module_caches[module_name] = new_dict  # set current to the new dict
 
                 else:

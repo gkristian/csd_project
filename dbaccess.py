@@ -7,6 +7,7 @@
 #TODO : modify column name
 
 import MySQLdb
+import json
 
 class dbaccess(object):
     def __init__ (self):
@@ -23,27 +24,47 @@ class dbaccess(object):
 	cursor = db.cursor()
 
 	print("Inside INSERT. Received input :")
+	print(type(inputdict) is str)
 	print(inputdict)
-
-	#Do insertion to db based on module type. Create table first if it doesnt exist
-	table = inputdict['module']
 	
-	if table == 'nfm':
-		id = inputdict['id']
-		flow = inputdict['flow']
-		delay = inputdict['delay']
-		q1 = "CREATE TABLE IF NOT EXISTS %s (id FLOAT(30),flow INTEGER(20), delay INTEGER(20), PRIMARY KEY (id))" % (table)
-		q2 = "INSERT INTO nfm(id,flow,delay) VALUES (%d,%d,%d)" %(id,flow,delay)
-	elif table == 'rpm':
-		print "TODO LATER"
-	elif table == 'hum':
-		print "TODO LATER"
-	else:
-		print('Error: module name does not exist')
+	#Do insertion to db based on module type. Create table first if it doesnt exist
+	nfmdict = json.loads(inputdict['nfm'])
+	rpmdict = json.loads(inputdict['rpm'])
+	humdict = json.loads(inputdict['hum'])
+	
+	print (type(nfmdict) is str)	
+
+	print "NFM Dict";print nfmdict
+	print "RPM Dict";print rpmdict
+	print humdict
+#	if nfmdict == 'nfm':
+	print "HAHAHA"
+	id = nfmdict['id']
+	flow = nfmdict['flow']
+	delay = nfmdict['delay']
+	print "HELLO FROM ADELE"
+	print id
+	print flow
+	print delay
+	q1 = "CREATE TABLE IF NOT EXISTS nfm(id INTEGER(30),flow INTEGER(20), delay INTEGER(20), PRIMARY KEY (id))" 
+	q2 = "INSERT INTO nfm(id,flow,delay) VALUES (%d,%d,%d)" %(id,flow,delay)
+	q3 = "SELECT * FROM nfm"
+#	elif table == 'rpm':
+#		print "TODO LATER"
+#	elif table == 'hum':
+#		print "TODO LATER"
+#	else:
+#		print('Error: module name does not exist')
 
 	try:
 		cursor.execute(q1)
+	except:
+		print "Table exist"
+	
+	try:
+		print "Inserting now"
 		cursor.execute(q2)
+		cursor.execute(q3)
 		#Commit changes in the database
 		db.commit()
 		return "Insert success!"

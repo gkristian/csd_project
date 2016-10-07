@@ -25,14 +25,16 @@ class NotCache:
 
     def __init__(self):
         # current layer of values
-        nfm_dict = dict.fromkeys(['module', 'id', 'nfm1', 'nfm2', 'nfm3'])  # all except module is dummy value keys
-        nfm_dict['module'] = 'NFM'
-        nfm_dict['id'] = 1
-        hum_dict = dict.fromkeys(['module', 'id', 'hum1', 'hum2', 'hum3'])
-        hum_dict['module'] = 'HUM'
+        nfm_dict = dict.fromkeys(['module', 'id', 'flow', 'delay']) #all except module is dummy value keys
+        nfm_dict['module'] = 'nfm'
+        nfm_dict['id'] = 111
+        nfm_dict['flow'] = 444
+        nfm_dict['delay'] = 555
+        hum_dict = dict.fromkeys(['module', 'id', 'hum1', 'hum2', 'hum3']) #TODO
+        hum_dict['module'] = 'hum'
         hum_dict['id'] = 1
-        rpm_dict = dict.fromkeys(['module', 'id', 'rpm1', 'rpm2', 'rpm3'])
-        rpm_dict['module'] = 'RPM'
+        rpm_dict = dict.fromkeys(['module', 'id', 'rpm1', 'rpm2', 'rpm3']) #TODO
+        rpm_dict['module'] = 'rpm'
         rpm_dict['id'] = 1
         # json string of dicts containing older values
         nfm_old = json.dumps(nfm_dict)
@@ -43,8 +45,8 @@ class NotCache:
         self.lock = threading.Lock()
 
         # dict listing current and old layers of values
-        self.module_caches = {'NFM': nfm_dict, 'HUM': hum_dict, 'RPM': rpm_dict}
-        self.module_caches_old = {'NFM': nfm_old, 'HUM': hum_old, 'RPM': rpm_old}
+        self.module_caches = {'nfm': nfm_dict, 'hum': hum_dict, 'rpm': rpm_dict}
+        self.module_caches_old = {'nfm': nfm_old, 'hum': hum_old, 'rpm': rpm_old}
 
     def __print_module_cache_keys(self, module_name):
         """Prints the keys in the cache dictionary with name module_name

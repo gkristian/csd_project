@@ -3,7 +3,12 @@
 from dbaccess import dbaccess
 
 db = dbaccess()
-db.Insert("nfm","our first data")
+
+#Create dummy dictionary
+inputdict = {'module': 'nfm', 'id': 222, 'flow': 68, 'delay': 534 }
+
+#insert dictionary. dbaccess decide which table to insert to
+db.insert(inputdict)
 
 print  "HELL YEAH"
 

@@ -4,24 +4,19 @@ import time
 
 cache = NotCache()
 
-filling_chache_data = {'module': 'NFM', 'id': 000}
+filling_cache_data = {'module': 'NFM', 'id': 000}
 
 for x in range(1, 100, 1):
     key = 'nfm%s' % x
     value = x
-    filling_chache_data[key] = value
+    filling_cache_data[key] = value
 
 # controller format json
-list_keys = []
-for x in range(1, 100, 2):
-    key = 'nfm%s' % x
-    list_keys.append(key)
-
+list_keys = ['nfm%s' % x for x in range(1, 100, 2)]
 controller_json_data = {'module': 'NFM', 'keylist': list_keys}
 
 # monitor format json
 monitoringmodule_json_data = {'module': 'NFM', 'id': 222}
-
 for x in range(1, 100, 3):
     key = 'nfm%s' % x
     value = 3
@@ -32,7 +27,7 @@ start = time.clock()
 try:
     # set all values in NFM cache to values dict in data
     # not of any correct format, for testing purposes
-    cache.set_all_values(json.dumps(filling_chache_data))
+    cache.set_all_values(json.dumps(filling_cache_data))
 except Exception as e:
     print e
 

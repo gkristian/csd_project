@@ -229,5 +229,5 @@ class NotCache:
         # self.module_caches_old['HUM'] = json.dumps(self.module_caches['HUM'])
         # self.module_caches_old['RPM'] = json.dumps(self.module_caches['RPM'])
 
-        data = json.dumps(self.module_caches_old)
+        data = self.module_caches_old
         return data

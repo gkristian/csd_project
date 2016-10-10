@@ -9,13 +9,15 @@ class client_side:
         print '**Client_Side Server has been initiated**'
         print '\n'
         self.jsonfile=jsonfile
+
     def postme(self,jsonfile):
         self.jsonfile=jsonfile
         resp=requests.post(client_side.url,json=self.jsonfile)
         if resp.status_code !=201:
-            print 'didnt work'
+            print 'Sending POST req: recieved error code 201 '
         else:
-            print 'Im working as POST '
+            print 'POST request successful'
+
     def getme(self):
         resp=requests.get('http://127.0.0.1:8000/Tasks.txt')
         if resp.status_code !=200:
@@ -30,5 +32,5 @@ class sendout(client_side):
 
 c=client_side(x1)
 c.postme(x1)
-c.getme()
+#c.getme()
 

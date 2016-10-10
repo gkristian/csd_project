@@ -107,9 +107,6 @@ class StanfordTopo( Topo ):
                 f4 = self.addHost('f4', ip='10.0.40.4/8', mac='00:00:00:00:04:04')
 
                 #Link Capacity definitions:
-                #lopt1=dict(bw=10000)
-                #lopt2=dict(bw=1000)
-                #lopt3=dict(bw=100)
                 # Add link b1, b2, 1 Gbps
                 self.addLink(b1, b2,bw=1000)
 

@@ -1,8 +1,11 @@
 #!/usr/bin/python
 import requests
 import json
+import time
+from repeattimer import RepeatedTimer
 
 x1={"summary":"NFM status", "description":"1000 packets comes"}
+
 class client_side:
     url='http://127.0.0.1:8000/Tasks.txt'
     def __init__(self,jsonfile):
@@ -25,12 +28,25 @@ class client_side:
         else:
             print 'Positive response for GET'
 
-class sendout(client_side):
-    def __init__(self):
-        print()
+# TESTING 
+
+def monitorer(data):
+    c=client_side(data)
+    c.postme(data)
+
+# NOT USABLE AS OF YET, SERVER NOT READY
+def controller(data):
+    c=client_side(data)
+    c.getme(data)
 
 
-c=client_side(x1)
-c.postme(x1)
-#c.getme()
+rt_monitor_module = RepeatedTimer(1, monitorer, x1) 
+#rt_controller = RepeatedTimer(1, controller) # NOT USABLE AS OF YET
+
+try:
+    time.sleep(3) # your long-running job goes here...
+finally:
+    rt_monitor_module.stop()
+    #rt_controller.stop()
+
 

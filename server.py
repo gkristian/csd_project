@@ -5,6 +5,7 @@ import SocketServer
 import BaseHTTPServer
 import json
 import Queue
+import threading
 
 #a class for communication that estabish
 PORT=8000
@@ -18,7 +19,7 @@ class Server(BaseHTTPServer.HTTPServer):
         BaseHTTPServer.HTTPServer.serve_forever(self)
 
 
-class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class ServerHandler(SocketServer.ThreadingMixIn, SimpleHTTPServer.SimpleHTTPRequestHandler):
     # Empty uninitialized varable for holding the queue
     test_q = {}
 

@@ -4,7 +4,8 @@ import json
 import time
 from repeattimer import RepeatedTimer
 
-x1={"summary":"NFM status", "description":"1000 packets comes"}
+x1 = {'module': 'nfm', 'id': 10,'flow':88,'delay':1111} #just dummy data
+x2 = {'module': 'nfm', 'id': 20,'flow':99,'delay':4567}
 
 class client_side:
     url='http://127.0.0.1:8000/Tasks.txt'
@@ -21,31 +22,50 @@ class client_side:
         else:
             print 'POST request successful'
 
-    def getme(self):
-        resp=requests.get('http://127.0.0.1:8000/Tasks.txt')
+    def getme(self, data_dict):
+        payload = data_dict
+        resp=requests.get('http://127.0.0.1:8000/Tasks.txt', params=payload)
         if resp.status_code !=200:
             print ' No response for GET'
         else:
+            # sift out our data
+            json_text_list = resp.text.split("200 ")[1]
+            json_text_list = json_text_list.split("Server")[0]
+            tuple_list = json.loads(json_text_list)
+            
+            #for x in tuple_list: print x
+
+            # return these values in some format
+
+            return tuple_list
+
             print 'Positive response for GET'
 
 # TESTING 
 
 def monitorer(data):
+    data['id'] += 1
     c=client_side(data)
     c.postme(data)
 
 # NOT USABLE AS OF YET, SERVER NOT READY
 def controller(data):
     c=client_side(data)
-    c.getme(data)
+    print "Data to the controller, a tuple list: "
+    print c.getme(data)
 
 
-rt_monitor_module = RepeatedTimer(1, monitorer, x1) 
-#rt_controller = RepeatedTimer(1, controller) # NOT USABLE AS OF YET
+rt_monitor_module = RepeatedTimer(1, monitorer, x1)
+x3 = {'module': 'nfm', 'id':000, 'keylist': ['flow','delay']}
+
+controller(x3)
+
+#rt_controller = RepeatedTimer(1, controller, x3) # NOT USABLE AS OF YET
 
 try:
     time.sleep(3) # your long-running job goes here...
 finally:
+    print "argh"
     rt_monitor_module.stop()
     #rt_controller.stop()
 

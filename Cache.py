@@ -26,14 +26,17 @@ class NotCache:
 
         # current layer of values
         nfm_dict = dict.fromkeys(nfm_keys) #all except module is dummy value keys
+        nfm_dict.update({k : 0 for k in nfm_dict.iterkeys()}) # set default values
         nfm_dict['module'] = nfm_name
         nfm_dict['id'] = 0
  
         hum_dict = dict.fromkeys(hum_keys) #TODO
+        hum_dict.update({k : 0 for k in hum_dict.iterkeys()}) # set default values
         hum_dict['module'] = hum_name
         hum_dict['id'] = 0
     
         rpm_dict = dict.fromkeys(rpm_keys) #TODO
+        rpm_dict.update({k : 0 for k in rpm_dict.iterkeys()}) # set default values
         rpm_dict['module'] = rpm_name
         hum_dict['id'] = 0
   
@@ -67,7 +70,7 @@ class NotCache:
         for key in dict_view:
             print key
 
-    def __print_module_cache_items(self, module_name):
+    def print_module_cache_items(self, module_name):
         """Prints the keys in the cache dictionary with name module_name
         :type module_name: str
         """
@@ -181,24 +184,30 @@ class NotCache:
         else:
             raise ModuleNotFoundException("No module %s" % module_name)
 
-    def get_values(self, json_string):
+    def get_values(self, data_dict):
         """Get the specified values from the dicts of the given module names,
         if no such module exists it returns an error string
         :return: list"""
-
-        data = json.loads(json_string)
+        print "fine 1"
+        data = data_dict
+        print "fine 2"
 
         if 'module' and 'keylist' in data:
+            print "fine 3"
             module_name = data['module']
             keylist = data['keylist']
 
             with self.lock:
+                print "fine 4"
                 if module_name in self.module_caches:
                     # create a partial func with module set
+                    print "fine 5"
                     getsvalues = partial(self.__get_value, module_name=module_name, )
+                    print "fine 6"
 
                     values = map(getsvalues,
                                  keylist)  # apply this function on every name in the list, eg get all values
+                    print "fine 7"
 
                     return values
 
@@ -206,6 +215,13 @@ class NotCache:
                     raise ModuleNotFoundException("No module %s" % module_name)
         else:
             raise JsonFormatException("json string is of incorrect form reefer to controllerformat.txt")
+
+    def get_all_values(self):
+        """Get the all values from the dicts,
+        if no such module exists it returns an error string
+        :return: list"""
+        with self.lock:
+            return json.dumps(self.module_caches)
 
     def get_all_module_values(self, module_name):
         """Get all the values from the cache of a given module name,

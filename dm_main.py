@@ -20,7 +20,7 @@ try:
 
 
 	# controller format json
-	controller_json_data = {'module': 'nfm', 'id':000, 'keylist': ['flow','delay']}
+	controller_data = {'module': 'nfm', 'id':000, 'keylist': ['flow','delay']}
 
 
 	#START SERVERHANDLER THREAD HERE
@@ -33,17 +33,17 @@ try:
 
 	# function to start a server in another thread,
 	# takes a port number and a queue pointer
-	def start_serving(port, test, name):
+	def start_serving(port, cache, name):
 		PORT = port
 		h=ServerHandler
 		httpd=Server(("",PORT), h)
 		print '\nServing %s at Port: %d' % (name, PORT)
-		httpd.serve_forever(test)
+		httpd.serve_forever(cache)
 
 	try:
 		# start thread for listening to monitoring modules
 		PORT = 8000
-		monitor_t = threading.Thread(target=start_serving, args=(PORT, test_q, "monitoring modules"))
+		monitor_t = threading.Thread(target=start_serving, args=(PORT, cache, "monitoring modules"))
 		monitor_t.daemon = True
 		monitor_t.start()
 	except KeyboardInterrupt: # to exit 
@@ -64,38 +64,17 @@ try:
 	#     print e
 
 
-	# sleep for  15 seconds to be able to view sending client requests
-	time.sleep(15)
-	# print the queue
-	print "\nItems in test queue: "
-	while not test_q.empty():
-		print test_q.get()
+	print "\nThe current view of  the nfm cache"
+	cache.print_module_cache_items("nfm")
 
+	print json.loads(cache.get_all_values())
 
 	#  TODO ONLY FOR TESTING, TO BE REMOVED
-	# BREAK IN TESTED WORKFLOW, NOW ONLY TESTING CACHE TO DB,
-	# PRETEND WE RECEIVE DATA HERE
-	filling_cache_data = {'module': 'nfm', 'id': 321,'flow':88,'delay':1111} #just dummy data
-	filling_cache_data2 = {'module': 'nfm', 'id': 654,'flow':99,'delay':4567}
-
-	#TEMPORARY. TO DO : remove hardcoded value
-	# set all values in NFM cache to values dict in data
-	# not of any correct format, for testing purposes
-	try:
-		cache.set_values(json.dumps(filling_cache_data))
-		cache.set_values(json.dumps(filling_cache_data2))
-		cache.set_values(json.dumps(filling_cache_data))
-
-		print "\nSet values finished"
-	except Exception as e:
-	    print "\nEXCEPTION SET"
-
-
 	#PRETEND CONTROLLER REQUEST DATA HERE
 	try:
 		print "\nGet the specified subset of values from NFM:"
 	    #returns a subset of  specified module values
-		print cache.get_values(json.dumps(controller_json_data))
+		print cache.get_values(controller_data)
 		print "Get success"
 	except BaseException as e:
 	    print e

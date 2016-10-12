@@ -58,14 +58,12 @@ def controller(data):
 rt_monitor_module = RepeatedTimer(1, monitorer, x1)
 x3 = {'module': 'nfm', 'id':000, 'keylist': ['flow','delay']}
 
-controller(x3)
-
-#rt_controller = RepeatedTimer(1, controller, x3) # NOT USABLE AS OF YET
+rt_controller = RepeatedTimer(1, controller, x3) 
 
 try:
     time.sleep(3) # your long-running job goes here...
 finally:
     rt_monitor_module.stop()
-    #rt_controller.stop()
+    rt_controller.stop()
 
 

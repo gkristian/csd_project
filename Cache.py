@@ -58,7 +58,6 @@ class NotCache:
         :type module_name: str
         """
         dict_view = None
-
         with self.lock:
             if module_name in self.module_caches.viewkeys():
                 dict_view = self.module_caches[module_name].viewkeys()
@@ -66,7 +65,6 @@ class NotCache:
                 raise ModuleNotFoundException("module by name %s does not exists" % module_name)
 
         print "Unsorted list of keys in sub-cache for %s" % module_name
-
         for key in dict_view:
             print key
 
@@ -89,17 +87,14 @@ class NotCache:
         :type module_name: module name
         :type key_value_tuple: tuple containing (key, value)
         """
-
         if module_name in self.module_caches.viewkeys():
             current_dict = self.module_caches[module_name]
             key = key_value_tuple[0]
             value = key_value_tuple[1]
             if key in current_dict.viewkeys():
                 current_dict[key] = value
-
             else:
                 raise MonitoringKeyvalueNotFoundException("No key %s" % key)
-
         else:
             raise ModuleNotFoundException("module by name %s does not exists" % module_name)
 
@@ -140,10 +135,8 @@ class NotCache:
 
                     # for testing purposes, return a view  of the changed dict
                     return json.dumps(self.module_caches[module_name])
-
                 else:
                     raise ModuleNotFoundException("module by name %s does not exists" % module_name)
-
             else:
                 raise JsonFormatException("json string is of incorrect form, refer to monitorformat.txt")
 
@@ -153,18 +146,14 @@ class NotCache:
         """
         with self.lock:
             new_dict = json.loads(json_obj)
-
             if 'module' in new_dict:
                 module_name = new_dict['module']
-
                 if module_name in self.module_caches:
                     # changes places of pointers
                     self.module_caches_old[module_name] = self.module_caches[module_name]  # set previous current to old
                     self.module_caches[module_name] = new_dict  # set current to the new dict
-
                 else:
                     raise ModuleNotFoundException("No module %s" % module_name)
-
             else:
                 raise JsonFormatException("json string is of incorrect form, refer to monitorformat.txt")
 
@@ -198,12 +187,9 @@ class NotCache:
                 if module_name in self.module_caches:
                     # create a partial func with module set
                     getsvalues = partial(self.__get_value, module_name=module_name, )
-
                     values = map(getsvalues,
                                  keylist)  # apply this function on every name in the list, eg get all values
-
                     return values
-
                 else:
                     raise ModuleNotFoundException("No module %s" % module_name)
         else:
@@ -225,9 +211,7 @@ class NotCache:
         with self.lock:
             if module_name in self.module_caches.viewkeys():
                 current_dict = self.module_caches[module_name]
-
                 return json.dumps(current_dict)
-
             else:
                 raise ModuleNotFoundException("No module %s" % module_name)
 
@@ -236,6 +220,5 @@ class NotCache:
         a json string serializing a dict containing 3 dicts
         :rtype: json string
         """
-
         data = self.module_caches_old
         return data

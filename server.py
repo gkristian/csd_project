@@ -65,12 +65,6 @@ class ServerHandler(SocketServer.ThreadingMixIn, SimpleHTTPServer.SimpleHTTPRequ
         print "GET handling done"
 
 
-        # TODO, fetch data from cache and send it on 
-        # that is:
-        # decode URL parameters to find out which values the controller wants
-        # fetch that data from cache,
-        # create GET response and set the fetched data as content
-
     def do_POST(self):
         print "\nAccepting POST req"
         # create response to POST req

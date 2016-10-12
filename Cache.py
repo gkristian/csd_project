@@ -236,9 +236,6 @@ class NotCache:
         a json string serializing a dict containing 3 dicts
         :rtype: json string
         """
-        # self.module_caches_old['NFM'] = json.dumps(self.module_caches['NFM'])
-        # self.module_caches_old['HUM'] = json.dumps(self.module_caches['HUM'])
-        # self.module_caches_old['RPM'] = json.dumps(self.module_caches['RPM'])
 
         data = self.module_caches_old
         return data

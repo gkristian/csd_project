@@ -33,10 +33,7 @@ class client_side:
             json_text_list = json_text_list.split("Server")[0]
             tuple_list = json.loads(json_text_list)
             
-            #for x in tuple_list: print x
-
             # return these values in some format
-
             return tuple_list
 
             print 'Positive response for GET'
@@ -62,7 +59,7 @@ x3 = {'module': 'nfm', 'id':000, 'keylist': ['flow','delay']}
 rt_controller = RepeatedTimer(1, controller, x3) 
 
 try:
-    time.sleep(3) # your long-running job goes here...
+    time.sleep(4) # your long-running job goes here...
 finally:
     rt_monitor_module.stop()
     rt_controller.stop()

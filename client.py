@@ -65,7 +65,6 @@ controller(x3)
 try:
     time.sleep(3) # your long-running job goes here...
 finally:
-    print "argh"
     rt_monitor_module.stop()
     #rt_controller.stop()
 

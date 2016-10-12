@@ -188,26 +188,19 @@ class NotCache:
         """Get the specified values from the dicts of the given module names,
         if no such module exists it returns an error string
         :return: list"""
-        print "fine 1"
         data = data_dict
-        print "fine 2"
 
         if 'module' and 'keylist' in data:
-            print "fine 3"
             module_name = data['module']
             keylist = data['keylist']
 
             with self.lock:
-                print "fine 4"
                 if module_name in self.module_caches:
                     # create a partial func with module set
-                    print "fine 5"
                     getsvalues = partial(self.__get_value, module_name=module_name, )
-                    print "fine 6"
 
                     values = map(getsvalues,
                                  keylist)  # apply this function on every name in the list, eg get all values
-                    print "fine 7"
 
                     return values
 

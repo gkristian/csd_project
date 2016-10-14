@@ -90,6 +90,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             j_data=json.loads(self.data)
 
             # put the json data in the cache
+            #if first time from module x use set_all_values, module name and id 0?
             self.cache.set_values(self.data)
         
             print "{}".format(j_data)

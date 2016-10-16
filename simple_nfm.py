@@ -19,10 +19,16 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 	neighbourDict = {}	# dictionary to store each switch's neighbours
 	flows = {}		# dictionary to store each switch's flows
 	bla = threading.Event() # semaphore variable to syncronize between flow request and path computing
+	blabla = threading.Event() #semaphore variable to synchronize between port request and ---||---
 	switchCounter = 0	# total registered switches
 	responsedSwitches = 0	# counter of a round's responded switches
+	responsedSwitchesPortStatus = 0 #counter of a round's responded switches of port stats
 	DMclient = client_side(" ")
 	mininetRunning = False
+	pathComponents = {}
+	linkBytes = {}
+	updateTime = 5
+	portDict = {}
 	
 
 	def __init__(self, *args, **kwargs):
@@ -41,11 +47,11 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 		datapath = ev.datapath
 		if ev.state == MAIN_DISPATCHER:
 			if datapath.id not in self.datapaths:
-				self.logger.info('registered datapath: %016x', datapath.id)
+				self.logger.debug('registered datapath: %016x', datapath.id)
 				self.datapaths[datapath.id] = datapath
 		elif ev.state == DEAD_DISPATCHER:
 			if datapath.id in self.datapaths:
-				self.logger.info('unregister.datapath: %016x', datapath.id)
+				self.logger.debug('unregister.datapath: %016x', datapath.id)
 				del self.datapaths[datapath.id]
 	
 	@set_ev_cls(event.EventSwitchEnter)
@@ -59,7 +65,7 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 		#print "one round"		
 		for link in links:
 			#self.logger.info("%d %d %s", link[0], link[1], link[2])
-			#self.logger.info("Neighbours of switch %s are: ", link[0])
+			self.logger.debug("Neighbours of switch %s are: ", link[0])
 			
 			if str(link[0]) in self.neighbourDict:
 				nList = self.neighbourDict[str(link[0])]
@@ -70,31 +76,34 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 			else:
 				nList = []
 				link_tuple = {str(link[1]): link[2]}
-				if link_tuple not in nList:
- 					nList.append(link_tuple)
+				#if link_tuple not in nList:
+ 				nList.append(link_tuple)
 				self.neighbourDict[str(link[0])] = nList
 			#self.logger.info(self.neighbourDict)
 		#self.logger.info(switches)
 		#self.logger.info(links)
 		#self.logger.info(self.neighbourDict)
-		self.logger.info("NEIGHBOURS LEARNED...")
+		self.logger.debug("NEIGHBOURS LEARNED...")
 		self.switchCounter = len(switches)
-		self.logger.info("TOTAL SWITCHES: %d", len(switches))
+		self.logger.debug("TOTAL SWITCHES: %d", len(switches))
 
 	
 
 	def _monitor(self):
 		self.bla.set()
+		self.blabla.set()
 		while True:
-			self.logger.info("REQUESTING FLOW STAT...")
-			hub.sleep(10)
+			self.logger.debug("REQUESTING FLOW STAT...")
+			hub.sleep(self.updateTime)
 			
 			self.bla.wait()
+			self.blabla.wait()
 			#self.logger.info("BLA")
 
 			for dp in self.datapaths.values():
 				self._request_stats(dp)
 			self.bla.clear()
+			self.blabla.clear()
 			
 
 	def _request_stats(self, datapath):
@@ -139,7 +148,7 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 		#self.logger.info(self.flows)
 		self.responsedSwitches += 1
 		#self.logger.info("FLOW STAT RECEIVED")
-		self.logger.info("FLOW STAT RECEIVED: %d/%d", self.responsedSwitches, self.switchCounter)
+		self.logger.debug("FLOW STAT RECEIVED: %d/%d", self.responsedSwitches, self.switchCounter)
 		#self.logger.info(self.responsedSwitches)
 		"""
 		WHEN EVERY SWITCH HAS GIVEN THE NFM ITS FLOW STAT, START CALCULATING THE PATHS
@@ -159,7 +168,9 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 		for switchX in range(6):
 			for switchY in range(6):
 				if switchX is not switchY:
+					#self.logger.info("Checking between %d and %d", switchX+1, switchY+1)
 					self.checkLink(switchX+1, switchY+1)
+		#self.logger.info(self.pathComponents)
 
 	"""
 	ALGORITHM: CROSSCHECKING BETWEEN NEIGHBOURS OF THE SWITCHES AND EACH SWITCH'S FLOWS,
@@ -167,6 +178,10 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 	"""
 	def checkLink(self, Sx, Sy):
 		#TODO
+		#DEBUG
+		if str(Sx) not in self.neighbourDict:
+			self.logger.info("%d not listed in neighbour dictionary", Sx)
+			self.logger.info(self.neighbourDict)
 		Sx_neighbours = self.neighbourDict[str(Sx)]
 		Sy_exists = False
 		Sx_port = None	
@@ -178,10 +193,47 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 		if not Sy_exists:
 			return False
 		Sx_flows = self.flows[Sx]
+		#bytes = {}
 		for flow in Sx_flows:
 			if flow[2] == Sx_port:
-				self.logger.info("Flow exists: %d -> %d with destination: %s", Sx, Sy, flow[1])
-				return True
+				#Determing BW
+				path = str(Sx)+" -> "+str(Sy)+"[src_port: "+str(flow[0])+",dst:"+str(flow[1])+"]"
+				"""
+				if path in bytes:
+					linkBytes = bytes[path]
+					linkBytes += flow[4]
+					bytes[path] = linkBytes
+				else:
+					bytes[path] = flow[4]
+				"""	
+				bw = 0			
+				if path in self.linkBytes:
+					linkBytes = self.linkBytes[path]
+					#self.logger.info("%d %d", flow[4], linkBytes)
+					#if flow[4] >= linkBytes:
+					bw = (flow[4] - linkBytes)/self.updateTime
+				else:
+					bw = flow[4]/self.updateTime
+				self.linkBytes[path] = flow[4]
+							
+				speed = str(bw*8)+" bit/s"
+				if (bw*8) > 1024:
+					speed = str((bw*8)/1024)+" Kbit/s"
+				elif (bw*8) > (1024*1024):
+					speed = str((bw*8)/(1024*1024))+" Mbit/s"
+				self.logger.info("Flow exists: %d -> %d with destination: %s. Packets: %d, bytes: %d, bw: %s", Sx, Sy, flow[1], flow[3], flow[4], speed)				
+				if flow[1] in self.pathComponents:
+					pathList = self.pathComponents[flow[1]]
+					if path not in pathList:
+						pathList.append(path)
+					self.pathComponents[flow[1]] = pathList
+				elif flow[1] != -1:
+					pathList = [path]
+					self.pathComponents[flow[1]] = pathList
+				#return True
+		
+		#for link in bytes:
+		#	self.logger.info("BW of link %s: %d bytes/sec", link, bytes[link]/self.updateTime)
 		return False
 
 
@@ -199,7 +251,36 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 
 	def print_port_table(self, ev):
 		body = ev.msg.body
+		
+		
+		portDictKey = str(ev.msg.datapath.id)
+		if portDictKey in self.portDict:
+			subDict = self.portDict[portDictKey]
+			for stat in sorted(body, key=attrgetter('port_no')):
+				subDictKey = str(stat.port_no)
+				if subDictKey in subDict:
+					tx_bytes = subDict[subDictKey]
+					tx_bytes += stat.tx_bytes
+					subDict[subDictKey] = tx_bytes
+				else:
+					subDict[subDictKey] = stat.tx_bytes
+			self.portDict[portDictKey] = subDict
+		else:
+			subDict = {}
+			for stat in sorted(body, key=attrgetter('port_no')):
+				subDictKey = str(stat.port_no)
+				subDict[subDictKey] = stat.tx_bytes
+			self.portDict[portDictKey] = subDict
 
+		self.responsedSwitchesPortStatus += 1
+		if self.responsedSwitchesPortStatus == self.switchCounter:
+			self.responsedSwitchesPortStatus = 0
+			self.logger.info("PORT DICT: ")
+			self.logger.info(self.portDict)
+			self.logger.info("\n")
+			self.blabla.set()
+
+		"""
 		self.logger.info('datapath	 port	'
 						 '  rx-pkts  rx-bytes rx-error '
 						 'tx-pkts  tx-bytes tx-error')
@@ -211,13 +292,13 @@ class SimpleNFM(simple_switch_13.SimpleSwitch13):
 							  ev.msg.datapath.id, stat.port_no,
 							  stat.rx_packets, stat.rx_bytes, stat.rx_errors,
 							  stat.tx_packets, stat.tx_bytes, stat.tx_errors)	
-
+		"""
 
 	@set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
 	def _port_stats_reply_handler(self, ev):
-		#self.print_port_table(ev)
-		#self.logger.info('\n\n\n')
-		a = 0
+		self.print_port_table(ev)
+		#self.logger.info('\n\n')
+		#a = 0
 
 
 

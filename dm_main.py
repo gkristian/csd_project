@@ -22,24 +22,27 @@ try:
 
 	# function to push from cache, used in our repeattimer
 	def push_from_cache():
-		try:
-			print "\nData pushed from cache:"
-			datatosql = cache.push()
-			db.insert(datatosql)
-			print "Push finished \n"
-		except BaseException as e:
-			rt_push.stop()
-			print e
+		if cache.get_state() == True:
+			try:
+				print "\nData pushed from cache:"
+				datatosql = cache.push()
+				db.insert(datatosql)
+				print "Push finished \n"
+			except BaseException as e:
+				rt_push.stop()
+				print e
+		else:
+			print "Cache not initialized"
 
 	server_quit = {'interrupted' : False} 
 
 	time_intervall = 2 # set time between pushes to db
-	rpm_keys = []
-	hum_keys = []
-	nfm_keys = ['flow', 'delay']
+	#rpm_keys = []
+	#hum_keys = []
+	#nfm_keys = ['flow', 'delay']
 
 
-	cache = NotCache(nfm_keys,'nfm', hum_keys,'hum', rpm_keys, 'rpm')
+	cache = NotCache()
 	db = dbaccess()
 
 	# start pushing old data from the cache to the db, every 2 seconds

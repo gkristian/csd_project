@@ -90,8 +90,14 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             j_data=json.loads(self.data)
 
             # put the json data in the cache
-            #if first time from module x use set_all_values, module name and id 0?
-            self.cache.set_values(self.data)
+            #if first time from module x use set_all_values, module name and id 1?
+            if 'id' in j_data:
+                if j_data['id'] == 1:
+                    self.cache.set_all_values(self.data)
+                else:
+                    self.cache.set_values(self.data)
+            else:
+                print " not a correct json dict"       
         
             print "{}".format(j_data)
             ServerHandler.manam= j_data

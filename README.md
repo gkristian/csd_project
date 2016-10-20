@@ -9,7 +9,7 @@ RECENT_CHANGE:
 
 TODO:
 
--add the hosts to the graph (30 mins)
+-add the hosts to the graph. Study shows using a MultiGraph is much better than DiGraph but is a MultiNode graph directional? (30 mins)
 
 -use the link.to_dict() to add out_port to each switch so that from the graph the path can be built (5 hrs)
 

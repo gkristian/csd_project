@@ -23,7 +23,14 @@ TODO:
 
 
 Usage Instructions:
-
+0. You need to install below python libraries part of the discrete math graph daraw framework:
+	pip install networkx
+	
+ You also need to install below libraries for graph visualization to run future versions of this application.
+	pip install matplotlib
+	apt-get install graphviz
+	apt-get install python-pygraphviz
+	pip install pydot
 1. cd /bin. Run ryu script first and tail its log in one window
 
 2. In another winow. cd bin. Run mininet script. At the CLI run pingall to initiate topology discovery without flooding.

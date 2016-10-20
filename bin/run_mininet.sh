@@ -1,6 +1,6 @@
 #TODO:
 # Upgrade controller app to OpenFlow13. Estimate time 2 hours
-TOPO_FILE=midterm_topology-nobw.py 
+TOPO_FILE=../src/midterm_topology-nobw.py 
 #TOPO_FILE=SimpleTopo.py
 #TODO:
 

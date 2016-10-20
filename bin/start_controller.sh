@@ -4,7 +4,7 @@
 #
 # Notes:
 # No need to change PYTHONPATH env variable
-RYU_CC_APP=controller_core_of10.py
+RYU_CC_APP=../src/controller_core_of10.py
 LOG_FILE=/tmp/cclog.log
 OUTPUT_LOG=/tmp/cc.log
 

@@ -12,6 +12,7 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
 from ryu.lib import hub
+import networkx as nx
 import json
 import threading
 from client import client_side
@@ -35,6 +36,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	portDict = {}
 	switches = []
 	
+	
 
 	def __init__(self, *args, **kwargs):
 		super(NFM, self).__init__(*args, **kwargs)
@@ -42,8 +44,15 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		#self.monitor_thread = hub.spawn(self._monitor)
 		self.topology_api_app = self
 		self.mac_to_port = {}
+		self.net = nx.DiGraph([('1-1','2-1'),('2-1','1-1'),('1-2','3-2'),('3-2','1-2'),('2-2','3-1'),('3-1','2-2'), ('00:00:00:00:01:01','1-3'),('1-3','00:00:00:00:01:01'),('00:00:00:00:02:01','2-3'),('2-3','00:00:00:00:02:01'),('00:00:00:00:03:01','3-3'),('3-3','00:00:00:00:03:01')])
+		#self.logger.info([n for n in self.net.nodes()])
+		#self.logger.info([n for n in self.net.edges(data=True)])
+		self.totalSwitches = self.determineNumberOfSwitches()
+		self.logger.info("TOTAL SWITCHES: %d", self.totalSwitches)
+		#self.populateNET()
 		#testSend = {'module': 'nfm', 'id': 380,'flow':1,'delay':5567}
 		#self.DMclient.postme(testSend)
+
 
 	@set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
 	def _state_change_handler(self, ev):
@@ -62,7 +71,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			if datapath.id in self.datapaths:
 				self.logger.info('unregister.datapath: %016x', datapath.id)
 				del self.datapaths[datapath.id]
-	
+	"""
 	@set_ev_cls(event.EventSwitchEnter)
 	def get_topology_data(self, ev):
 		switch_list = get_switch(self.topology_api_app, None)
@@ -105,7 +114,19 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		#self.logger.info("NEIGHBOURS LEARNED...")
 		self.switchCounter = len(self.switches)
 		#self.logger.info("TOTAL SWITCHES: %d", len(switches))
+	"""
 
+
+	def determineNumberOfSwitches(self):
+		total = []
+		nodes = [str(n) for n in self.net.nodes()]
+		self.logger.info(nodes)
+		for dpid_port in nodes:
+			DPID_P = dpid_port.split('-')
+			dpid = DPID_P[0]
+			if len(DPID_P) == 2 and dpid not in total:
+				total.append(dpid)
+		return len(total)
 
 	def _monitor(self):
 		hub.sleep(10)
@@ -142,6 +163,16 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	AND COMPUTE THE WHOLE PATHS BETWEEN END HOSTS
 	"""
 	def calculatePaths(self):
+		edges = [n for n in self.net.edges(data=True)]
+		for (From, To, Attr) in edges:
+			DPID_PORT = From.split('-')
+			if len(DPID_PORT) == 2:
+				FROM_DPID = DPID_PORT[0]
+				FROM_PORT = DPID_PORT[1]
+				bytes = self.checkFlowTable(FROM_DPID, FROM_PORT)
+				self.logger.info("BYTES SENT FROM %d: %d", int(FROM_DPID), bytes)
+				
+		"""
 		#TODO: Compute the whole paths between end hosts
 		for switchX in self.switches:
 			for switchY in self.switches:
@@ -151,6 +182,12 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		self.logger.info("PATH COMPONENTS:")		
 		self.logger.info(self.pathComponents)
 		self.updateNIB()
+		"""
+		
+
+	def checkEdge(From, To, Sx):
+		self.logger.info(From)
+
 
 	"""
 	ALGORITHM: CROSSCHECKING BETWEEN NEIGHBOURS OF THE SWITCHES AND EACH SWITCH'S FLOWS,
@@ -162,7 +199,8 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		if str(Sx) not in self.neighbourDict:
 			self.logger.info("%d not listed in neighbour dictionary", Sx)
 			self.logger.info(self.neighbourDict)
-		Sx_neighbours = self.neighbourDict[str(Sx)]
+		#Sx_neighbours = self.neighbourDict[str(Sx)]
+ 
 		Sy_exists = False
 		Sx_port = None	
 		for tup in Sx_neighbours:			
@@ -253,7 +291,8 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	def _flow_stats_reply_handler(self, ev):
 		body = ev.msg.body
 		dpid = ev.msg.datapath.id
-	
+		self.logger.info("DPID")
+		self.logger.info(dpid)
 		#table_list = []
 		for stat in [flow for flow in body if flow.priority >= 0]:
 			#in_port = -1
@@ -270,18 +309,22 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			bytes = stat.byte_count
 			if eth_dest == -1 or eth_src == -1:
 				continue
-			#self.logger.info("in_port: %d, eth_src: %s, eth_dst: %s, out_port: %d, bytes: %d", in_port, eth_src, eth_dst, out_port, bytes)
+			self.logger.info("dpid: %d, eth_src: %s, eth_dst: %s, out_port: %d, bytes: %d", dpid, eth_src, eth_dest, out_port, bytes)
 			#if switch already exists in dictionary, check if the current flow exists in that subdictionary
 			#update bytes counter only if that flow already exists
 			#else append the flow to the subdictionary list
 			if dpid in self.flows:
-				temp = [out_port, eth_dest, eth_src]
 				UPDATED_LINK_UTILIZATION = False
+				self.logger.info("CHECKING FLOWS")
+				self.logger.info(self.flows)
+				flowCounter = 0
 				for [OUT_P, ETH_D, ETH_S, BYTES_C] in self.flows[dpid]:
-					if temp is [OUT_P, ETH_D, ETH_S]:
+					if out_port == OUT_P and eth_dest == ETH_D and eth_src == ETH_S:
 						#Update link utilization
-						self.flows[dpid][4] = bytes - BYTES_C
+						self.flows[dpid][flowCounter][3] = bytes - BYTES_C
 						UPDATED_LINK_UTILIZATION = True
+						break
+					flowCounter += 1
 				if not UPDATED_LINK_UTILIZATION:
 					#Append to list
 					self.flows[dpid].append([out_port, eth_dest, eth_src, bytes])
@@ -290,16 +333,27 @@ class NFM(simple_switch_13.SimpleSwitch13):
 				self.flows[dpid] = [[out_port, eth_dest, eth_src, bytes]]
 		self.responsedSwitches += 1
 		#self.logger.info("FLOW STAT RECEIVED")
-		self.logger.info("FLOW STAT RECEIVED: %d/%d", self.responsedSwitches, self.switchCounter)
+		self.logger.info("FLOW STAT RECEIVED: %d/%d", self.responsedSwitches, self.totalSwitches)
 		#self.logger.info(self.responsedSwitches)
 
 		#WHEN EVERY SWITCH HAS GIVEN THE NFM ITS FLOW STAT, START CALCULATING THE PATHS
-		if self.responsedSwitches == self.switchCounter:
+
+		if self.responsedSwitches == self.totalSwitches:
 			self.logger.info("Responsed Switches %d", self.responsedSwitches)
 			self.responsedSwitches = 0
 			self.calculatePaths()
+			#self.checkFlowTable()
 			self.bla.set()		
-		
+	
+	def checkFlowTable(self, Sx, Sx_port):
+		#self.logger.info(self.flows)
+		if int(Sx) in self.flows:
+			Sx_flows = self.flows[int(Sx)]
+			for [OUT_PORT, ETH_DST, ETH_SRC, BYTES] in Sx_flows:
+				#self.logger.info([OUT_PORT, ETH_DST, ETH_SRC, BYTES])
+				if OUT_PORT == int(Sx_port):
+					return BYTES
+		return 0
 			
 
 	def print_json(self, ev):

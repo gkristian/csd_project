@@ -28,22 +28,23 @@ class NotCache:
         nfm_dict = dict.fromkeys(nfm_keys) #all except module is dummy value keys
         nfm_dict.update({k : 0 for k in nfm_dict.iterkeys()}) # set default values
         nfm_dict['module'] = 'nfm'
-        nfm_dict['id'] = 0
+        nfm_dict['timestamp'] = "0"
+
  
         hum_dict = dict.fromkeys(hum_keys) #TODO
         hum_dict.update({k : 0 for k in hum_dict.iterkeys()}) # set default values
         hum_dict['module'] = 'hum'
-        hum_dict['id'] = 0
+        hum_dict['timestamp'] = "0"
     
         rpm_dict = dict.fromkeys(rpm_keys) #TODO
         rpm_dict.update({k : 0 for k in rpm_dict.iterkeys()}) # set default values
         rpm_dict['module'] = 'rpm'
-        rpm_dict['id'] = 0
+        rpm_dict['timestamp'] = "0"
   
         # json string of dicts containing older values
-        nfm_old = nfm_dict # TODO change to ordinary dicts 
-        hum_old = hum_dict
-        rpm_old = rpm_dict
+        nfm_old = json.dumps(nfm_dict) # TODO change to ordinary dicts 
+        hum_old = json.dumps(hum_dict)
+        rpm_old = json.dumps(rpm_dict)
 
         # define a lock for enabling concurrency
         self.lock = threading.Lock()
@@ -107,20 +108,20 @@ class NotCache:
             # Fetching monitoring module's values into the module variable
             if 'module' in json_dict:
                 module_name = json_dict['module']
-                new_id = json_dict['id']
+                new_timestamp = json_dict['timestamp']
                 if module_name in self.module_caches:
                     # create a list of key value tuples out of the dict
-                    # to do so remove module name and id, then call items()
+                    # to do so remove module name and timestamp, then call items()
                     json_dict.pop('module')
-                    json_dict.pop('id')
+                    json_dict.pop('timestamp')
                     list_tuples = json_dict.items()
 
                     # set previous data to old
                     self.module_caches_old[module_name] = json.dumps(self.module_caches[module_name])
 
-                    # update id
+                    # update timestamp
                     current_dict = self.module_caches[module_name]
-                    current_dict['id'] = new_id
+                    current_dict['timestamp'] = new_timestamp
 
                     # create a partial function with module name set
                     # in setvalues, partial function acts as an "adder"
@@ -154,7 +155,6 @@ class NotCache:
                     	self.module_caches_old[module_name] = json.dumps(new_dict)  #initializing 
                     	self.module_caches[module_name] = new_dict
                     	self.initialized = True
-                    	print "cAche initialized"
                     else:
                     	self.module_caches_old[module_name] = self.module_caches[module_name]  # set previous current to old
                     	self.module_caches[module_name] = new_dict  # set current to the new dict
@@ -226,7 +226,7 @@ class NotCache:
         a json string serializing a dict containing 3 dicts
         :rtype: json string
         """
-        data = {'nfm' : json.loads(self.module_caches_old['nfm']), 'rpm' : json.loads(self.module_caches_old['rpm']), 'hum' : json.loads(self.module_caches_old['hum'])}
+        data = {'nfm' : self.module_caches_old['nfm'], 'rpm' : self.module_caches_old['rpm'], 'hum' : self.module_caches_old['hum']}
         return data
 
     def get_state(self):

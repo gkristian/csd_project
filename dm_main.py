@@ -29,14 +29,14 @@ try:
 				db.insert(datatosql)
 				print "Push finished \n"
 			except BaseException as e:
-				rt_push.stop()
+				#rt_push.stop()
 				print e
 		else:
 			print "Cache not initialized"
 
 	server_quit = {'interrupted' : False} 
 
-	time_intervall = 2 # set time between pushes to db
+	time_intervall = 5 # set time between pushes to db
 	#rpm_keys = []
 	#hum_keys = []
 	#nfm_keys = ['flow', 'delay']
@@ -85,9 +85,11 @@ try:
 		server_quit['interrupted'] = True 
 		sys.exit
 
+
 	# sleep until we have no more threads , or interupt is called
 	while threading.active_count() > 0:
 		if server_quit['interrupted']:
+			var = 1
 			rt_push.stop()
 		time.sleep(0.1)
 

@@ -52,11 +52,11 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
             # get the values
             module_name = query_components["module"][0] #get value from list
-            sent_id = query_components["id"][0]
+            sent_timestamp = query_components["timestamp"][0]
             keylist = query_components["keylist"]
 
             # create a dict in the format chache wants
-            data = {'module': module_name, 'id':sent_id, 'keylist': keylist}
+            data = {'module': module_name, 'timestamp':sent_timestamp, 'keylist': keylist}
 
             print module_name
             print keylist
@@ -86,18 +86,32 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             if self.cache == None:
                 print "No cache!"
 
+            # initialized = {}
+
+            # initialized['nfm'] = False 
+            # initialized['rpm'] = False
+            # initialized['hum'] = False
+            initialized = False
+
             # Load json from POST req
             j_data=json.loads(self.data)
+            if 'module' in j_data:
+                module_name = j_data['module']
 
-            # put the json data in the cache
-            #if first time from module x use set_all_values, module name and id 1?
-            if 'id' in j_data:
-                if j_data['id'] == 1:
-                    self.cache.set_all_values(self.data)
+                # put the json data in the cache
+                #if first time from module x use set_all_values, module name and timestamp 1?
+                if 'timestamp' in j_data:
+                    if not initialized:
+                        self.cache.set_all_values(self.data)
+                        initialized = True
+                    else:
+                        self.cache.set_values(self.data)
                 else:
-                    self.cache.set_values(self.data)
+                    print "1 not a correct json dict"
             else:
-                print " not a correct json dict"       
+                print "2 not a correct json dict"
+
+                   
         
             print "{}".format(j_data)
             ServerHandler.manam= j_data

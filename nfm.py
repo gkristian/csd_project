@@ -44,9 +44,9 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		#self.monitor_thread = hub.spawn(self._monitor)
 		self.topology_api_app = self
 		self.mac_to_port = {}
-		self.net = nx.DiGraph([('1-1','2-1'),('2-1','1-1'),('1-2','3-2'),('3-2','1-2'),('2-2','3-1'),('3-1','2-2'), ('00:00:00:00:01:01','1-3'),('1-3','00:00:00:00:01:01'),('00:00:00:00:02:01','2-3'),('2-3','00:00:00:00:02:01'),('00:00:00:00:03:01','3-3'),('3-3','00:00:00:00:03:01')])
+		self.net = nx.DiGraph([('1-1','2-1',{'bw':10}),('2-1','1-1',{'bw':10}),('1-2','3-2',{'bw':30}),('3-2','1-2',{'bw':30}),('2-2','3-1',{'bw':20}),('3-1','2-2',{'bw':20}), ('00:00:00:00:01:01','1-3',{'bw':5}),('1-3','00:00:00:00:01:01',{'bw':5}),('00:00:00:00:02:01','2-3',{'bw':5}),('2-3','00:00:00:00:02:01',{'bw':5}),('00:00:00:00:03:01','3-3',{'bw':5}),('3-3','00:00:00:00:03:01',{'bw':5})])
 		#self.logger.info([n for n in self.net.nodes()])
-		#self.logger.info([n for n in self.net.edges(data=True)])
+		#self.logger.info([n for n in self.net.edges(data='bw')])
 		self.totalSwitches = self.determineNumberOfSwitches()
 		self.logger.info("TOTAL SWITCHES: %d", self.totalSwitches)
 		#self.populateNET()
@@ -71,50 +71,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			if datapath.id in self.datapaths:
 				self.logger.info('unregister.datapath: %016x', datapath.id)
 				del self.datapaths[datapath.id]
-	"""
-	@set_ev_cls(event.EventSwitchEnter)
-	def get_topology_data(self, ev):
-		switch_list = get_switch(self.topology_api_app, None)
-		self.switches = [switch.dp.id for switch in switch_list]
-		links_list = get_link(self.topology_api_app)
-		links_list2 = get_all_link(self.topology_api_app)
-		
-		links = [(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
-		self.logger.info("LINKS2: ")
-		for link in links_list2:
-			self.logger.info(link)		
-		#self.logger.info(links)
-		#self.logger.info(links_list2)
-		#global self.neighbourDict
-		#print "one round"
-		self.neighbourDict = {}		
-		for link in links:
-			self.logger.info("%d %d %s", link[0], link[1], link[2])
-			self.logger.info("Neighbours of switch %s are: ", link[0])
-			
-			if str(link[0]) in self.neighbourDict:
-				nList = self.neighbourDict[str(link[0])]
-				link_tuple = {str(link[1]): link[2]}
-				if link_tuple not in nList:
- 					nList.append(link_tuple)
-				self.neighbourDict[str(link[0])] = nList
-				self.logger.info(nList)
-			else:
-				nList = []
-				link_tuple = {str(link[1]): link[2]}
-				#if link_tuple not in nList:
- 				nList.append(link_tuple)
-				self.neighbourDict[str(link[0])] = nList
-				self.logger.info(nList)
-			self.logger.info("\n")
-			#self.logger.info(self.neighbourDict)
-		#self.logger.info(switches)
-		#self.logger.info(links)
-		#self.logger.info(self.neighbourDict)
-		#self.logger.info("NEIGHBOURS LEARNED...")
-		self.switchCounter = len(self.switches)
-		#self.logger.info("TOTAL SWITCHES: %d", len(switches))
-	"""
+
 
 
 	def determineNumberOfSwitches(self):
@@ -163,31 +120,16 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	AND COMPUTE THE WHOLE PATHS BETWEEN END HOSTS
 	"""
 	def calculatePaths(self):
-		edges = [n for n in self.net.edges(data=True)]
+		edges = [n for n in self.net.edges(data='bw')]
 		for (From, To, Attr) in edges:
 			DPID_PORT = From.split('-')
 			if len(DPID_PORT) == 2:
 				FROM_DPID = DPID_PORT[0]
 				FROM_PORT = DPID_PORT[1]
 				bytes = self.checkFlowTable(FROM_DPID, FROM_PORT)
-				self.logger.info("BYTES SENT FROM %d: %d", int(FROM_DPID), bytes)
-				
-		"""
-		#TODO: Compute the whole paths between end hosts
-		for switchX in self.switches:
-			for switchY in self.switches:
-				if switchX is not switchY:
-					self.logger.info("Checking between %d and %d", switchX, switchY)
-					self.checkLink(switchX, switchY)
-		self.logger.info("PATH COMPONENTS:")		
-		self.logger.info(self.pathComponents)
-		self.updateNIB()
-		"""
-		
-
-	def checkEdge(From, To, Sx):
-		self.logger.info(From)
-
+				self.logger.info("BYTES SENT FROM SWITCH %d PORT %d: %d", int(FROM_DPID), int(FROM_PORT), bytes)
+				self.logger.info("LINK UTLIZATION: {0:.0f}%".format(100*((float(bytes)*8)/(float(Attr)*1000000))))
+				#self.logger.info("%.2f",float(Attr)/3)
 
 	"""
 	ALGORITHM: CROSSCHECKING BETWEEN NEIGHBOURS OF THE SWITCHES AND EACH SWITCH'S FLOWS,
@@ -269,23 +211,6 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		#	self.logger.info("BW of link %s: %d bytes/sec", link, bytes[link]/self.updateTime)
 		return False
 
-	def updateNIB(self):
-		self.logger.info("UPDATING NIB")
-		"""
-		for key,value in self.pathComponents.iteritems():
-			#self.logger.info(key)
-			flowPaths = 0
-			totalTo = 0
-			for flow in value:
-				
-			fromSwitch = 0
-			toSwitch = 0
-			for [Sx, Sy] in value:
-				#self.logger.info(fromSwitch)
-				if Sy == fromSwitch
-				fromSwitch = Sx
-				toSwitch = Sy
-		"""
 
 	@set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
 	def _flow_stats_reply_handler(self, ev):
@@ -316,11 +241,12 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			if dpid in self.flows:
 				UPDATED_LINK_UTILIZATION = False
 				self.logger.info("CHECKING FLOWS")
-				self.logger.info(self.flows)
+				#self.logger.info(self.flows)
 				flowCounter = 0
 				for [OUT_P, ETH_D, ETH_S, BYTES_C] in self.flows[dpid]:
 					if out_port == OUT_P and eth_dest == ETH_D and eth_src == ETH_S:
 						#Update link utilization
+						#self.logger.info("UPDATING FLOW BYTES; PREVIOUS: %d, CURRENt: %d", BYTES_C, bytes)
 						self.flows[dpid][flowCounter][3] = bytes - BYTES_C
 						UPDATED_LINK_UTILIZATION = True
 						break
@@ -342,7 +268,6 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			self.logger.info("Responsed Switches %d", self.responsedSwitches)
 			self.responsedSwitches = 0
 			self.calculatePaths()
-			#self.checkFlowTable()
 			self.bla.set()		
 	
 	def checkFlowTable(self, Sx, Sx_port):

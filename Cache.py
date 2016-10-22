@@ -226,9 +226,7 @@ class NotCache:
         a json string serializing a dict containing 3 dicts
         :rtype: json string
         """
-        #data = {'nfm' : json.loads(self.module_caches_old['nfm']), 'rpm' : json.loads(self.module_caches_old['rpm']), 'hum' : json.loads(self.module_caches_old['hum'])}
-        dictthing = self.module_caches_old['nfm']
-        data = {'nfm' : dictthing} # hmm
+        data = {'nfm' : self.module_caches_old['nfm'], 'rpm' : self.module_caches_old['rpm'], 'hum' : self.module_caches_old['hum']}
         return data
 
     def get_state(self):

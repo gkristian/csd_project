@@ -60,6 +60,7 @@ class Topology2( Topo ):
 		# connect hosts to leaf switches, 10 mbps
 		self.addLink(l1, l2)
 		self.addLink(l2, l3)
+		self.addLink(l3, l4)
 		self.addLink(l1, u1)
 		self.addLink(l1, u2)
 		self.addLink(l3, h1)

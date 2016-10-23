@@ -55,22 +55,63 @@ if ($res3->num_rows > 0) {
 }
 
 echo "</td><td valign='top'>";
-//Construct table of link utilization=====================
+//Show  table of link utilization for each link=====================
 echo "<h2>Processed NFM table</h2>";
-
 if ($res3->num_rows > 0) {
+	$i=0;
+	//$linklist=array('apple','banana','ha','hi');
+	$arrall=array(); //Contains the whole NFM table
+	$arrlinkname=array();
     echo "<table border=1><tr><th>timestamp</th>"; //HEADER
-    while($row3 = $res3->fetch_assoc()) {
-        echo "<th>" .$row3['link']. "</th>";
+
+	while($row3 = $res3->fetch_assoc()) {
+		array_push($arrlinkname,$row3['link']);
+        echo "<th>" .$arrlinkname[$i]. "</th>";
+		$i=$i+1;
     }
-    echo "</tr>";/*
+    echo "</tr><br>";
+
+	/*Create array for each link. Work as follow :
+	1. Get data for each link from raw nfm table
+	2. Assign data to correct structure in $arrall. Try print_r to understand
+	*/
+	foreach ($arrlinkname as &$currentlink) {
+		echo "hi-";
+		$j=0;
+		if ($res4 = $con->query("SELECT * FROM nfm WHERE link=$currentlink")) {
+		    while($row4 = $res4->fetch_assoc()) {//Data for each row
+				$arrall[$currentlink][$j]=array(
+					$row4['timestamp'],
+					$row4['util']
+				);
+				$j=$j+1;
+			}
+		} else {
+			echo "Error xx";
+		}
+	}
+	echo "<br>=================<br>";
+	echo "<br><br>ARRALL DUMP<br>";
+	print_r($arrall);
+/*	$arrall = array_flip($arrall);
+	echo "<br>AFTER FLIP";
+	foreach ($arrall as &$value) {
+	    echo "<br>LINKNAME" . $value;
+
+	}
+	$arrall = array_flip($arrall);
+
+//	echo $arrlink['1-1'];
+
+/*
     while($row1 = $res1->fetch_assoc()) {//Data for each row
         echo "<tr>";
         echo "<td>" . $row1['timestamp'] . "</td>";
         echo "<td>" . $row1['link'] . "</td>";
         echo "<td>" . $row1['util'] . "</td>";
         echo "</tr>";
-    }*/
+    }
+	*/
 	echo "</table>";
 } else {
     echo "Error : Construct table";

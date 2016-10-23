@@ -240,10 +240,10 @@ class ProjectController(app_manager.RyuApp):
         #nx.draw(self.net, with_labels=True)
 
         ###
-        pos = nx.random_layout(self.net)
+        #pos = nx.random_layout(self.net)
         ###pos = nx.circular_layout(G)
         # pos = nx.shell_layout(G)
-        # pos = nx.spring_layout(G)
+        pos = nx.spring_layout(self.net)
         #pos = nx.graphviz_layout(self.net,prog='dot')
         nx.draw(self.net, pos, with_labels=True , hold= False)
         #nx.draw_graphviz(self.net)

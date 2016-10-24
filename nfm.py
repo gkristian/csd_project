@@ -19,21 +19,7 @@ from client import client_side
 from datetime import datetime
 
 
-class NFM(simple_switch_13.SimpleSwitch13):	
-
-	flows = {}		# dictionary to store each switch's flows
-	#bla = threading.Event() # semaphore variable to syncronize between flow request and path computing
-
-	#switchCounter = 0	# total registered switches
-	responsedSwitches = 0	# counter of a round's responded switches
-	responsedSwitchesPortStatus = 0 #counter of a round's responded switches of port stats
-	#DMclient = client_side(" ")
-	#mininetRunning = False
-	#pathComponents = {}
-	#updateTime = 10
-	#portDict = {}
-	#switches = []
-	
+class NFM(simple_switch_13.SimpleSwitch13):
 	
 	"""
 	Constructor; Retrieving graph object from controller and defining all necessary variables
@@ -42,16 +28,19 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		super(NFM, self).__init__(*args, **kwargs)
 		self.datapaths = {}		#store datapaths
 		self.net = app_manager._CONTEXTS['network']	#fetch graph object of physical network
-		self.totalSwitches = self.determineNumberOfSwitches()
-		self.logger.info("TOTAL SWITCHES: %d", self.totalSwitches)
-		self.DICT_TO_DB = {'module':'nfm'}
+		self.totalSwitches = self.determineNumberOfSwitches()	#calculate total switches by the graph topology object
+		self.logger.debug("TOTAL SWITCHES: %d", self.totalSwitches)
+		self.DICT_TO_DB = {'module':'nfm'}	#prepare a dictionary for updating and sending to Database
 		self.pathComponents = {}
 		self.updateTime = 10
 		self.flow_request_semaphore = threading.Event();
 		self.switches = []	#list to store all switches dpid
 		self.portDict = {}	
 		self.mininetRunning = False
-		self.DMclient = client_side(" ")
+		self.DMclient = client_side(" ")	#instance of Database module client
+		self.responsedSwitches = 0	#counter for amount of switch flows retrieving after a request
+		self.responsedSwitchesPortStatus = 0
+		self.flows = {}		#dictionary to store each switch's flows
 
 
 	"""
@@ -80,29 +69,18 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	Function to calculate the number of switches in the physical topology with the help of graph object
 	"""
 	def determineNumberOfSwitches(self):
-		total = []
-		nodes = [str(n) for n in self.net.nodes()]
-		self.logger.info(nodes)
-		for dpid_port in nodes:
-			DPID_P = dpid_port.split('-')
-			dpid = DPID_P[0]
-			if len(DPID_P) == 2 and dpid not in total:
-				total.append(dpid)
-		return len(total)
+		return len([n for n in self.net.nodes() if len(str(n).split(':')) == 1])
+
 
 	"""
 	Main loop of requesting statistics of the switches
 	"""
 	def _monitor(self):
-		#hub.sleep(10)
 		self.flow_request_semaphore.set()
-
 		while True:
-			self.logger.info("REQUESTING FLOW STAT...")
+			self.logger.debug("REQUESTING FLOW STAT...")
 			hub.sleep(self.updateTime)
-			
 			self.flow_request_semaphore.wait()
-
 			for dp in self.datapaths.values():
 				self._request_stats(dp)
 			self.flow_request_semaphore.clear()
@@ -131,24 +109,17 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	def _flow_stats_reply_handler(self, ev):
 		body = ev.msg.body
 		dpid = ev.msg.datapath.id
-		#self.logger.info("DPID")
-		#self.logger.info(dpid)
 
 		for stat in [flow for flow in body if flow.priority >= 0]:
 			in_port = -1
 			out_port = -1
 			eth_dest = -1
-			#eth_src = -1
-			#self.logger.info(stat)
 			if 'in_port' in stat.match:
 				in_port = stat.match['in_port']
 			if 'eth_dst' in stat.match:
 				eth_dest = stat.match['eth_dst']
-			#if 'eth_src' in stat.match:
-			#	eth_src = stat.match['eth_src']
 			out_port = stat.instructions[0].actions[0].port
 			CURRENT_BYTES = stat.byte_count
-			#if eth_dest == -1 or eth_src == -1:
 			if in_port == -1 or out_port == -1 or eth_dest == -1:
 				continue
 			self.logger.debug("dpid: %d, eth_dst: %s, out_port: %d, bytes: %d", dpid, eth_dest, out_port, CURRENT_BYTES)
@@ -159,12 +130,11 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			if dpid in self.flows:
 				UPDATED_LINK_UTILIZATION = False
 				flowCounter = 0
-				#for [OUT_P, ETH_D, ETH_S, PREVIOUS_BYTES, DIFF_BYTES] in self.flows[dpid]:
+
 				for [IN_P, OUT_P, ETH_D, PREVIOUS_BYTES, DIFF_BYTES] in self.flows[dpid]:
-					#if out_port == OUT_P and eth_dest == ETH_D and eth_src == ETH_S:
 					if in_port == IN_P and out_port == OUT_P and eth_dest == ETH_D:
 						#Update link utilization
-						self.logger.debug("UPDATING FLO'W BYTES; PREVIOUS: %d, DIFF: %d", PREVIOUS_BYTES, DIFF_BYTES)
+						self.logger.info("UPDATING FLOW BYTES; PREVIOUS: %d, DIFF: %d", PREVIOUS_BYTES, DIFF_BYTES)
 						self.flows[dpid][flowCounter][4] = CURRENT_BYTES - PREVIOUS_BYTES
 						self.flows[dpid][flowCounter][3] = CURRENT_BYTES
 						UPDATED_LINK_UTILIZATION = True
@@ -172,11 +142,9 @@ class NFM(simple_switch_13.SimpleSwitch13):
 					flowCounter += 1
 				if not UPDATED_LINK_UTILIZATION:
 					#Append to list
-					#self.flows[dpid].append([out_port, eth_dest, eth_src, CURRENT_BYTES, prev_bytes])
 					self.flows[dpid].append([in_port, out_port, eth_dest, CURRENT_BYTES, prev_bytes])
 			#else add the complete flow to the dictionary mapping to this switch
 			else:
-				#self.flows[dpid] = [[out_port, eth_dest, eth_src, CURRENT_BYTES, prev_bytes]]
 				self.flows[dpid] = [[in_port, out_port, eth_dest, CURRENT_BYTES, prev_bytes]]
 		self.responsedSwitches += 1
 		self.logger.info("FLOW STAT RECEIVED: %d/%d", self.responsedSwitches, self.totalSwitches)
@@ -196,27 +164,27 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 		self.DICT_TO_DB['timestamp'] = timestamp
 		self.DICT_TO_DB['link_utilization'] = {}
-		edges = [n for n in self.net.edges(data='bw')]
-		for (From, To, Attr) in edges:
-			DPID_PORT = From.split('-')
-			if len(DPID_PORT) == 2:
-				FROM_DPID = DPID_PORT[0]
-				FROM_PORT = DPID_PORT[1]
-				bytes = self.checkFlowTable(FROM_DPID, FROM_PORT)
-				self.logger.debug("BYTES SENT FROM SWITCH %d PORT %d: %d", int(FROM_DPID), int(FROM_PORT), bytes)
-				LINK_UTILIZATION = float(bytes)*8/(float(Attr)*1000000)
-				self.logger.debug("LINK UTLIZATION: {0:.0f}%".format(100*LINK_UTILIZATION))
-				DPID_TO_DPID = FROM_DPID+'-'+To.split('-')[0]
+		edges = [n for n in self.net.edges(data=True)]
+		for (FROM, TO, ATTR) in edges:
+			# Check that 'From' is a Switch. A host would return a list with length larger than 1
+			if len(str(FROM).split(':')) == 1 and len(str(TO).split(':')) == 1:	
+				FROM_PORT = ATTR['src_port']
+				bytes = self.checkFlowTable(FROM, FROM_PORT)
+				self.logger.info("BYTES SENT FROM SWITCH %d PORT %d: %d [bw=%d Mbit/s]", FROM, FROM_PORT, bytes, ATTR['bw'])
+				LINK_UTILIZATION = float(bytes)*8/(float(ATTR['bw'])*1000000)
+				self.logger.info("LINK UTLIZATION: {0:.0f}%".format(100*LINK_UTILIZATION))
+				DPID_TO_DPID = str(FROM)+'-'+str(TO)
+				#self.logger.info("LINK UTILIZATION ON LINK %s: %d {0:.2}%".
 				self.DICT_TO_DB['link_utilization'][DPID_TO_DPID] = LINK_UTILIZATION
+		self.logger.info("NFM ATTEMPTING A PUSH TO DB")		
 		#self.DMclient.postme(self.DICT_TO_DB)
 
 	
 	def checkFlowTable(self, Sx, Sx_port):
-		if int(Sx) in self.flows:
-			Sx_flows = self.flows[int(Sx)]
-			#for [OUT_PORT, ETH_DST, ETH_SRC, PREVIOUS_BYTES, DIFF] in Sx_flows:
+		if Sx in self.flows:
+			Sx_flows = self.flows[Sx]
 			for [IN_PORT, OUT_PORT, ETH_DST, PREVIOUS_BYTES, DIFF] in Sx_flows:
-				if OUT_PORT == int(Sx_port):
+				if OUT_PORT == Sx_port:
 					return DIFF
 		return 0
 			

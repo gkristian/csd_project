@@ -7,6 +7,7 @@ ini_set('display_errors', 1);
 
 //Connection establishment
 require('connection.php');
+echo "<html><b>Debug Message :</b><br>";
 
 //Get all nfm data
 $q1 = "SELECT * FROM nfm";
@@ -22,7 +23,7 @@ if ($res2 = $con->query($q2)) {
 	printf("NFM keycount fetched. #links :");
 	$row2 = $res2->fetch_assoc();
 	$nfmkeycount = intval($row2['count']); //Convert result string to int
-	echo $nfmkeycount . gettype($nfmkeycount);
+	echo $nfmkeycount;
 } else {
 	printf("No data from keycount<br>");
 }
@@ -35,49 +36,22 @@ if ($res3 = $con->query($q3)) {
     printf("<br>Failed to fetch link names<br>");
 }
 
-echo "<html>";
-//Make 3 big columns for 2 data and graph
-echo "<table><tr><td valign='top'>";
-
-//Construct RAW NFM table=================================
-if ($res3->num_rows > 0) {
-	echo "<h2>RAW NFM Table</h2>";
-	//HEADER
-	echo "<table border=1><tr><th>timestamp</th><th>link</th><th>utilization</th></tr>";
-    while($row1 = $res1->fetch_assoc()) {//Data for each row
-		echo "<tr>";
-		echo "<td>" . $row1['timestamp'] . "</td>";
-		echo "<td>" . $row1['link'] . "</td>";
-		echo "<td>" . $row1['util'] . "</td>";
-		echo "</tr>";
-	}
-	echo "</table>";
-} else {
-   	echo "Error : Construct table";
-}
-
-echo "</td><td valign='top'>";
-//Show  table of link utilization for each link=====================
-echo "<h2>Processed table</h2>";
-if ($res3->num_rows > 0) {
+//CONSTRUCT array of linkname and array of everything
+if ($res3->num_rows > 0) { //Means data exist
+	//ARRAY OF LINKNAME
 	$i=0;
-	$arrall=array(); //Contains the whole NFM table
-	$arrlinkname=array();
-    echo "<table border=1><tr><th>timestamp</th>"; //HEADER
-
-	//Fetch link names
-	while($row3 = $res3->fetch_assoc()) {
+	$arrlinkname=array();	
+	while($row3 = $res3->fetch_assoc()) { //Fetch link names
 		array_push($arrlinkname,$row3['link']);
-        echo "<th>" .$arrlinkname[$i]. "</th>";
 		$i=$i+1;
     }
-    echo "</tr><br>";
-
-	/*Create array cointaining data for every link. Work as follow :
+    
+	/*ARRAY OF DATA for every link. Work as follow :
 	1. Get data for each link from raw nfm table
 	2. Assign data to correct structure in $arrall. Try print_r to understand
-	$arrall[$link][$timestamp][$column] -> column means time and utilization
+	$arrall[$link][$timestamp][$column] -> $column=0 is time and $column=1 is utilization
 	*/
+	$arrall=array(); //The main array
 	$linkindex=0;
 	foreach ($arrlinkname as &$currentlink) {
 		$timeindex=0;
@@ -97,9 +71,63 @@ if ($res3->num_rows > 0) {
 	//print_r($arrall);
 	$linkcount = count($arrall);
 	$timecount = count($arrall[0]);
-	echo "<br>#timestamp : " . $timecount . gettype($timecount);
-	echo "<br>#links : " . $linkcount . gettype($linkcount);
+	echo "<br><b>Result of arrall creation : </b>";
+	echo "<br>#timestamp : " . $timecount;
+	echo "<br>#links : " . $linkcount;
+} else {
+    echo "Error : Failed to create $arrlinkname and $arrall";
+}
 
+//CODE TO SHOW TABLE AND GRAPHS=====================================================================
+echo "<table border=1>";
+
+//SECTION FOR GRAPHS================================================================================
+echo "<tr><td colspan=2>";
+echo "<h2>Graphs</h2>";
+$data=array();
+for($link=0;$link<$linkcount;$link++){
+	$data=array();
+	for($time=0;$time<$timecount;$time++){
+		array_push($data,$arrall[$link][$time][1]);
+	}
+	$tobesend = array_slice($data, -21); //Take the latest 20 data
+	$imploded=implode(":", $tobesend);
+	echo "<img src=plotnfm.php?title=".$arrlinkname[$link]."&data=".urlencode($imploded).">";
+}
+echo "</td></tr>";
+
+//SECTION FOR RAW NFM table=========================================================================
+echo "<tr><td valign='top'>";
+if ($res3->num_rows > 0) {
+	echo "<h2>RAW NFM Table</h2>";
+	//HEADER
+	echo "<table border=1><tr><th>timestamp</th><th>link</th><th>utilization</th></tr>";
+    while($row1 = $res1->fetch_assoc()) {//Data for each row
+		echo "<tr>";
+		echo "<td>" . $row1['timestamp'] . "</td>";
+		echo "<td>" . $row1['link'] . "</td>";
+		echo "<td>" . $row1['util'] . "</td>";
+		echo "</tr>";
+	}
+	echo "</table>";
+} else {
+   	echo "Error : Construct raw table";
+}
+echo "</td>";
+
+//SECTION FOR SEPARATED TABLE FOR EACH LINK=====================================================
+echo "<td valign='top'>";
+echo "<h2>Processed table</h2>";
+if ($res3->num_rows > 0) {
+	$i=0;
+    echo "<table border=1><tr><th>timestamp</th>"; //HEADER
+	//Fetch link names and assign as table header
+	for($i=0;$i<$linkcount;$i++) {
+		echo "<th>" .$arrlinkname[$i]. "</th>";		
+    }
+    echo "</tr>";
+
+	$linkindex=0;
 	//Create rows for data
 	for($time=0;$time<$timecount;$time++){
 		echo "<tr>";
@@ -113,22 +141,10 @@ if ($res3->num_rows > 0) {
 } else {
     echo "Error : Construct table";
 }
+echo "</td></tr>";
 
-
-echo "</td><td valign='top'>";
-//Data visualization====================================
-echo "<h2>Graphs</h2>";
-$data=array();
-for($link=0;$link<$linkcount;$link++){
-	$data=array();
-	for($time=0;$time<$timecount;$time++){
-		array_push($data,$arrall[$link][$time][1]);
-	}
-	$imploded=implode(":", $data);
-	echo "<img src=plotnfm.php?title=".$arrlinkname[$link]."&data=".urlencode($imploded).">";
-}
 
 //End of main table
-echo "</td></tr></table></html>";
+echo "</table></html>";
 $con->close(); //DON'T FORGET TO CLOSE
 ?>

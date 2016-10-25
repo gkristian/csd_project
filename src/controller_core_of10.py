@@ -58,11 +58,12 @@ class ProjectController(app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(ProjectController, self).__init__(*args, **kwargs)
         #self.mac_to_port = {}
-        self.l2_lookup_table = {}
+        self.l2_dpid_table = {}
         #an example from log is: here 21 is the dpid
         # l2_lookup_table: {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}},
         #                   23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
-
+        self.l2_ip2mac_table = {}
+        self.l2_mac2ip_table = {}
         self.topology_api_app = self
         self.net=nx.DiGraph()
         self.nodes = {}
@@ -118,18 +119,19 @@ class ProjectController(app_manager.RyuApp):
             self.logger.error("EMPTY in_port in Packet-IN message")
 
         pkt = packet.Packet(msg.data)
-        eth = pkt.get_protocol(ethernet.ethernet)
+        pkt_eth = pkt.get_protocol(ethernet.ethernet)
 
 
-        dst_mac = eth.dst
-        src_mac = eth.src
+        dst_mac = pkt_eth.dst
+        src_mac = pkt_eth.src
         dpid = datapath.id
         #note the switch dpid in our table
         #self.mac_to_port.setdefault(dpid, {})
 
-        if eth.ethertype == ether_types.ETH_TYPE_LLDP:
+        if pkt_eth.ethertype == ether_types.ETH_TYPE_LLDP:
             # ignore lldp packel
             return
+
 
         # self.logger.debug("OFPP_FLOOD = %r",ofproto.OFPP_FLOOD) #only when pingall done, then it gave OFPP_FLOOD = 65531
         # #note that 65531 decimal in hex is  FFFB
@@ -144,16 +146,19 @@ class ProjectController(app_manager.RyuApp):
             #if eth.ethertype != ether_types.ETH_TYPE_ARP:
             #    self.logger.warning("Missing ARP header in broadcast packet. Unable to learn. Aborting execution of broadcast loop in code")
             #    return
-            pkt_arp = pkt.get_protocol(arp.arp)  # this object does not have any indexes so no [0]
-            if not pkt_arp:
-                return
 
             ############################# Below was discarded idea of representing graph nodes: srcdpid-srcport, dstdpid-dstport that lead to such edges in topology ('3-1', '00:00:00:00:00:03'), ('2-1', '00:00:00:00:00:02')
             ####self.net.add_edge(str(dpid)+ '-' + str(msg.in_port), str(src),{'end_host': 1}) #-1 indicates its a host
             ############################# The way of representing the graph nodes
+
+            # broadcast arp must have arp header
+            pkt_arp = pkt.get_protocol(arp.arp)  # this object does not have any indexes so no [0]
+            if not pkt_arp:
+                return
+
             if src_mac not in self.net: #learn it
                 self.logger.debug("learning src_mac = %r for the first time ", src_mac)
-                self.logger.debug("our current l2_table is %r",self.l2_lookup_table)
+                self.logger.debug("our current l2_table is %r", self.l2_dpid_table)
                 #open for IP src and IP dst of ARP broadcast: we  associate src mac learn from source and use destination IP to route to correct switch
 
 
@@ -177,7 +182,11 @@ class ProjectController(app_manager.RyuApp):
                 #self.mac_to_port[dpid][src_mac]['ip'] = pkt_arp.src_ip  # this is legal because we are appending a key in this C-array like way to an existing setdefaulted dict
                 #self.l2_lookup_table[dpid] ={src_mac: {}}
                 #self.l2_lookup_table[dpid][src_mac]={'in_port':in_port, 'ip':pkt_arp.src_ip}
-                self.l2_lookup_table[dpid]={src_mac:{'in_port':msg.in_port,'ip':pkt_arp.src_ip}}
+
+                #below three tables could be improved by putting all info in one object and use getters and setters but we dont want to get a performance hit
+                self.l2_dpid_table[dpid]={src_mac:{'in_port':msg.in_port, 'ip':pkt_arp.src_ip}}
+                self.l2_ip2mac_table[pkt_arp.src_ip]=src_mac
+                self.l2_mac2ip_table[src_mac]=pkt_arp.src_ip
 
                 self.logger.debug("PACKET ARP has arp.src_ip = %r", pkt_arp.src_ip)
                 self.logger.debug("PACKET ARP has arp.dst_ip = %r", pkt_arp.dst_ip)
@@ -188,7 +197,7 @@ class ProjectController(app_manager.RyuApp):
                 self.net.add_edge(src_mac, dpid,
                                   {'src_port': msg.in_port, 'dst_port': msg.in_port,
                                    'src_dpid': src_mac, 'dst_dpid': dpid, 'end_host': True,
-                                   'ip': pkt_arp.src_ip})  # src is the src mac
+                                   'ip': pkt_arp.src_ip, 'ip':pkt_arp.src_ip})  # src is the src mac
 
 
 
@@ -203,7 +212,35 @@ class ProjectController(app_manager.RyuApp):
                 # return
 
             else:
+
                 self.logger.debug("RX_BRADCAST_SRC_ALREADY_LEARNT: Received a broadcast packet with source mac in our l2_table, creating arp reply and attaching to OF packet_out")
+
+
+                if pkt_arp.opcode != arp.ARP_REQUEST:
+                    return
+                #have we learnt the IP in arp.dst_ip header ie. do we know its mac yet
+                if not pkt_arp.dst_ip in self.l2_ip2mac_table:
+                    self.logger.debug("Havent learnt the arp.dst_ip's mac yet. Aborting")
+                    return
+
+                # get  mac of the dst ip in arp header
+                mac_of_arp_dst_ip= self.l2_ip2mac_table[pkt_arp.dst_ip]
+                ip_of_arp_dst_mac = self.l2_mac2ip_table[mac_of_arp_dst_ip]
+                self.logger.debug("KEY1 : Found dst_mac %r for arp header dst ip %r , puttin in arp reply",mac_of_arp_dst_ip , pkt_arp.dst_ip)
+                new_pkt = packet.Packet()
+                new_pkt.add_protocol(ethernet.ethernet(ethertype=pkt_eth.ethertype,
+                                                   dst=pkt_eth.src,
+                                                   src=mac_of_arp_dst_ip))
+                new_pkt.add_protocol(arp.arp(opcode=arp.ARP_REPLY,
+                                         src_mac=mac_of_arp_dst_ip,
+                                         src_ip=ip_of_arp_dst_mac,
+                                         dst_mac=src_mac,
+                                         dst_ip=pkt_arp.src_ip))
+                self.logger.debug("Crafting ARP reply") #pkt_arp.src_mac
+
+                #self._send_packet(datapath, self.l2_dpid_table[dpid][src_mac]['in_port'], new_pkt) #dpid= datapath.id the switch the packet in came from we want to reply on that switch
+                self._send_packet(datapath, in_port,new_pkt)  # dpid= datapath.id the switch the packet in came from we want to reply on that switch
+
 
         else: #if dst_mac is not broadcat rather some specific address
             #either we have already learnt this address
@@ -213,8 +250,8 @@ class ProjectController(app_manager.RyuApp):
                 if not nx.has_path(self.net,src_mac,dst_mac): #if returned False we abort
                     self.logger.debug("Cannot find path from src mac %r to dst_mac %r, aborting",src_mac,dst_mac)
                     return
-                spath=nx.shortest_path(self.net,src_mac,dst_mac)
-                self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
+                ###spath=nx.shortest_path(self.net,src_mac,dst_mac)
+                ####self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
 
                 #lookup dst mac in our graph, has_path()
                 #if yes find path
@@ -272,10 +309,10 @@ class ProjectController(app_manager.RyuApp):
             #self.logger.debug("Received PacketIn: dpid = %r , in_port = %r , srcmac= %r, dstmac = %r , packet_type = %r",dpid, msg.match['in_port'] , src,dst, eth.ethertype)
             #print "Received PacketIn: dpid = ", dpid, "srcmac=", src, "dstmac = ", dst, "packet_type = ", eth.ethertype
             #store in a dict what types of packets received and how many
-            if eth.ethertype in self.rxpkts_types_D:
-                self.rxpkts_types_D[eth.ethertype] += 1;
+            if pkt_eth.ethertype in self.rxpkts_types_D:
+                self.rxpkts_types_D[pkt_eth.ethertype] += 1;
             else:
-                self.rxpkts_types_D.setdefault(eth.ethertype,1) #for dictionary D, against a key eth.ethertype, set a default value 1
+                self.rxpkts_types_D.setdefault(pkt_eth.ethertype,1) #for dictionary D, against a key eth.ethertype, set a default value 1
 
             #eth.etheretype == ether_types.ETH_TYPE_ARP
             #eth.etheretype == ether_types.ETH_TYPE_LLDP
@@ -347,7 +384,7 @@ class ProjectController(app_manager.RyuApp):
     def show_graph_stats(self):
         self.logger.debug( "list of edges: self.net.edges %s ",self.net.edges())
         self.logger.debug("list of nodes: \n %r", self.net.nodes())
-        self.logger.debug("l2_lookup_table : %r",self.l2_lookup_table)
+        self.logger.debug("l2_lookup_table : %r", self.l2_dpid_table)
         #self.logger.debug("show edge data LOT of output: %r",self.net())
 
 
@@ -462,4 +499,20 @@ class ProjectController(app_manager.RyuApp):
 	#print "################Something##############"
 	#print ev.link.src, ev.link.dst
     def print_l2_table(self):
-        self.logger.debug("l2_table = %r",self.l2_lookup_table)
+        self.logger.debug("l2_table = %r", self.l2_dpid_table)
+        self.logger.debug("l2_mac2ip = %r", self.l2_mac2ip_table)
+        self.logger.debug("l2_ip2mac = %r", self.l2_ip2mac_table)
+
+    def _send_packet(self, datapath, port, pkt):
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+        pkt.serialize()
+        self.logger.info("packet-out %s" % (pkt,))
+        data = pkt.data
+        actions = [parser.OFPActionOutput(port=port)]
+        out = parser.OFPPacketOut(datapath=datapath,
+                                  buffer_id=ofproto.OFP_NO_BUFFER,
+                                  in_port=ofproto.OFPP_CONTROLLER,
+                                  actions=actions,
+                                  data=data)
+        datapath.send_msg(out)

@@ -57,12 +57,7 @@ class ProjectController(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(ProjectController, self).__init__(*args, **kwargs)
-        #self.mac_to_port = {}
-        self.l2_lookup_table = {}
-        #an example from log is: here 21 is the dpid
-        # l2_lookup_table: {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}},
-        #                   23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
-
+        self.mac_to_port = {}
         self.topology_api_app = self
         self.net=nx.DiGraph()
         self.nodes = {}
@@ -127,7 +122,7 @@ class ProjectController(app_manager.RyuApp):
         src_mac = eth.src
         dpid = datapath.id
         #note the switch dpid in our table
-        #self.mac_to_port.setdefault(dpid, {})
+        self.mac_to_port.setdefault(dpid, {})
 
         if eth.ethertype == ether_types.ETH_TYPE_LLDP:
             # ignore lldp packel
@@ -150,43 +145,34 @@ class ProjectController(app_manager.RyuApp):
             if src_mac not in self.net: #learn it
                 #open for IP src and IP dst of ARP broadcast: we  associate src mac learn from source and use destination IP to route to correct switch
 
+                self.net.add_edge(dpid,src_mac,
+                                         {'src_port': msg.in_port, 'dst_port': msg.in_port,
+                                          'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host':True}) #src is the src mac
+                self.net.add_edge(src_mac, dpid,
+                                  {'src_port': msg.in_port, 'dst_port': msg.in_port,
+                                   'src_dpid': src_mac, 'dst_dpid': dpid, 'end_host':True })  # src is the src mac
 
                 # learn a mac address to avoid FLOOD next time.
                 # a 3 column table is maintained: dpid, src_mac, in_port
                 # self.mac_to_port[dpid][src_mac]['port'] #this is illegal
                 #below is illegal
                 #self.mac_to_port[dpid][src_mac].setdefault('port',msg.in_port)  #msg.match['port'] is this a v3 v1 thing?
-                ###self.mac_to_port[dpid].setdefault(src_mac, {})
+                self.mac_to_port[dpid].setdefault(src_mac, {})
                 #now start addings keys to this setdefaulted dict with key srcmac
                 #self.mac_to_port[dpid][src_mac]['port']= msg.in_port  # msg.match['port'] is this a v3 v1 thing?
                 ####self.mac_to_port[dpid][src_mac]['port'] = msg.match['port']
-                ####self.mac_to_port[dpid][src_mac]['port'] = msg.match['port']
+                self.mac_to_port[dpid][src_mac]['port'] = msg.match['port']
                 #is this a v3 v1 thing?
                 #open the arp packet for IP adddress
-
-                pkt_arp = pkt.get_protocol(arp.arp) # this object does not have any indexes so no [0]
+                pkt_arp = pkt.get_protocol(arp.arp)[0]
                 if pkt_arp:
                     # now u can add keys to this above setdefaulted dict on the fly
                     # self.mac_to_port[dpid][src_mac]['ip']='some_value' #this is legal now, thats why we used setdefault for
                     # since its destined to bcast address, arp header must be there so no need to check IF ARP HEADER PRESENT
-                    #self.mac_to_port[dpid][src_mac]['ip'] = pkt_arp.src_ip  # this is legal because we are appending a key in this C-array like way to an existing setdefaulted dict
-                    #self.l2_lookup_table[dpid] ={src_mac: {}}
-                    #self.l2_lookup_table[dpid][src_mac]={'in_port':in_port, 'ip':pkt_arp.src_ip}
-                    self.l2_lookup_table[dpid]={src_mac:{'in_port':msg.in_port,'ip':pkt_arp.src_ip}}
-
+                    self.mac_to_port[dpid][src_mac]['ip'] = pkt_arp.src_ip  # this is legal because we are appending a key in this C-array like way to an existing setdefaulted dict
                     self.logger.debug("PACKET ARP has SRC_IP = %r", pkt_arp.src_ip)
                     self.logger.debug("PACKET ARP has SRC_IP = %r", pkt_arp.dst_ip)
                     self.logger.debug("PACKET ARP has SRC_IP = %r", pkt_arp.opcode)
-                    self.net.add_edge(dpid, src_mac,
-                                      {'src_port': msg.in_port, 'dst_port': msg.in_port,
-                                       'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True})  # src is the src mac
-                    self.net.add_edge(src_mac, dpid,
-                                      {'src_port': msg.in_port, 'dst_port': msg.in_port,
-                                       'src_dpid': src_mac, 'dst_dpid': dpid, 'end_host': True,
-                                       'ip': pkt_arp.src_ip})  # src is the src mac
-
-
-
                     # self._handle_arp(datapath, port, pkt_ethernet, pkt_arp)
                     # if eth.ethertype == ether_types.ETH_TYPE_ARP:
                     # extract the src and dst IP address
@@ -199,54 +185,28 @@ class ProjectController(app_manager.RyuApp):
 
                 #
         if dst_mac in self.net:
-            self.logger.debug(" DO SP ROUTING destination mac %r is in our topologyview ",dst_mac)
             #lookup dst mac in our graph, has_path()
             #if yes find path
             #install_path_flows(path)
-            # print (src in self.net)
-            # print nx.shortest_path(self.net,1,4)
-            # print nx.shortest_path(self.net,4,1)
-            # print nx.shortest_path(self.net,src,4)
-            # path=nx.shortest_path(self.net,src,dst)
-            # next=path[path.index(dpid)+1]
-            # out_port=self.net[dpid][next]['port']
-            # else:
-            #    self.logger.debug("MAC_port table %r", self.mac_to_port)
-            # out_port = ofproto.OFPP_FLOOD
-
-            #####actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
-
-            # install a flow to avoid packet_in next time
-
-            # if out_port != ofproto.OFPP_FLOOD:
-            #   self.add_flow(datapath, msg.in_port, dst, actions)
-
-            #     out = datapath.ofproto_parser.OFPPacketOut(
-            #     datapath=datapath, buffer_id=msg.buffer_id, in_port=msg.in_port,
-            #     actions=actions)
-            # datapath.send_msg(out)
-
             pass
 
-        else: #this is not an lldp packet, this is not arp broadcast, the dst mac is not known but is not broadcast either
+        else: #this is not an lldp packet, this is not arp broadcast.
             #check if its a valid openflow packet
-            self.logger.debug("Received an unlearnt destination mac. eird dst_mac=%r src_mac=%r ", dst_mac,src_mac)
-            #here we get dst mac to be fffff all the time
+            self.logger.debug("Received Packet-IN event with dst mac not broadcast. ")
+            #Is            it            a            valid            openflow - check msg len
+            #do we have this packet in our mac_to_port table
+            if dst_mac in self.mac_to_port[dpid]:
+                #compute
+                #find output to prepaer a flow-mod to all the switches in the path
+                #this outport just tells
+                #route this packet to switch dpid's out_port
 
-            # #Is            it            a            valid            openflow - check msg len
-            # #do we have this packet in our mac_to_port table
-            # if dst_mac in self.mac_to_port[dpid]:
-            #     #compute
-            #     #find output to prepaer a flow-mod to all the switches in the path
-            #     #this outport just tells
-            #     #route this packet to switch dpid's out_port
-            #
-            #     #out_port = self.mac_to_port[dpid][dst_mac]
-            #
-            #     pass
-            # #else:
-            #     #we have no path to the destination mac address, we ll just wait and wont flood the network.
-            #     #pass
+                #out_port = self.mac_to_port[dpid][dst_mac]
+
+                pass
+            #else:
+                #we have no path to the destination mac address, we ll just wait and wont flood the network.
+                #pass
 
         #self.logger("type of msg.in_port is %s",type(msg.in_port))
         #self.logger.debug("Received PacketIn: dpid = %r , in_port = %r , srcmac= %r, dstmac = %r , packet_type = %r",dpid, msg.match['in_port'] , src,dst, eth.ethertype)
@@ -284,9 +244,32 @@ class ProjectController(app_manager.RyuApp):
 
             #self.net.add_edge(dpid,src,edge_dict) #to this edge we are attaching a dictionary edge_dict
             #self.net.add_edge(src,dpid)
-        #if dst_mac in self.net:
-        #   pass
-        #    self.logger.debug("dst mac in our graph")
+        if dst_mac in self.net:
+            pass
+            self.logger.debug("dst mac in our graph")
+            #print (src in self.net)
+            #print nx.shortest_path(self.net,1,4)
+            #print nx.shortest_path(self.net,4,1)
+            #print nx.shortest_path(self.net,src,4)
+
+            #path=nx.shortest_path(self.net,src,dst)
+            #next=path[path.index(dpid)+1]
+            #out_port=self.net[dpid][next]['port']
+        else:
+            self.logger.debug("MAC_port table %r", self.mac_to_port)
+            #out_port = ofproto.OFPP_FLOOD
+
+        #####actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+
+        # install a flow to avoid packet_in next time
+
+        #if out_port != ofproto.OFPP_FLOOD:
+        #   self.add_flow(datapath, msg.in_port, dst, actions)
+
+        #     out = datapath.ofproto_parser.OFPPacketOut(
+        #     datapath=datapath, buffer_id=msg.buffer_id, in_port=msg.in_port,
+        #     actions=actions)
+        # datapath.send_msg(out)
 
         self.show_graph_stats()
 
@@ -327,8 +310,6 @@ class ProjectController(app_manager.RyuApp):
     def show_graph_stats(self):
         self.logger.debug( "list of edges: self.net.edges %s ",self.net.edges())
         self.logger.debug("list of nodes: \n %r", self.net.nodes())
-        self.logger.debug("l2_lookup_table : %r",self.l2_lookup_table)
-        #self.logger.debug("show edge data LOT of output: %r",self.net())
 
 
     #Below method just populates the net graph to which above packet-in method just adds src/dst

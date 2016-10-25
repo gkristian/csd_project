@@ -59,7 +59,7 @@ def controller(data):
 
 url = 'http://192.168.43.139:8000/Tasks.txt'
 url = 'http://127.0.0.1:8000/Tasks.txt'
-c=client_side(x2, url)
+c=client_side("", url)
 c.postme(x2)
 time.sleep(3)
 c=client_side(x3, url)

@@ -7,12 +7,14 @@ ini_set('display_errors', 1);
 
 //Connection establishment
 require('connection.php');
-echo "<html><b>Debug Message :</b><br>";
+echo "<html>";
+echo "<meta http-equiv='refresh' content='10'>";
+//echo "<b>Debug Message :</b><br>";
 
 //Get all nfm data
 $q1 = "SELECT * FROM nfm";
 if ($res1 = $con->query($q1)) {
-    printf("NFM table fetched<br>");
+    //printf("NFM table fetched<br>");
 } else {
     printf("No data from NFM table<br>");
 }
@@ -20,10 +22,10 @@ if ($res1 = $con->query($q1)) {
 //Get NFM's number of keys (#links)
 $q2 = "SELECT count FROM keycount WHERE module='nfm'";
 if ($res2 = $con->query($q2)) {
-	printf("NFM keycount fetched. #links :");
+	//printf("NFM keycount fetched. #links :");
 	$row2 = $res2->fetch_assoc();
 	$nfmkeycount = intval($row2['count']); //Convert result string to int
-	echo $nfmkeycount;
+	//echo $nfmkeycount;
 } else {
 	printf("No data from keycount<br>");
 }
@@ -31,7 +33,7 @@ if ($res2 = $con->query($q2)) {
 //Get link names
 $q3 = "SELECT link FROM nfm LIMIT $nfmkeycount";
 if ($res3 = $con->query($q3)) {
-    printf("<br>Link names fetched");
+    //printf("<br>Link names fetched");
 } else {
     printf("<br>Failed to fetch link names<br>");
 }
@@ -40,12 +42,12 @@ if ($res3 = $con->query($q3)) {
 if ($res3->num_rows > 0) { //Means data exist
 	//ARRAY OF LINKNAME
 	$i=0;
-	$arrlinkname=array();	
+	$arrlinkname=array();
 	while($row3 = $res3->fetch_assoc()) { //Fetch link names
 		array_push($arrlinkname,$row3['link']);
 		$i=$i+1;
     }
-    
+
 	/*ARRAY OF DATA for every link. Work as follow :
 	1. Get data for each link from raw nfm table
 	2. Assign data to correct structure in $arrall. Try print_r to understand
@@ -71,29 +73,38 @@ if ($res3->num_rows > 0) { //Means data exist
 	//print_r($arrall);
 	$linkcount = count($arrall);
 	$timecount = count($arrall[0]);
-	echo "<br><b>Result of arrall creation : </b>";
-	echo "<br>#timestamp : " . $timecount;
-	echo "<br>#links : " . $linkcount;
+	//echo "<br><b>Result of arrall creation : </b>";
+	//echo "<br>#timestamp : " . $timecount;
+	//echo "<br>#links : " . $linkcount;
 } else {
     echo "Error : Failed to create $arrlinkname and $arrall";
 }
 
 //CODE TO SHOW TABLE AND GRAPHS=====================================================================
-echo "<table border=1>";
+echo "<table border=0>";
 
 //SECTION FOR GRAPHS================================================================================
-echo "<tr><td colspan=2>";
-echo "<h2>Graphs</h2>";
+echo "<tr><td colspan=2><center>";
+echo "<font face='calibri' size='6'><b>Link Utilization Graphs</font><br>";
+echo "data for the past 3 minutes</b><br>";
 $data=array();
 for($link=0;$link<$linkcount;$link++){
 	$data=array();
 	for($time=0;$time<$timecount;$time++){
 		array_push($data,$arrall[$link][$time][1]);
 	}
-	$tobesend = array_slice($data, -21); //Take the latest 20 data
-	$imploded=implode(":", $tobesend);
-	echo "<img src=plotnfm.php?title=".$arrlinkname[$link]."&data=".urlencode($imploded).">";
+	$tobesend = array_slice($data, -19); //Take the latest 20 data
+	//Multiply the value to percental scale
+	foreach ($tobesend as &$value) {
+ 	   $value = $value * 100;
+	}
+	$title=explode("-",$arrlinkname[$link]);
+	if($title[1]>$title[0]){ //Remove duplicate
+		$imploded=implode(":",$tobesend);
+		echo "<img src=plotnfm.php?title=".$arrlinkname[$link]."&data=".urlencode($imploded).">";
+	}
 }
+echo "<br><br>";
 echo "</td></tr>";
 
 //SECTION FOR RAW NFM table=========================================================================

@@ -20,10 +20,12 @@ class NotCache:
     def __init__(self, *args, **kwargs):
     	self.initialized = False
 
+        #dummy variables
         nfm_keys = ["key1", "key2", "key3"]
         hum_keys = ["key1", "key2", "key3"]
         rpm_keys = ["key1", "key2", "key3"]
 
+        
         # current layer of values
         nfm_dict = dict.fromkeys(nfm_keys) #all except module is dummy value keys
         nfm_dict.update({k : 0 for k in nfm_dict.iterkeys()}) # set default values

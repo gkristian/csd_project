@@ -9,7 +9,8 @@ from server import ServerHandler
 from repeattimer import RepeatedTimer
 import os
 import sys
- 
+
+
 try:
 	# function to start a server in another thread,
 	# takes a port number and a queue pointer
@@ -22,6 +23,7 @@ try:
 
 	# function to push from cache, used in our repeattimer
 	def push_from_cache():
+		start_time = time.time()
 		if cache.get_state() == True:
 			try:
 				print "\nData pushed from cache:"
@@ -33,8 +35,10 @@ try:
 				print e
 		else:
 			print "Cache not initialized"
+		print("Time taken to push from cache to db %s seconds " % (time.time() - start_time))
 
-	server_quit = {'interrupted' : False} 
+
+	server_quit = {'interrupted' : False}
 
 	time_intervall = 5 # set time between pushes to db
 	#rpm_keys = []

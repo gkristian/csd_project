@@ -4,12 +4,11 @@ import SimpleHTTPServer
 import SocketServer
 import BaseHTTPServer
 import json
-import Queue
+import time
 import threading
 import Cache
 from urlparse import urlparse, parse_qs 
 import sys
-
 
 #a class for communication that estabish
 PORT=8000
@@ -20,6 +19,7 @@ class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
         # Get the queue to set data in, to be able to pass it to main
         self.RequestHandlerClass.cache = cache
         self.RequestHandlerClass.quit = quit
+        self.RequestHandlerClass.initialized['init_cache'] = False
         # listen to modules while not interruped
         while not quit['interrupted']:
             self.handle_request()
@@ -29,14 +29,20 @@ class Server(SocketServer.ThreadingMixIn, BaseHTTPServer.HTTPServer):
 class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     # Empty uninitialized varable for holding the cache
     cache = {} #currently an empty dict, will be replaced with our caceh as soon as the server starts
+    # key whose value is true of false on main thread receving keybordinterrupt
     quit = {} 
+    initialized = {}
+
 
     def _set_headers(self, code):
         self.send_response(code)
         self.send_header('content-type','text/html')
         self.end_headers()
 
+
     def do_GET(self):
+        get_start_time = time.time()
+
         self.quit['interrupted']
         if not self.quit['interrupted']:
             print "\nAccepting GET req"
@@ -50,28 +56,44 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             print "view get the GET dict"
             print query_components.viewitems()
 
-            # get the values
-            module_name = query_components["module"][0] #get value from list
-            sent_timestamp = query_components["timestamp"][0]
-            keylist = query_components["keylist"]
+            if 'module' and 'keylist' in query_components:
+                # get the module name
+                module_name = query_components["module"][0] 
+                #get required keys from list
+                keylist = query_components["keylist"]
 
-            # create a dict in the format chache wants
-            data = {'module': module_name, 'timestamp':sent_timestamp, 'keylist': keylist}
+                #sent_timestamp = query_components["timestamp"][0]
+            
 
-            print module_name
-            print keylist
- 
-            cache_data = json.dumps(self.cache.get_values(data))
+                # create a dict in the format chache wants
+                data = {'module': module_name, 'keylist': keylist}
 
-            self._set_headers(200)
-            self.send_response(200, cache_data)
-            self.end_headers()
-            print "GET handling done"
+                print module_name
+                print keylist
+                
+                cache_get_start_time = time.time()
+                cache_data = json.dumps(self.cache.get_values(data))
+                print("Time for cache get %s seconds ---" % (time.time() - cache_get_start_time))
+
+                self._set_headers(200)
+                self.send_response(200, cache_data)
+                self.end_headers()
+                print "GET handling done"
+            else:
+                # No key module or keylist
+                print "Not correct structure of GET components"
+                self._set_headers(400)
+                self.send_response(400)
+                self.end_headers()
         else:
             print "get interrupted"
             sys.exit
+        print("Time to process a GET request %s seconds ---" % (time.time() - get_start_time))
+
 
     def do_POST(self):
+        post_start_time = time.time()
+
         print self.quit['interrupted']
         if not self.quit['interrupted']:
             print "\nAccepting POST req"
@@ -91,7 +113,6 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             # initialized['nfm'] = False 
             # initialized['rpm'] = False
             # initialized['hum'] = False
-            initialized = False
 
             # Load json from POST req
             j_data=json.loads(self.data)
@@ -101,15 +122,22 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 # put the json data in the cache
                 #if first time from module x use set_all_values, module name and timestamp 1?
                 if 'timestamp' in j_data:
-                    if not initialized:
+                    print self.initialized
+                    if not self.initialized['init_cache']:
+                        all_start_time = time.time()
                         self.cache.set_all_values(self.data)
-                        initialized = True
+                        self.initialized['init_cache'] = True
+                        print("Time to initialize cache: %s seconds ---" % (time.time() - all_start_time))
                     else:
+                        some_start_time = time.time()
                         self.cache.set_values(self.data)
+                        print("Time to set values cache: %s seconds ---" % (time.time() - some_start_time))
                 else:
                     print "1 not a correct json dict"
+   
             else:
                 print "2 not a correct json dict"
+            print  self.initialized
 
                    
         
@@ -122,5 +150,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         else:
             print "post interrupted"
             sys.exit
+        print("Time to process a POST request %s seconds ---" % (time.time() - post_start_time))
+
         
 

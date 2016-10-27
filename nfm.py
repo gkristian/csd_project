@@ -43,6 +43,11 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		self.flows = {}		#dictionary to store each switch's flows
 
 
+
+	@set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
+    	def _packet_in_handler(self, ev):
+		a = 0
+
 	"""
 	Switch state change handler. Called every time a switch state changes
 	"""
@@ -120,9 +125,10 @@ class NFM(simple_switch_13.SimpleSwitch13):
 				eth_dest = stat.match['eth_dst']
 			out_port = stat.instructions[0].actions[0].port
 			CURRENT_BYTES = stat.byte_count
-			if in_port == -1 or out_port == -1 or eth_dest == -1:
+			self.logger.info("HELLO")
+			if in_port == -1 or out_port == -1:
 				continue
-			self.logger.debug("dpid: %d, eth_dst: %s, out_port: %d, bytes: %d", dpid, eth_dest, out_port, CURRENT_BYTES)
+			self.logger.info("dpid: %d, eth_dst: %s, out_port: %d, bytes: %d", dpid, eth_dest, out_port, CURRENT_BYTES)
 			#if switch already exists in dictionary, check if the current flow exists in that subdictionary
 			#update bytes counter only if that flow already exists
 			#else append the flow to the subdictionary list
@@ -177,7 +183,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 				#self.logger.info("LINK UTILIZATION ON LINK %s: %d {0:.2}%".
 				self.DICT_TO_DB['link_utilization'][DPID_TO_DPID] = LINK_UTILIZATION
 		self.logger.info("NFM ATTEMPTING A PUSH TO DB")		
-		#self.DMclient.postme(self.DICT_TO_DB)
+		self.DMclient.postme(self.DICT_TO_DB)
 
 	
 	def checkFlowTable(self, Sx, Sx_port):

@@ -2,8 +2,15 @@
 //PHP file to visualize NFM table and graph
 //Purwidi 2016
 
+//Set error reporting parameter
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+//Timer. Credit : https://www.phpjabbers.com/measuring-php-page-load-time-php17.html
+$time = microtime();
+$time = explode(' ', $time);
+$time = $time[1] + $time[0];
+$start = $time;
 
 //Connection establishment
 require('connection.php');
@@ -156,6 +163,15 @@ echo "</td></tr>";
 
 
 //End of main table
-echo "</table></html>";
+echo "</table>";
 $con->close(); //DON'T FORGET TO CLOSE
+
+//End timer
+$time = microtime();
+$time = explode(' ', $time);
+$time = $time[1] + $time[0];
+$finish = $time;
+$total_time = round(($finish - $start), 4);
+echo "<center><b>Page generated in ".$total_time." seconds.</b></center>";
+echo "</html>";
 ?>

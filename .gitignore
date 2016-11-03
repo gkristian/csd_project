@@ -17,5 +17,6 @@ dist
 .bzr
 .svn
 *.pyc
+*.png
 *.pyo
 *.tmp*

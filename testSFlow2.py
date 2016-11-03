@@ -28,6 +28,7 @@ cfg.CONF.register_opts(opts, 'plow')
 
 
 """
+RUN THIS COMMAND ON SWITCH(ES) 
 ovs-vsctl -- --id=@sflow create sflow agent=eth0 target=\"127.0.0.1:6343\" header=128
 sampling=10 polling=20 -- set bridge SWITCH sflow=@sflow
 

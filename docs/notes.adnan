@@ -1,0 +1,13 @@
+== Mininet and OpenVswitch==
+1.The order of the parameter matters when invoking mininet from command line and using a topology file. 
+
+	#This works
+	mn --custom $TOPO_FILE  --topo topo2 --controller remote --switch ovs,protocols=OpenFlow13  --mac -v debug
+
+	#This doesnt work as if topology py is not read
+	##mn --switch ovs,protocols=OpenFlow13  --mac --controller remote,ip=127.0.0.1,port=6633 --custom $TOPO_FILE -v debug
+2.In the mininet CLI>dpctl dump-flows may not work when using OpenFlow13. This is because dpctl in mininet invokes ovs-ofctl which requires -O OpenFlow13 as input 
+to know which Openflow protocol is used to query the openflow rules table of the switch. Mininet's dpctl command has nothing to do with ovs-dpctl which queries the table in the ovs kernel datapath
+	
+
+

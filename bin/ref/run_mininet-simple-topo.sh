@@ -1,6 +1,6 @@
 #TODO:
 # Upgrade controller app to OpenFlow13. Estimate time 2 hours
-TOPO_FILE=../src/SimpleTopo.py
+TOPO_FILE=../../src/SimpleTopo.py
 #TOPO_FILE=SimpleTopo.py
 #TODO:
 

@@ -4,7 +4,7 @@
 #
 # Notes:
 # No need to change PYTHONPATH env variable
-RYU_CC_APP=../src/controller_core_of10.py
+RYU_CC_APP=../src/controller_core_of13.py
 LOG_FILE=/tmp/cclog.log
 OUTPUT_LOG=/tmp/cc.log
 
@@ -16,7 +16,7 @@ ps auxw |grep ryu-manager |grep -v grep
 echo "____"
 
 echo The log files are $LOG_FILE and $OUTPUT_LOG
-echo tail -f anyone of them
+#echo tail -f anyone of them
 
- tail -f $LOG_FILE |grep -v Event
+# tail -f $LOG_FILE |grep -v Event
 

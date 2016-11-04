@@ -15,7 +15,7 @@ from datetime import datetime
 from ryu.app.ofctl import api
 from ryu.ofproto import ofproto_v1_3
 import simple_switch_13
-
+import time
 
 
 class RPM(app_manager.RyuApp):
@@ -25,8 +25,8 @@ class RPM(app_manager.RyuApp):
 	"""
 	def __init__(self, *args, **kwargs):
 		super(RPM, self).__init__(*args, **kwargs)
+		self.datapaths = {}
 
-		self.datapaths = {}		#store datapaths
 		#self.net = app_manager._CONTEXTS['network']	#fetch graph object of physical network
 		self.net = nx.DiGraph([(1,2,{'src_port':1,'dst_port':1,'src_dpid':1,'dst_dpid':2,'bw':10}),
 								(1,3,{'src_port':2,'dst_port':2,'src_dpid':1,'dst_dpid':3,'bw':30}),
@@ -51,32 +51,48 @@ class RPM(app_manager.RyuApp):
 		self.updateTime = 10
 		self.switches_DPIDs = {}	#dict to store all switches in order of dpid
 		
+		self.start_time = 0
 
-		#self.DMclient = client_side(" ")	#instance of Database module client
-		
-		self.responses = 0	#counter for amount of switch flows retrieving after a request
-
-		# Starting monitoring thread, inside the thread a semaphore unlocks when 
-		# switches and dependant structures are ready
-		#self.monitoring_semaphore = threading.Semaphore();
-		#self.monitoring_thread = hub.spawn(self._monitor(monitoring_semaphore))
+		# format {"dpid1": {"start_time": 100, "measured_time": 13, "xid": 1234}}
+		self.switches_data = {}
+		# format on position dpid, current xid
 
 	"""
-	Main loop of sending  install/update/delete to the switches,
-	current only sending install
+	Main loop of sending  install/update/delete flow mods to the switches,
+	currently sending ca 16 request every second. i.e get results for 4 switches every second
+	TODO Send to DM every 5-10 seconds?
 	"""
-	def _monitor(self, monitor_semaphore): #TODO CHANGE FOR NEW STRUCTURE
-		while True:
-			#ADD SEMAPHORE HERE
-			self._print("MONITORING STARTED WAITING FOR SWITCHES")
-			monitoring_semaphore.aquire()
-			
+	def _monitor(self): #TODO CHANGE FOR NEW STRUCTURE
+		xid = 0
+		while True:			
 			self._print("SENDING FLOW MODS...")
 			dpids = self.switches_DPIDs.viewkeys()
-			for dpid in dipids: #TODO
-				self.send_flow_mod(dp)
+			for dpid in dpids: # Testing flow mod + flow remove
+				dp = self.switches_DPIDs[dpid]
 
-	def send_flow_mod(self, datapath):
+				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', "ADD")
+				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "UPDATE")
+				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "DELETE")
+				self.send_flow_mod(dp, 2, '20:00:00:00:00:00', "ADD")
+				self.send_flow_mod(dp, 2, '20:00:00:00:00:00', "DELETE")
+				self._print("FLOW MODS SENT")
+
+				#TODO work in structure for saving away data
+				self.switches_data[dpid]["start_time"] = int(round(time.time() * 1000))
+				xid += 1
+				self.switches_data[dpid]["xid"] = xid
+				self.send_barrier_request(dp, xid)
+				self._print("BARRIER REQ WITH ID %d SENT" %xid)
+				
+				self._print(str(self.switches_data.viewitems()))
+				time.sleep(0.0625)
+
+
+
+	"""
+	Install or update a flow rule for a given switch/datapath. 
+	"""
+	def send_flow_mod(self, datapath, in_port_nr, eth_dst_adr, command_dir):
 		ofp = datapath.ofproto
 		#self._print(ofp)
 
@@ -88,12 +104,25 @@ class RPM(app_manager.RyuApp):
 		hard_timeout = 10
 		priority = 32768
 		buffer_id = ofp.OFP_NO_BUFFER
+
+		if command_dir == "ADD":
+			command = ofp.OFPFC_ADD
+		elif command_dir == "UPDATE":
+			command = ofp.OFPFC_MODIFY
+		elif command_dir == "DELETE":
+			command = ofp.OFPFC_DELETE
+		else:
+			self._print("Not a valid command %s, sending as install" % command_dir)
+			command = ofp.OFPFC_ADD
+
+
+
 	
-		match = ofp_parser.OFPMatch(in_port=1, eth_dst='00:00:00:00:00:00')  # DUMMY IP
+		match = ofp_parser.OFPMatch(in_port=in_port_nr, eth_dst= eth_dst_adr)  # DUMMY IP
 		actions = [ofp_parser.OFPActionOutput(ofp.OFPP_NORMAL, 0)]
 		inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,actions)]
 		req = ofp_parser.OFPFlowMod(datapath, cookie, cookie_mask,
-									table_id, ofp.OFPFC_ADD,
+									table_id, command,
 									idle_timeout, hard_timeout,
 									priority, buffer_id,
 									ofp.OFPP_ANY, ofp.OFPG_ANY,
@@ -101,10 +130,11 @@ class RPM(app_manager.RyuApp):
 									match, inst)
 		datapath.send_msg(req)
 
-	def send_barrier_request(self, datapath):
+	def send_barrier_request(self, datapath, xid):
 		ofp_parser = datapath.ofproto_parser
 
 		req = ofp_parser.OFPBarrierRequest(datapath)
+		req.set_xid(xid)
 		datapath.send_msg(req)
 
 
@@ -157,8 +187,21 @@ class RPM(app_manager.RyuApp):
 	
 	
 	@set_ev_cls(ofp_event.EventOFPBarrierReply, MAIN_DISPATCHER)
-	def barrier_reply_handler(self, ev):
+	def _handle_barrier(self, ev):
+		msg = ev.msg
+		datapath = msg.datapath
+		dpid = datapath.id
+		self._print("Barrier datapath %d" % dpid)
+
+		current_time = int(round(time.time() * 1000))
+		starting_time = self.switches_data[dpid]["start_time"]
+		timed = current_time - starting_time
+
+		self.switches_data[dpid]["measured_time"] = timed
+		
 		self._print('OFPBarrierReply received')
+		# Time taken for installation of all current waiting rules and RTT
+		print "Timer from barrier req to resp: %d (ms) for datapath %d" % (timed, datapath.id)
 
 
 	"""
@@ -177,24 +220,20 @@ class RPM(app_manager.RyuApp):
 				self.logger.info('unregister.datapath: %016x', datapath.id)
 				del self.switches_DPIDs[datapath.id]
 
-		if len(self.switches_DPIDs.viewkeys()) == self.totalSwitchesNr:
-			print self.switches_DPIDs.viewkeys()
+		DPIDS = self.switches_DPIDs.viewkeys()
+
+		if len(DPIDS) == self.totalSwitchesNr:
+			print DPIDS
+			for key in DPIDS:
+				print key
+				self.switches_data[key] = {"start_time": -1, "measured_time": -1, "xid": -1}
+			self._print(str(self.switches_data.viewitems()))
+
+			# Start monitoring thread sending flow mods and barrier requests
+			self.monitoring_thread = hub.spawn(self._monitor)
+			self._print("Monitoring thread started")
 			
-			# TODO: 
-	 
-
-			# Wake up thread that sends flow mods
-			#self.monitoring_semaphore.release()
 			
-			# Testing flow mod + flow remove
-			dp = self.switches_DPIDs[1]
-			print dp
-
-			self.send_flow_mod(dp)
-			self._print("FLOW MOD SENT!")
-
-			self.send_barrier_request(dp)
-			self._print("BARRIER REQ SENT!")
 
 
 

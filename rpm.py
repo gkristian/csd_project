@@ -58,14 +58,14 @@ class RPM(app_manager.RyuApp):
 
 		# Starting monitoring thread, inside the thread a semaphore unlocks when 
 		# switches and dependant structures are ready
-		self.monitoring_semaphore = threading.Semaphore();
-		self.monitoring_thread = hub.spawn(self._monitor(monitoring_semaphore))
+		#self.monitoring_semaphore = threading.Semaphore();
+		#self.monitoring_thread = hub.spawn(self._monitor(monitoring_semaphore))
 
 	"""
 	Main loop of sending  install/update/delete to the switches,
 	current only sending install
 	"""
-	def _monitor(self, monitor_semaphore):
+	def _monitor(self, monitor_semaphore): #TODO CHANGE FOR NEW STRUCTURE
 		while True:
 			#ADD SEMAPHORE HERE
 			self._print("MONITORING STARTED WAITING FOR SWITCHES")
@@ -73,7 +73,7 @@ class RPM(app_manager.RyuApp):
 			
 			self._print("SENDING FLOW MODS...")
 			dpids = self.switches_DPIDs.viewkeys()
-			for dpid in : #TODO
+			for dpid in dipids: #TODO
 				self.send_flow_mod(dp)
 
 	def send_flow_mod(self, datapath):
@@ -85,7 +85,7 @@ class RPM(app_manager.RyuApp):
 		cookie = cookie_mask = 0
 		table_id = 0
 		idle_timeout = 0
-		hard_timeout = 1
+		hard_timeout = 10
 		priority = 32768
 		buffer_id = ofp.OFP_NO_BUFFER
 	
@@ -100,6 +100,14 @@ class RPM(app_manager.RyuApp):
 									ofp.OFPFF_SEND_FLOW_REM,
 									match, inst)
 		datapath.send_msg(req)
+
+	def send_barrier_request(self, datapath):
+		ofp_parser = datapath.ofproto_parser
+
+		req = ofp_parser.OFPBarrierRequest(datapath)
+		datapath.send_msg(req)
+
+
 
 	"""
 	Function to calculate the number of switches in the physical topology with the help of graph object
@@ -146,6 +154,13 @@ class RPM(app_manager.RyuApp):
 						msg.duration_sec, msg.duration_nsec,
 						msg.idle_timeout, msg.hard_timeout,
 						msg.packet_count, msg.byte_count, msg.match)
+	
+	
+	@set_ev_cls(ofp_event.EventOFPBarrierReply, MAIN_DISPATCHER)
+	def barrier_reply_handler(self, ev):
+		self._print('OFPBarrierReply received')
+
+
 	"""
 	Switch state change handler. Called every time a switch state changes, creates a dict dpid -> datapath
 	"""
@@ -169,13 +184,18 @@ class RPM(app_manager.RyuApp):
 	 
 
 			# Wake up thread that sends flow mods
-			self.monitoring_semaphore.release()
+			#self.monitoring_semaphore.release()
 			
 			# Testing flow mod + flow remove
-			#dp = self.switches_DPIDs[1]
-			#print dp
-			#self.send_flow_mod(dp)
-			#self._print("FLOW MOD SENT!")
+			dp = self.switches_DPIDs[1]
+			print dp
+
+			self.send_flow_mod(dp)
+			self._print("FLOW MOD SENT!")
+
+			self.send_barrier_request(dp)
+			self._print("BARRIER REQ SENT!")
+
 
 
 

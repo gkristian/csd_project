@@ -55,11 +55,26 @@ class RPM(app_manager.RyuApp):
 		#self.DMclient = client_side(" ")	#instance of Database module client
 		
 		self.responses = 0	#counter for amount of switch flows retrieving after a request
-		
-		#TODO start monitoring thread(s) to continuosly monitor switches
-		# inside the thread have semaphore to unlock when switches are ready
-		#self.monitoring_semaphore = threading.Event();
 
+		# Starting monitoring thread, inside the thread a semaphore unlocks when 
+		# switches and dependant structures are ready
+		self.monitoring_semaphore = threading.Semaphore();
+		self.monitoring_thread = hub.spawn(self._monitor(monitoring_semaphore))
+
+	"""
+	Main loop of sending  install/update/delete to the switches,
+	current only sending install
+	"""
+	def _monitor(self, monitor_semaphore):
+		while True:
+			#ADD SEMAPHORE HERE
+			self._print("MONITORING STARTED WAITING FOR SWITCHES")
+			monitoring_semaphore.aquire()
+			
+			self._print("SENDING FLOW MODS...")
+			dpids = self.switches_DPIDs.viewkeys()
+			for dpid in : #TODO
+				self.send_flow_mod(dp)
 
 	def send_flow_mod(self, datapath):
 		ofp = datapath.ofproto
@@ -104,6 +119,8 @@ class RPM(app_manager.RyuApp):
 		ofp = dp.ofproto
 		ofp_id = dp.id
 
+		#TODO BE ABLE TO IDENTIFY RPM FLOW EVENT
+
 		self._print("Switch with id: %d" % ofp_id)
 
 		if msg.reason == ofp.OFPRR_IDLE_TIMEOUT:
@@ -147,14 +164,18 @@ class RPM(app_manager.RyuApp):
 
 		if len(self.switches_DPIDs.viewkeys()) == self.totalSwitchesNr:
 			print self.switches_DPIDs.viewkeys()
-			# Testing flow mod + flow remove
+			
 			# TODO: 
-			#if innit set a semaphore here to open up when all switches are availible
-			#self.monitoring_semaphore = 
-			dp = self.switches_DPIDs[1]
-			print dp
-			self.send_flow_mod(dp)
-			self._print("FLOW MOD SENT!")
+	 
+
+			# Wake up thread that sends flow mods
+			self.monitoring_semaphore.release()
+			
+			# Testing flow mod + flow remove
+			#dp = self.switches_DPIDs[1]
+			#print dp
+			#self.send_flow_mod(dp)
+			#self._print("FLOW MOD SENT!")
 
 
 

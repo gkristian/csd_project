@@ -66,12 +66,12 @@ class RPM(app_manager.RyuApp):
 
 	TODO Send updates to DM
 	"""
-	def _monitor(self): #TODO CHANGE FOR NEW STRUCTURE
+	def _monitor(self): 
 		xid = 0
 		# set of switches
 		dpids = self.switches_DPIDs.viewkeys()
 		# define waiting time before sending next barrier request
-		sleeping = 0.25
+		sleeping = 0.125
 
 		# Current minimum waiting time, lower than this means that the request 
 		# sending rate exceeds the event handler serving rate and we get event 
@@ -87,11 +87,28 @@ class RPM(app_manager.RyuApp):
 				# Get the datapath object
 				dp = self.switches_DPIDs[dpid]
 
+				# Testing sending flow mods
+				# Groups of: add -> 2x update -> delete
 				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', "ADD")
 				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "UPDATE")
-				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "DELETE")
-				self.send_flow_mod(dp, 2, '20:00:00:00:00:00', "ADD")
-				self.send_flow_mod(dp, 2, '20:00:00:00:00:00', "DELETE")
+				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "UPDATE")
+				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "DELETE")
+
+				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', "ADD")
+				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "UPDATE")
+				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "UPDATE")
+				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "DELETE")
+
+				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', "ADD")
+				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "UPDATE")
+				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "UPDATE")
+				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "DELETE")
+
+				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', "ADD")
+				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "UPDATE")
+				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "UPDATE")
+				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "DELETE")
+
 				self._print("FLOW MODS SENT")
 
 				# set start time for measurment
@@ -107,6 +124,9 @@ class RPM(app_manager.RyuApp):
 				
 				# wait to send new monitoring requests
 				time.sleep(sleeping)
+
+			#testing
+			break
 
 
 

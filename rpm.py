@@ -16,6 +16,31 @@ from ryu.app.ofctl import api
 from ryu.ofproto import ofproto_v1_3
 import simple_switch_13
 import time
+import sys
+
+if len(sys.argv) > 4:
+	rate = int(sys.argv[2])
+	mods_nr = int(sys.argv[3])
+	update = int(sys.argv[4])
+
+	if (1/rate) > 0.03125 and update > 3: # minimum values
+		print "Taking arguments send %s barrier request every sec , send %s flow mod messages, send updates every %s sec" % (rate, mods_nr, update)
+		UPDATE_TIME = update
+	else:
+		print "Arguments lower than minimum values, going with default values 2 reqs every second, updates every 10 seconds"
+		rate = 2
+		UPDATE_TIME = 10
+else:
+	print "Setting default sleeping value to 0.5 seconds"
+	#self.sleeping = 0.03125
+	rate = 1
+	mods_nr = 5
+	UPDATE_TIME = 10
+
+SLEEPING = 1/rate
+MODS_NR = mods_nr
+
+
 
 
 class RPM(app_manager.RyuApp):
@@ -50,7 +75,8 @@ class RPM(app_manager.RyuApp):
 		self.logger.debug("TOTAL SWITCHES: %d", self.totalSwitchesNr)
 
 		# TODO communication with DM
-		self.DICT_TO_DB = {'module':'rpm'}	#prepare a dictionary for updating and sending to Database
+		# TODO proper format
+		self.DICT_TO_DB = {'module':'rpm', 'id': -1, 'delays':{}}	#prepare a dictionary for updating and sending to Database
 		
 		self.switches_DPIDs = {}	#dict to store all datapath ojects by key dpid
 		
@@ -70,49 +96,41 @@ class RPM(app_manager.RyuApp):
 		xid = 0
 		# set of switches
 		dpids = self.switches_DPIDs.viewkeys()
-		# define waiting time before sending next barrier request
-		sleeping = 0.125
-
-		# Current minimum waiting time, lower than this means that the request 
-		# sending rate exceeds the event handler serving rate and we get event 
-		# queque build up, which fucks up the measuring
-		min_sleeping = 0.03125
-
+		# set starting time counter for sending updates to DM
+		last_update_time = int(round(time.time() * 1000))
+		
 		# TODO minimum waiting time may change with topology changes, investigate.
 
 		# Sending loop
 		while True:			
-			self._print("SENDING FLOW MODS...")
+			#self._print("SENDING FLOW MODS...")
 			for dpid in dpids: 
 				# Get the datapath object
 				dp = self.switches_DPIDs[dpid]
 
-				# Testing sending flow mods
-				# Groups of: add -> 2x update -> delete
-				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', "ADD")
-				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "UPDATE")
-				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "UPDATE")
-				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "DELETE")
+				# Sending flow mods
+				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "ADD", "NORMAL")
+				# number of updates to be sent is equal to toal number of messages to be sent 
+				#minus the add and the delete message
+				updates = MODS_NR - 2
+				out_act = "FLOOD"
+				while updates > 0:
+					self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "UPDATE", out_act)
+					# Set next update change
+					if out_act == "FLOOD":
+						out_act = "NORMAL"
+					
+					if out_act == "NORMAL":
+						out_act == "FLOOD"
 
-				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', "ADD")
-				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "UPDATE")
-				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "UPDATE")
-				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "DELETE")
+					updates -= 1
 
-				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', "ADD")
-				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "UPDATE")
-				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "UPDATE")
-				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "DELETE")
+				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "DELETE")
 
-				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', "ADD")
-				self.send_flow_mod(dp, 1, '10:00:00:00:00:00', "UPDATE")
-				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "UPDATE")
-				self.send_flow_mod(dp, 2, '10:00:00:00:00:00', "DELETE")
-
-				self._print("FLOW MODS SENT")
+				#self._print("FLOW MODS SENT")
 
 				# set start time for measurment
-				self.switches_data[dpid]["start_time"] = int(round(time.time() * 1000))
+				self.switches_data[dpid]["start_time"] = int(time.time() * 1000)
 				# set xid to be able to identify the response
 				xid += 1
 				self.switches_data[dpid]["xid"] = xid
@@ -120,13 +138,23 @@ class RPM(app_manager.RyuApp):
 				self.send_barrier_request(dp, xid)
 				self._print("BARRIER REQ WITH ID %d SENT" %xid)
 				
-				self._print("Data before barrier req: " + str(self.switches_data.viewitems()))
+				#self._print("Data before barrier req: " + str(self.switches_data.viewitems()))
 				
+				# if it has gone min UPDATE_TIME seconds since last update
+				# send an update to DM 
+				current_time = int(round(time.time() * 1000))
+				if current_time - last_update_time >= UPDATE_TIME*1000:
+					self._print("SEND UPDATE TO DM")
+					self.DICT_TO_DB['id'] = self.DICT_TO_DB['id'] + 1
+					print self.DICT_TO_DB.viewitems()
+					last_update_time = int(round(time.time() * 1000))
+
+
 				# wait to send new monitoring requests
-				time.sleep(sleeping)
+				time.sleep(SLEEPING)
 
 			#testing
-			break
+			#break
 
 
 
@@ -134,14 +162,15 @@ class RPM(app_manager.RyuApp):
 	Install, update or delete a flow rule for a given switch/datapath, 
 	given in port number and ethernet destination address
 	"""
-	def send_flow_mod(self, datapath, in_port_nr, eth_dst_adr, command_dir):
+	def send_flow_mod(self, datapath, in_port_nr, eth_src_adr, eth_dst_adr, command_dir, out_action = "NORMAL"):
 		ofp = datapath.ofproto
 		ofp_parser = datapath.ofproto_parser
-
+		
+		# default values, may be changed depending on command
 		cookie = cookie_mask = 0
 		table_id = 0
 		idle_timeout = 0
-		hard_timeout = 0
+		hard_timeout = 3
 		priority = 32768
 		buffer_id = ofp.OFP_NO_BUFFER
 
@@ -155,12 +184,15 @@ class RPM(app_manager.RyuApp):
 			self._print("Not a valid command %s, sending as install" % command_dir)
 			command = ofp.OFPFC_ADD
 
-
+		if out_action == "FLOOD":
+			out_action = ofp.OFPP_FLOOD
+		else:
+			out_action = ofp.OFPP_NORMAL
 
 	
-		match = ofp_parser.OFPMatch(in_port=in_port_nr, eth_dst= eth_dst_adr)  		# What does flows does the rule capture, flows should be dummies
-		actions = [ofp_parser.OFPActionOutput(ofp.OFPP_NORMAL, 0)]					# What action should be taken, normal not flood
-		inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,actions)]	# set options and compose request
+		match = ofp_parser.OFPMatch(in_port=in_port_nr, eth_dst= eth_dst_adr, eth_src= eth_src_adr)  		# What does flows does the rule capture, flows should be dummies
+		actions = [ofp_parser.OFPActionOutput(out_action, 0)]											# What action should be taken, normal not flood
+		inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,actions)]							# set options and compose request
 		req = ofp_parser.OFPFlowMod(datapath, cookie, cookie_mask,				
 									table_id, command,
 									idle_timeout, hard_timeout,
@@ -249,11 +281,13 @@ class RPM(app_manager.RyuApp):
 		req_xid = self.switches_data[dpid]["xid"]
 
 		if req_xid == xid:
-			current_time = int(round(time.time() * 1000)) 			# current time in milliseconds
+			current_time = int(time.time() * 1000) 			# current time in milliseconds
 			starting_time = self.switches_data[dpid]["start_time"] 	# also in milliseconds
 			timed = current_time - starting_time					# measured time between barrier request and response
 			# Store the measured time
 			self.switches_data[dpid]["measured_time"] = timed
+			# Store the measured time in DB message dict
+			self.DICT_TO_DB['delays'][dpid] = timed
 		
 			# Time taken for installation of all current waiting rules and RTT 
 			self._print("Timer from barrier req to resp: %d (ms) for datapath %d" % (timed, datapath.id)) # why is this longer for a slower sending rate?!
@@ -287,6 +321,7 @@ class RPM(app_manager.RyuApp):
 			for key in DPIDS:
 				print key
 				self.switches_data[key] = {"start_time": -1, "measured_time": -1, "xid": -1}
+				self.DICT_TO_DB['delays'][key] = -1
 			self._print(str(self.switches_data.viewitems()))
 
 			# Start monitoring thread sending flow mods and barrier requests

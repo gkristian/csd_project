@@ -10,13 +10,14 @@ from ryu.lib import hub
 import networkx as nx
 import json
 import threading
-#from client import client_side
 from datetime import datetime
 from ryu.app.ofctl import api
 from ryu.ofproto import ofproto_v1_3
 import simple_switch_13
 import time
 import sys
+from client import client_side
+
 
 if len(sys.argv) > 4:
 	rate = int(sys.argv[2])
@@ -74,9 +75,11 @@ class RPM(app_manager.RyuApp):
 		
 		self.logger.debug("TOTAL SWITCHES: %d", self.totalSwitchesNr)
 
-		# TODO communication with DM
+		# Communication with DM
+		url = 'http://127.0.0.1:8000/Tasks.txt'
+		self.client = client_side(url)
 		# TODO proper format
-		self.DICT_TO_DB = {'module':'rpm', 'id': -1, 'delays':{}}	#prepare a dictionary for updating and sending to Database
+		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}}	#prepare a dictionary for updating and sending to Database
 		
 		self.switches_DPIDs = {}	#dict to store all datapath ojects by key dpid
 		
@@ -145,8 +148,9 @@ class RPM(app_manager.RyuApp):
 				current_time = int(round(time.time() * 1000))
 				if current_time - last_update_time >= UPDATE_TIME*1000:
 					self._print("SEND UPDATE TO DM")
-					self.DICT_TO_DB['id'] = self.DICT_TO_DB['id'] + 1
+					self.DICT_TO_DB['timestamp'] = current_time
 					print self.DICT_TO_DB.viewitems()
+					self.client.postme(self.DICT_TO_DB)
 					last_update_time = int(round(time.time() * 1000))
 
 

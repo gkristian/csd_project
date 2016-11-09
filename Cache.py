@@ -229,6 +229,7 @@ class NotCache:
         :rtype: json string
         """
         data = {'nfm' : self.module_caches_old['nfm'], 'rpm' : self.module_caches_old['rpm'], 'hum' : self.module_caches_old['hum']}
+        print data.viewitems()
         return data
 
     def get_state(self):

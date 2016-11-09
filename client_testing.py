@@ -53,26 +53,27 @@ def monitorer(data):
 def controller(data):
     url = 'http://192.168.43.139:8070/Tasks.txt'
     url = 'http://127.0.0.1:8000/Tasks.txt'
-    c=client_side(data, url)
+    c=client_side(url)
     print "Data to the controller, a tuple list: "
     print c.getme(data)
 
-url = 'http://192.168.43.139:8000/Tasks.txt'
+#url = 'http://192.168.43.139:8000/Tasks.txt'
 url = 'http://127.0.0.1:8000/Tasks.txt'
-c=client_side(url)
-c.postme(x2)
-time.sleep(3)
-c=client_side(url)
-c.postme(x3)
-time.sleep(3)
-c=client_side(url)
-c.postme(x4)
+#c=client_side(url)
+#c.postme(x2)
+#time.sleep(3)
+#c=client_side(url)
+#c.postme(x3)
+#time.sleep(3)
+#c=client_side(url)
+#c.postme(x4)
 
 #time.sleep(10)
 #rt_monitor_module = RepeatedTimer(1, monitorer, x2)
 
-x3 = {'module': 'nfm', 'id':000, 'keylist': ['flow','delay']}
-#rt_controller = RepeatedTimer(1, controller, x3) 
+#x3 = {'module': 'nfm', 'timestamp':000, 'keylist': ['flow','delay']}
+x3 = {'module': 'rpm', 'timestamp':000, 'keylist': ['delays']}
+rt_controller = RepeatedTimer(1, controller, x3) 
 
 try:
     time.sleep(4) # your long-running job goes here...

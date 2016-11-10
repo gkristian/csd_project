@@ -71,11 +71,11 @@ class ProjectController(app_manager.RyuApp):
         self.no_of_nodes = 0
         self.no_of_links = 0
         self.i=0
-        self.defines_D = {'bcast_mac':'ff:ff:ff:ff:ff:ff', 'build_graph_once': True}
+        self.defines_D = {'bcast_mac':'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True}
         self.rxpkts_types_D= {}
         self.logger.info("controller_core module starting up....")
         self.epoc_starttime = int(time.time())
-        self.network_bootstrap_time = 40 # in seconds
+        self.network_bootstrap_time = 70 # in seconds
 
     # Handy function that lists all attributes in the given object
     def ls(self,obj):
@@ -131,16 +131,19 @@ class ProjectController(app_manager.RyuApp):
     def shortest_path(self,src_node,dst_node):
         sp_L = nx.shortest_path(self.net,src_node, dst_node, weighted = True) # L indicates it is a list of nodes e.g. [1,2,3,4]
         return sp_L
+    def _check_bootstrap_completion(self):
+        # Do something after the network finished bootstraping e.g. save the topology diagram just once after the network has bootstrapped
+        if self.defines_D[
+            'bootstrap_in_progress']:  # we do it because nx.draw overwrite the previous graph everytime we draw it. as if matlab hold is on. TOFIX
+            if int(time.time()) - self.epoc_starttime > self.network_bootstrap_time:
+                self.defines_D['bootstrap_in_progress'] = False
+                self.logger.debug("Bootstrap just Completed")
+                #         self.save_topolog_to_file()
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
-
-        #Do something after the network finished bootstraping e.g. save the topology diagram just once after the network has bootstrapped
-        # if self.defines_D['build_graph_once']:  # we do it because nx.draw overwrite the previous graph everytime we draw it. as if matlab hold is on. TOFIX
-        #     if int(time.time()) - self.epoc_starttime > self.network_bootstrap_time:
-        #         self.defines_D['build_graph_once'] = False
-        #         self.save_topolog_to_file()
-
+        self.print_l2_table()
+        self._check_bootstrap_completion()
         self.save_topolog_to_file() #this should go away in the production version and above lines be uncommented in a proper manner
 
         msg = ev.msg
@@ -174,8 +177,7 @@ class ProjectController(app_manager.RyuApp):
         # self.logger.debug("haddr_to_bin(dst) = %r",haddr_to_bin(dst_mac)) #this on pingall gave: '\xff\xff\xff\xff\xff\xff'
 
         if dst_mac == self.defines_D['bcast_mac']: #if dst == 'ff:ff:ff:ff:ff:ff' means its a host that is flooding the network, we gotta learn it
-            self.logger.debug("Broadcast received from src mac = %s ", src_mac)
-            self.logger.debug("Broadcast has dpid= %r , in_port = %r", dpid, msg.match['in_port'] )
+            self.logger.debug("broadcast received from src mac = %s , switch dpid = %r at in_port = %r", src_mac, dpid, msg.match['in_port'])
 
             #Below are two ways to make sure that an ARP header is there in the broadcast packet received
             #if eth.ethertype != ether_types.ETH_TYPE_ARP:
@@ -192,8 +194,8 @@ class ProjectController(app_manager.RyuApp):
                 return
 
             if src_mac not in self.net: #learn it
-                self.logger.debug("learning src_mac = %r for the first time ", src_mac)
-                self.logger.debug("our current l2_table is %r", self.l2_dpid_table)
+                self.logger.debug("LEARNING : learning a new src_mac = %r for the first time ", src_mac)
+                #self.logger.debug("our current l2_table is %r", self.l2_dpid_table)
                 #open for IP src and IP dst of ARP broadcast: we  associate src mac learn from source and use destination IP to route to correct switch
 
 
@@ -223,9 +225,9 @@ class ProjectController(app_manager.RyuApp):
                 self.l2_ip2mac_table[pkt_arp.src_ip]=src_mac
                 self.l2_mac2ip_table[src_mac]=pkt_arp.src_ip
 
-                self.logger.debug("PACKET ARP has arp.src_ip = %r", pkt_arp.src_ip)
-                self.logger.debug("PACKET ARP has arp.dst_ip = %r", pkt_arp.dst_ip)
-                self.logger.debug("PACKET ARP has arp.opcode = %r", pkt_arp.opcode) # 1 for request
+
+                self.logger.debug("LEARNING : ARP extractions show about packet details as : arp.src_ip = %r , arp.dst_ip = %r , arp.opcode (1 for Request)  = %r  ", pkt_arp.src_ip, pkt_arp.dst_ip, pkt_arp.opcode)
+                #since its a directonal graph so we need to add two pairs for every single links i.e in each direction
                 self.net.add_edge(dpid, src_mac,
                                   {'src_port': msg.match['in_port'] , 'dst_port': msg.match['in_port'] ,
                                    'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True})  # src is the src mac
@@ -234,7 +236,7 @@ class ProjectController(app_manager.RyuApp):
                                    'src_dpid': src_mac, 'dst_dpid': dpid, 'end_host': True,
                                    'ip': pkt_arp.src_ip, 'ip':pkt_arp.src_ip})  # src is the src mac
 
-
+                self.print_l2_table()
 
                 # self._handle_arp(datapath, port, pkt_ethernet, pkt_arp)
                 # if eth.ethertype == ether_types.ETH_TYPE_ARP:
@@ -247,15 +249,14 @@ class ProjectController(app_manager.RyuApp):
                 # return
 
             else:
-
-                self.logger.debug("RX_BRADCAST_SRC_ALREADY_LEARNT: Received a broadcast packet with source mac in our l2_table, creating arp reply and attaching to OF packet_out")
-
-
                 if pkt_arp.opcode != arp.ARP_REQUEST:
+                    self.logger.debug("IGNORING packet as its not an arp request")
                     return
+                self.logger.debug(
+                    "RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out")
                 #have we learnt the IP in arp.dst_ip header ie. do we know its mac yet
                 if not pkt_arp.dst_ip in self.l2_ip2mac_table:
-                    self.logger.debug("Havent learnt the arp.dst_ip's mac yet. Aborting")
+                    self.logger.debug("RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return")
                     return
 
                 # get  mac of the dst ip in arp header
@@ -271,19 +272,30 @@ class ProjectController(app_manager.RyuApp):
                                          src_ip=ip_of_arp_dst_mac,
                                          dst_mac=src_mac,
                                          dst_ip=pkt_arp.src_ip))
-                self.logger.debug("Crafting ARP reply") #pkt_arp.src_mac
+                self.logger.debug("Crafting an ARP reply") #pkt_arp.src_mac
 
                 #self._send_packet(datapath, self.l2_dpid_table[dpid][src_mac]['in_port'], new_pkt) #dpid= datapath.id the switch the packet in came from we want to reply on that switch
                 self._send_packet(datapath, in_port,new_pkt)  # dpid= datapath.id the switch the packet in came from we want to reply on that switch
-
+                self.logger.debug("Sending arp reply reply done")
 
         else: #if dst_mac is not broadcat rather some specific address
             #either we have already learnt this address
+            self.logger.info("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : compute shortest path and install flows if bstrap completed")
+            # This is if block ensures that code after it only gets executed once the network has bootstraped i.e. bootstrap time limit has reached
+            if self.defines_D['bootstrap_in_progress']:
+                self.logger.info("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows")
+                #if int(time.time()) - self.epoc_starttime > self.network_bootstrap_time:
+                #    self.defines_D['bootstrap_in_progress'] = False
+                return #below code wont get executed during network bootstrap
+
+            self.logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation")
+
             if dst_mac in self.net:
-                self.logger.debug("RX_SPECIFIC_ARP_ALREADY_LEARNT: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
-                self.logger.debug("Do we have a path to this destination mac?")
+                self.logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
+                self.logger.debug("Do we have a path to this destination mac? src= %r , dst = %r ",dst_mac,src_mac)
                 if not nx.has_path(self.net,src_mac,dst_mac): #if returned False we abort
-                    self.logger.debug("Cannot find path from src mac %r to dst_mac %r, aborting",src_mac,dst_mac)
+                    #Above line once caused error CSD_CC_1 reported in ERRORS.txt
+                    self.logger.debug("Cannot find path from src mac %r to dst_mac %r, returning ie. doing nothing more",src_mac,dst_mac)
                     return
                 ###spath=nx.shortest_path(self.net,src_mac,dst_mac)
                 ####self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
@@ -314,12 +326,12 @@ class ProjectController(app_manager.RyuApp):
                 #     actions=actions)
                 # datapath.send_msg(out)
 
-                pass
+                #pass
 
             else: #this is not an lldp packet, this is not arp broadcast, the dst mac is not known but is not broadcast either
                 #check if its a valid openflow packet
-                self.logger.debug("UNLEARNT_SPECIFIC_DST_MAC: Received an unlearnt destination mac.  dst_mac=%r src_mac=%r ", dst_mac,src_mac)
-                self.logger.debug("UNLEARNT_SPECIFIC_DST_MAC: We see some traffic - it cant be LLDP though")
+                self.logger.debug("NEW_SPECIFIC_DST_MAC targeted request whose mac we havent learnt yet: Received a new destination mac.  dst_mac=%r src_mac=%r ", dst_mac,src_mac)
+                #self.logger.debug("NEW_SPECIFIC_DST_MAC: We see some traffic - it cant be LLDP though")
                 self.print_l2_table()
 
 
@@ -344,10 +356,12 @@ class ProjectController(app_manager.RyuApp):
             #self.logger.debug("Received PacketIn: dpid = %r , in_port = %r , srcmac= %r, dstmac = %r , packet_type = %r",dpid, msg.match['in_port'] , src,dst, eth.ethertype)
             #print "Received PacketIn: dpid = ", dpid, "srcmac=", src, "dstmac = ", dst, "packet_type = ", eth.ethertype
             #store in a dict what types of packets received and how many
-            if pkt_eth.ethertype in self.rxpkts_types_D:
-                self.rxpkts_types_D[pkt_eth.ethertype] += 1;
-            else:
-                self.rxpkts_types_D.setdefault(pkt_eth.ethertype,1) #for dictionary D, against a key eth.ethertype, set a default value 1
+            #uncomment following till
+            # if pkt_eth.ethertype in self.rxpkts_types_D:
+            #     self.rxpkts_types_D[pkt_eth.ethertype] += 1
+            # else:
+            #     self.rxpkts_types_D.setdefault(pkt_eth.ethertype,1) #for dictionary D, against a key eth.ethertype, set a default value 1
+            # till HERE when u wanna develop a statistics counter
 
             #eth.etheretype == ether_types.ETH_TYPE_ARP
             #eth.etheretype == ether_types.ETH_TYPE_LLDP
@@ -422,7 +436,7 @@ class ProjectController(app_manager.RyuApp):
         self.logger.debug("l2_lookup_table : %r", self.l2_dpid_table)
         #self.logger.debug("show edge data LOT of output: %r",self.net())
 
-
+        self.print_l2_table()
     #Below method just populates the net graph to which above packet-in method just adds src/dst
     @set_ev_cls(event.EventSwitchEnter)
     def get_topology_data(self, ev):
@@ -539,15 +553,16 @@ class ProjectController(app_manager.RyuApp):
         self.logger.debug("l2_ip2mac = %r", self.l2_ip2mac_table)
 
     def _send_packet(self, datapath, port, pkt):
+        #self.logger.debug("Sending crafted packet to datapath = %r, port = %r", datapath,port)
+        self.logger.debug("Sending an arp reply in _send_packet")
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         pkt.serialize()
-        self.logger.info("packet-out %s" % (pkt,))
-        data = pkt.data
+        self.logger.info("crafted arp reply packet-out %s" % (pkt,))
         actions = [parser.OFPActionOutput(port=port)]
         out = parser.OFPPacketOut(datapath=datapath,
                                   buffer_id=ofproto.OFP_NO_BUFFER,
                                   in_port=ofproto.OFPP_CONTROLLER,
                                   actions=actions,
-                                  data=data)
+                                  data=pkt.data)
         datapath.send_msg(out)

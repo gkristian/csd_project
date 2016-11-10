@@ -1,0 +1,23 @@
+ReferenceNr: CSD_CC_1
+ObservedBy: ashafi@kth.se
+Description:
+ Do we have a path to this destination mac?
+ProjectController: Exception occurred during handler processing. Backtrace from offending handler [_packet_in_handler] servicing event [EventOFPPacketIn] follows.
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/ryu/base/app_manager.py", line 290, in _event_loop
+    handler(ev)
+  File "/sdn_monitoring_branches/controller_core/src/controller_core_of13.py", line 285, in _packet_in_handler
+    if not nx.has_path(self.net,src_mac,dst_mac): #if returned False we abort
+  File "/usr/local/lib/python2.7/dist-packages/networkx/algorithms/shortest_paths/generic.py", line 35, in has_path
+    sp = nx.shortest_path(G,source, target)
+  File "/usr/local/lib/python2.7/dist-packages/networkx/algorithms/shortest_paths/generic.py", line 136, in shortest_path
+    paths=nx.bidirectional_shortest_path(G,source,target)
+  File "/usr/local/lib/python2.7/dist-packages/networkx/algorithms/shortest_paths/unweighted.py", line 136, in bidirectional_shortest_path
+    results=_bidirectional_pred_succ(G,source,target)
+  File "/usr/local/lib/python2.7/dist-packages/networkx/algorithms/shortest_paths/unweighted.py", line 186, in _bidirectional_pred_succ
+    for w in Gsucc(v):
+  File "/usr/local/lib/python2.7/dist-packages/networkx/classes/digraph.py", line 751, in successors_iter
+    raise NetworkXError("The node %s is not in the digraph."%(n,))
+NetworkXError: The node 00:00:00:00:02:02 is not in the digraph.
+
+_____________________________________________________________________________________________________

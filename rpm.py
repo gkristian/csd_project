@@ -17,6 +17,7 @@ import simple_switch_13
 import time
 import sys
 from client import client_side
+import threading
 
 
 if len(sys.argv) > 4:
@@ -35,11 +36,13 @@ else:
 	print "Setting default sleeping value to 0.5 seconds"
 	#self.sleeping = 0.03125
 	rate = 1
-	mods_nr = 5
-	UPDATE_TIME = 10
+	mods_nr = 3
+	UPDATE_TIME = 5
 
 SLEEPING = 1/rate
+SLEEPING =  0.25
 MODS_NR = mods_nr
+LOCK = threading.Lock()
 
 
 
@@ -81,7 +84,7 @@ class RPM(app_manager.RyuApp):
 		# TODO proper format
 		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}}	#prepare a dictionary for updating and sending to Database
 		
-		self.switches_DPIDs = {}	#dict to store all datapath ojects by key dpid
+		self.switches_DPIDs = {}	# dict to store all datapath ojects by key dpid
 		
 		self.start_time = 0
 
@@ -96,6 +99,7 @@ class RPM(app_manager.RyuApp):
 	TODO Send updates to DM
 	"""
 	def _monitor(self): 
+		lock = threading.Lock()
 		xid = 0
 		# set of switches
 		dpids = self.switches_DPIDs.viewkeys()
@@ -105,57 +109,65 @@ class RPM(app_manager.RyuApp):
 		# TODO minimum waiting time may change with topology changes, investigate.
 
 		# Sending loop
-		while True:			
+		#while True:
+		for n in range(10):
+			print "Round nr %d" % n		
 			#self._print("SENDING FLOW MODS...")
-			for dpid in dpids: 
-				# Get the datapath object
-				dp = self.switches_DPIDs[dpid]
+			for dpid in dpids:
+				with lock:
+					# if it has gone min UPDATE_TIME seconds since last update
+					# send an update to DM 
+					current_time = int(round(time.time() * 1000))
+					if current_time - last_update_time >= UPDATE_TIME*1000:
+						self._print("SEND UPDATE TO DM")
+						self.DICT_TO_DB['timestamp'] = current_time
+						print self.DICT_TO_DB.viewitems()
+						self.client.postme(self.DICT_TO_DB) #kanske blockerande
+						last_update_time = int(round(time.time() * 1000))
 
-				# Sending flow mods
-				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "ADD", "NORMAL")
-				# number of updates to be sent is equal to toal number of messages to be sent 
-				#minus the add and the delete message
-				updates = MODS_NR - 2
-				out_act = "FLOOD"
-				while updates > 0:
-					self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "UPDATE", out_act)
-					# Set next update change
-					if out_act == "FLOOD":
-						out_act = "NORMAL"
+				with lock:
+					# Get the datapath object
+					dp = self.switches_DPIDs[dpid]
+
+					# Sending flow mods
 					
-					if out_act == "NORMAL":
-						out_act == "FLOOD"
+					self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "ADD", "NORMAL")
 
-					updates -= 1
 
-				self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "DELETE")
-
-				#self._print("FLOW MODS SENT")
-
-				# set start time for measurment
-				self.switches_data[dpid]["start_time"] = int(time.time() * 1000)
-				# set xid to be able to identify the response
-				xid += 1
-				self.switches_data[dpid]["xid"] = xid
-				# send the barrier request
-				self.send_barrier_request(dp, xid)
-				self._print("BARRIER REQ WITH ID %d SENT" %xid)
+					# number of updates to be sent is equal to toal number of messages to be sent 
+					#minus the add and the delete message
 				
-				#self._print("Data before barrier req: " + str(self.switches_data.viewitems()))
+					updates = MODS_NR - 2
+					out_act = "FLOOD"
+					while updates > 0:
+						self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "UPDATE", out_act)
+					 	# Set next update change
+					 	if out_act == "FLOOD":
+					 		out_act = "NORMAL"
+					
+					 	if out_act == "NORMAL":
+					 		out_act == "FLOOD"
+
+					 	updates -= 1
+
+					self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "DELETE")
+
+					#self._print("FLOW MODS SENT")
+
+					# set start time for measurment
+					self.switches_data[dpid]["start_time"] = int(time.time() * 1000)
+					# set xid to be able to identify the response
+					xid += 1
+					self.switches_data[dpid]["xid"] = xid
+					# send the barrier request
+					self.send_barrier_request(dp, xid)
+					self._print("BARRIER REQ WITH ID %d SENT" %xid)
 				
-				# if it has gone min UPDATE_TIME seconds since last update
-				# send an update to DM 
-				current_time = int(round(time.time() * 1000))
-				if current_time - last_update_time >= UPDATE_TIME*1000:
-					self._print("SEND UPDATE TO DM")
-					self.DICT_TO_DB['timestamp'] = current_time
-					print self.DICT_TO_DB.viewitems()
-					self.client.postme(self.DICT_TO_DB)
-					last_update_time = int(round(time.time() * 1000))
+					#self._print("Data before barrier req: " + str(self.switches_data.viewitems()))
 
-
-				# wait to send new monitoring requests
-				time.sleep(SLEEPING)
+					# wait to send new monitoring requests,
+					# let the other thread handle events for a while
+					time.sleep(SLEEPING)
 
 			#testing
 			#break
@@ -174,7 +186,7 @@ class RPM(app_manager.RyuApp):
 		cookie = cookie_mask = 0
 		table_id = 0
 		idle_timeout = 0
-		hard_timeout = 3
+		hard_timeout = 10
 		priority = 32768
 		buffer_id = ofp.OFP_NO_BUFFER
 
@@ -285,17 +297,20 @@ class RPM(app_manager.RyuApp):
 		req_xid = self.switches_data[dpid]["xid"]
 
 		if req_xid == xid:
-			current_time = int(time.time() * 1000) 			# current time in milliseconds
-			starting_time = self.switches_data[dpid]["start_time"] 	# also in milliseconds
-			timed = current_time - starting_time					# measured time between barrier request and response
-			# Store the measured time
-			self.switches_data[dpid]["measured_time"] = timed
-			# Store the measured time in DB message dict
-			self.DICT_TO_DB['delays'][dpid] = timed
+			with LOCK:
+				current_time = int(time.time() * 1000) 			# current time in milliseconds
+				starting_time = self.switches_data[dpid]["start_time"] 	# also in milliseconds
+				timed = current_time - starting_time					# measured time between barrier request and response 
+			
+				# Store the measured time
+				self.switches_data[dpid]["measured_time"] = timed
+				# Store the measured time in DB message dict
+			
+				self.DICT_TO_DB['delays'][dpid] = timed
 		
-			# Time taken for installation of all current waiting rules and RTT 
-			self._print("Timer from barrier req to resp: %d (ms) for datapath %d" % (timed, datapath.id)) # why is this longer for a slower sending rate?!
-			self._print("Request xid %d, reply xid %d" % (self.switches_data[dpid]["xid"], xid))
+				# Time taken for installation of all current waiting rules and RTT 
+				self._print("Timer from barrier req to resp: %d (ms) for datapath %d" % (timed, datapath.id)) # why is this longer for a slower sending rate?!
+				self._print("Request xid %d, reply xid %d" % (self.switches_data[dpid]["xid"], xid))
 		else:
 			if xid > req_xid:
 				self._print("Sending rate exceeds handling rate")

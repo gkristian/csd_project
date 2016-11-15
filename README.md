@@ -3,8 +3,13 @@ branch : controller_core
 This branch implements a RYU controller app that build the network topology including the host mac addresses without flooding the network.
 It uses networkx library to store the network graph.
 
-RECENT_CHANGE:
+ChangeLog after midterm:
 
+
+
+
+
+ChangeLog before midterm:
 -mac_to_port now has mac addresses only of the hosts attached to the edge switches. It automatically detects from the network which switches have these hosts located and builds the table.
 
 TODO:

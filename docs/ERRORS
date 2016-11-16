@@ -20,4 +20,14 @@ Traceback (most recent call last):
     raise NetworkXError("The node %s is not in the digraph."%(n,))
 NetworkXError: The node 00:00:00:00:02:02 is not in the digraph.
 
+ReferenceNr: CSD CC 2
+ObservedBy: ashafi@kth.se
+Description:
+controller_core/src/controller_core_of13.py", line 337, in _packet_in_handler
+    self.__install_path_flow(spath)
+  File "/sdn_monitoring_branches/controller_core/src/controller_core_of13.py", line 168, in __install_path_flow
+    (src_mac,dst_mac,spath_without_macs) = self.__remove_macs_from_shortest_path(spath)
+  File "/sdn_monitoring_branches/controller_core/src/controller_core_of13.py", line 154, in __remove_macs_from_shortest_path
+    spath_dq = collections.deque(spath)
+NameError: global name 'collections' is not defined
 _____________________________________________________________________________________________________

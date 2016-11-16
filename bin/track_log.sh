@@ -1,1 +1,1 @@
-tail -f /tmp/cc.log | egrep '(Trace|Error|Complete)'
+tail -f /tmp/cclog.log | egrep '(Trace|Error|Complete)'

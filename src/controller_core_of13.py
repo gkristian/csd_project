@@ -20,6 +20,7 @@ from pprint import pprint
 
 from ryu.base import app_manager
 #from ryu.controller import mac_to_port
+from collections import deque
 from ryu.controller import ofp_event
 from ryu.controller.handler import MAIN_DISPATCHER, CONFIG_DISPATCHER
 from ryu.controller.handler import set_ev_cls
@@ -37,11 +38,13 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from ryu.lib.mac import haddr_to_bin
 import time
+#from collections import deque #used to remove first and last element from the list efficently
 
 
 
 
 class ProjectController(app_manager.RyuApp):
+    'CPM module for CSD Team4 project'
 	
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     #my custom logger only works if i use the ryu's logger: self.logger.info in the code and then use my custom logger, even then I noticed
@@ -131,7 +134,7 @@ class ProjectController(app_manager.RyuApp):
     def shortest_path(self,src_node,dst_node):
         sp_L = nx.shortest_path(self.net,src_node, dst_node, weighted = True) # L indicates it is a list of nodes e.g. [1,2,3,4]
         return sp_L
-    def _check_bootstrap_completion(self):
+    def __check_bootstrap_completion(self):
         # Do something after the network finished bootstraping e.g. save the topology diagram just once after the network has bootstrapped
         if self.defines_D[
             'bootstrap_in_progress']:  # we do it because nx.draw overwrite the previous graph everytime we draw it. as if matlab hold is on. TOFIX
@@ -139,11 +142,41 @@ class ProjectController(app_manager.RyuApp):
                 self.defines_D['bootstrap_in_progress'] = False
                 self.logger.debug("Bootstrap just Completed")
                 #         self.save_topolog_to_file()
+    #@staticmethod #I dont know how RYU shall deal with staticmethods though its use is justified here so I ll stick to what has worked in past
+    def __remove_macs_from_shortest_path(self,spath):
+        """
+        :param spath:
+        this function is not tested yet
+        returns a list after having removed first and last element from spath which are src_mac and dst_mac respectively
+        this must be done in the most efficent manner python has to offer so we use deque,  see timeit benchmarks at below URL
+        URL  : http://stackoverflow.com/questions/33626623/the-most-efficient-way-to-remove-first-n-elements-in-a-python-list
+        :return:
+        """
+        #spath_dq = collections.deque(spath) #this was giving ERROR #CSD CC 2 which makes sense
+        spath_dq = deque(spath)
+        dst_mac= spath_dq.pop()  # removes last element from the list
+        src_mac = spath_dq.popleft()  # removes first element from the list, not that classical python list manipulations are slow as compared to this
+        return (src_mac, dst_mac, list(spath_dq))
+
+    def __install_path_flow(self,spath):
+        """
+        input is a networkx shortest path list of the format [src_mac, switch1, sw2,..., swN, dst_mac]
+        it installs flows in all the switches1..N
+        :param spath
+        :return: true if operation was successful or else false
+        """
+        self.logger.debug("Installing flows for the path %r", spath)
+        #we don't do src_mac=spath[0] since I  have already done a deque operation of pops and I just dont want to repeat it
+        (src_mac,dst_mac,spath_without_macs) = self.__remove_macs_from_shortest_path(spath)
+        self.logger.debug("install_path_flow: src_mac = %r, dst_mac = %r, spath_without_macs = %r", src_mac, dst_mac, spath_without_macs)
+        #for dpid in spath_without_macs:
+            #self.add_flow(dpid)
+
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
         self.print_l2_table()
-        self._check_bootstrap_completion()
+        self.__check_bootstrap_completion()
         self.save_topolog_to_file() #this should go away in the production version and above lines be uncommented in a proper manner
 
         msg = ev.msg
@@ -278,6 +311,7 @@ class ProjectController(app_manager.RyuApp):
                 self._send_packet(datapath, in_port,new_pkt)  # dpid= datapath.id the switch the packet in came from we want to reply on that switch
                 self.logger.debug("Sending arp reply reply done")
 
+
         else: #if dst_mac is not broadcat rather some specific address
             #either we have already learnt this address
             self.logger.info("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : compute shortest path and install flows if bstrap completed")
@@ -297,8 +331,12 @@ class ProjectController(app_manager.RyuApp):
                     #Above line once caused error CSD_CC_1 reported in ERRORS.txt
                     self.logger.debug("Cannot find path from src mac %r to dst_mac %r, returning ie. doing nothing more",src_mac,dst_mac)
                     return
-                ###spath=nx.shortest_path(self.net,src_mac,dst_mac)
-                ####self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
+                #dst mac  is in our topology graph
+                spath=nx.shortest_path(self.net,src_mac,dst_mac)
+
+
+                self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
+                self.__install_path_flow(spath)
 
                 #lookup dst mac in our graph, has_path()
                 #if yes find path

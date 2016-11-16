@@ -9,5 +9,12 @@
 2.In the mininet CLI>dpctl dump-flows may not work when using OpenFlow13. This is because dpctl in mininet invokes ovs-ofctl which requires -O OpenFlow13 as input 
 to know which Openflow protocol is used to query the openflow rules table of the switch. Mininet's dpctl command has nothing to do with ovs-dpctl which queries the table in the ovs kernel datapath
 	
+=== Python language ===
+== Private methods ==
+In class, its defined by def __someprivateMethod(self,..)
+and within class its called by self.__someprivateMethod(self,...)
+
+An interesting difference from Java is that private can still be invoked from outside class.
+ http://www.bogotobogo.com/python/python_private_attributes_methods.php
 
 

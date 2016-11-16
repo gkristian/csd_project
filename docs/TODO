@@ -1,8 +1,10 @@
 Below are TODO notes by and for ashafi and written quickly and may not make sense to others.
 
+This has been implemented now {
 1a - KeyError exception is thrown when a dictionary is searched for a key that does not exist. Thats why defaultdict is needed or better "addict" see [1] to avoid catching such an exception and more flexible dict handling. As a rememdy, introduced a boot_strap_in_progress variable. One of the benefits is to avoid searching dictionaries or graph net object.
 1b - change this bootstrap_in_progress variable so that we don't have to do pingall twice. in previous commits we did only once before introducing this variable 
 1c - Instead of a bootstrap_timer, use a number_of_edge_hosts varaible and put an end to bootstrap once discovered hosts match that number after pingall 
+}
 
 2- merge net object with NFM
 

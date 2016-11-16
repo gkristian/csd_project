@@ -62,9 +62,10 @@ class ProjectController(app_manager.RyuApp):
         super(ProjectController, self).__init__(*args, **kwargs)
         #self.mac_to_port = {}
         self.l2_dpid_table = {}
-        #an example from log is: here 21 is the dpid
-        # l2_lookup_table: {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}},
+        #an example from log is: here 21 is the dpid, one can access using l2[21]['00:00:...']['ip']
+        # l2_dpid_table: {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}},
         #                   23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
+        #
         self.l2_ip2mac_table = {}
         self.l2_mac2ip_table = {}
         self.topology_api_app = self
@@ -78,7 +79,13 @@ class ProjectController(app_manager.RyuApp):
         self.rxpkts_types_D= {}
         self.logger.info("controller_core module starting up....")
         self.epoc_starttime = int(time.time())
-        self.network_bootstrap_time = 70 # in seconds
+        self.network_bootstrap_type = 1 # parameter described below, TODO: do as enumeration
+        """
+        type 0 means end bootstraping after a certain number of seconds i..e time limited bootstrap
+        type 1 means end bootstrapping once a certain number of mac addresses have been discovered ie. discovered mac address count limited. It counts the len of l2_mac2_ip_table dictionary
+        """
+        self.network_bootstrap_time = 70 # in seconds and used by type 0
+        self.network_bootstrap_discovery_count = 4 #used by type 1, means stop after 4 mac addresses learnt
 
     # Handy function that lists all attributes in the given object
     def ls(self,obj):
@@ -135,13 +142,17 @@ class ProjectController(app_manager.RyuApp):
         sp_L = nx.shortest_path(self.net,src_node, dst_node, weighted = True) # L indicates it is a list of nodes e.g. [1,2,3,4]
         return sp_L
     def __check_bootstrap_completion(self):
-        # Do something after the network finished bootstraping e.g. save the topology diagram just once after the network has bootstrapped
-        if self.defines_D[
-            'bootstrap_in_progress']:  # we do it because nx.draw overwrite the previous graph everytime we draw it. as if matlab hold is on. TOFIX
-            if int(time.time()) - self.epoc_starttime > self.network_bootstrap_time:
-                self.defines_D['bootstrap_in_progress'] = False
-                self.logger.debug("Bootstrap just Completed")
-                #         self.save_topolog_to_file()
+        'has the criteria for bootstrap completion met, if yes then set the completion flag'
+        if self.defines_D['bootstrap_in_progress']:
+            if (self.network_bootstrap_type == 0):
+                if int(time.time()) - self.epoc_starttime > self.network_bootstrap_time:
+                    self.defines_D['bootstrap_in_progress'] = False
+                    self.logger.debug("Bootstrap type %d just Completed", self.network_bootstrap_type)
+            if (self.network_bootstrap_type == 1):
+                if len(self.l2_mac2ip_table) == self.network_bootstrap_discovery_count:
+                    self.defines_D['bootstrap_in_progress'] = False
+                    self.logger.debug("Bootstrap type %d just Completed", self.network_bootstrap_type)
+
     #@staticmethod #I dont know how RYU shall deal with staticmethods though its use is justified here so I ll stick to what has worked in past
     def __remove_macs_from_shortest_path(self,spath):
         """

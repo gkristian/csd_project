@@ -45,7 +45,8 @@ import time
 
 class ProjectController(app_manager.RyuApp):
     'CPM module for CSD Team4 project'
-	
+    net = nx.DiGraph()
+    app_manager._CONTEXTS = {'network': net}
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     #my custom logger only works if i use the ryu's logger: self.logger.info in the code and then use my custom logger, even then I noticed
     #my logger seemed to be affected by ryu's logger config since both use the logging module. Did not spend any time discovering it further
@@ -66,10 +67,15 @@ class ProjectController(app_manager.RyuApp):
         # l2_dpid_table: {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}},
         #                   23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
         #
+
+        #self.net = kwargs['network']
+        #app_manager._CONTEXT = {'network',self.net}
+        #self.net = app_manager._CONTEXT['network']
+        #_CONTEXT = {'network',self.net}
         self.l2_ip2mac_table = {}
         self.l2_mac2ip_table = {}
         self.topology_api_app = self
-        self.net=nx.DiGraph()
+
         self.nodes = {}
         self.links = {}
         self.no_of_nodes = 0

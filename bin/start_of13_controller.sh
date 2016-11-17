@@ -5,13 +5,14 @@
 # Notes:
 # No need to change PYTHONPATH env variable
 RYU_CC_APP=../src/controller_core_of13.py
+NFM_APP=../src/nfm.py
 LOG_FILE=/tmp/cclog.log
 OUTPUT_LOG=/tmp/cc.log
 
 #ryu-manager --observe-links --verbose --log-file $LOG_FILE --default-log-level 3 $RYU_CC_APP &> $OUTPUT_LOG & 
 ./stop_controller.sh
 echo "Now starting ryu application "
-ryu-manager --observe-links --install-lldp-flow  --verbose --log-file $LOG_FILE --default-log-level 3 $RYU_CC_APP &> $OUTPUT_LOG & 
+ryu-manager --observe-links --install-lldp-flow  --verbose --log-file $LOG_FILE --default-log-level 3 $RYU_CC_APP $NFM_APP &> $OUTPUT_LOG & 
 ps auxw |grep ryu-manager |grep -v grep
 echo "____"
 

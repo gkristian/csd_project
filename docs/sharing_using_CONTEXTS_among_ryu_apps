@@ -1,0 +1,97 @@
+The way I have shared data is using the same format as in commit #nr 6195103c10e6286737c6db2b4551a3cb7a950f5f (see https://gits-15.sys.kth.se/csd-group-4-space-y/sdn_monitoring/commit/6195103c10e6286737c6db2b4551a3cb7a950f5f )
+
+However, from the app_manager.py and grep of _CONTEXT across examples apps, I noticed that shared data is accessed by class using kwargs['network'] but somehow this did not work in my case. Why? As a rule data is shared using _CONTEXT as per below info and accessed using kwargs['..']. Another criticism is that ryu docs consider _CONTEXT technique of sharing data to be obsolete. So what are other options?
+
+1.Can NFM become a sub-class of CPM and can therefore access the network graph instead of using _CONTEXT? I think this makes sense. 
+2 Ryu apps can send events to each other so can be share the network graph my sending event from CPM to NFM? In my opinion this method is not suitable and an overkill.
+class RyuApp(object):
+    """
+    The base class for Ryu applications.
+
+    RyuApp subclasses are instantiated after ryu-manager loaded
+    all requested Ryu application modules.
+    __init__ should call RyuApp.__init__ with the same arguments.
+    It's illegal to send any events in __init__.
+
+    The instance attribute 'name' is the name of the class used for
+    message routing among Ryu applications.  (Cf. send_event)
+    It's set to __class__.__name__ by RyuApp.__init__.
+    It's discouraged for subclasses to override this.
+    """
+
+    _CONTEXTS = {}
+    """
+    A dictionary to specify contexts which this Ryu application wants to use.
+    Its key is a name of context and its value is an ordinary class
+    which implements the context.  The class is instantiated by app_manager
+    and the instance is shared among RyuApp subclasses which has _CONTEXTS
+    member with the same key.  A RyuApp subclass can obtain a reference to
+    the instance via its __init__'s kwargs as the following.
+
+    Example::
+
+        _CONTEXTS = {
+            'network': network.Network
+        }
+
+        def __init__(self, *args, *kwargs):
+            self.network = kwargs['network']
+    """
+
+_______________________________________________________
+class GUIServerApp(app_manager.RyuApp):
+    _CONTEXTS = {
+        'wsgi': WSGIApplication,
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(GUIServerApp, self).__init__(*args, **kwargs)
+
+        wsgi = kwargs['wsgi']
+        wsgi.register(GUIServerController)
+
+
+______________________octl_rest.py____________________
+
+class RestStatsApi(app_manager.RyuApp):
+    OFP_VERSIONS = [ofproto_v1_0.OFP_VERSION,
+                    ofproto_v1_2.OFP_VERSION,
+                    ofproto_v1_3.OFP_VERSION,
+                    ofproto_v1_4.OFP_VERSION,
+                    ofproto_v1_5.OFP_VERSION]
+    _CONTEXTS = {
+        'dpset': dpset.DPSet,
+        'wsgi': WSGIApplication
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(RestStatsApi, self).__init__(*args, **kwargs)
+        self.dpset = kwargs['dpset']
+        wsgi = kwargs['wsgi']
+        self.waiters = {}
+        self.data = {}
+        self.data['dpset'] = self.dpset
+        self.data['waiters'] = self.waiters
+        mapper = wsgi.mapper
+
+___________________________________kk________________
+
+class TopologyAPI(app_manager.RyuApp):
+/opt/csd/ryu/app/rest_topology.py:    _CONTEXTS = {
+/opt/csd/ryu/app/rest_topology.py-        'wsgi': WSGIApplication
+/opt/csd/ryu/app/rest_topology.py-    }
+
+_____________________
+
+
+
+class SimpleSwitchSnort(app_manager.RyuApp):
+    OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
+    _CONTEXTS = {'snortlib': snortlib.SnortLib}
+
+    def __init__(self, *args, **kwargs):
+        super(SimpleSwitchSnort, self).__init__(*args, **kwargs)
+        self.snort = kwargs['snortlib']
+        self.snort_port = 3
+        self.mac_to_port = {}
+

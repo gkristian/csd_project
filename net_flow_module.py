@@ -1,5 +1,6 @@
 from operator import attrgetter
 
+
 import simple_switch_13
 from ryu.base import app_manager
 from ryu.controller import ofp_event
@@ -43,6 +44,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		self.responsedSwitchesPortStatus = 0
 		self.flows = {}		#dictionary to store each switch's flows
 		self.dropped = {}	#dictionary to store dropped packets for each dp
+		self.transmittedBytes = {}
 
 
 	@set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
@@ -81,6 +83,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			self.logger.debug("REQUESTING FLOW STAT...")
 			hub.sleep(self.updateTime)
 			self.flow_request_semaphore.wait()
+			self.logger.info("\n")
 			for dp in self.datapaths.values():
 				self._request_stats(dp)
 			self.flow_request_semaphore.clear()
@@ -113,16 +116,16 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		for stat in [flow for flow in body if flow.priority >= 1 and flow.priority <= 33000]:
 			in_port = -1
 			out_port = -1
-			eth_dest = -1
+			#eth_dest = -1
 			if 'in_port' in stat.match:
 				in_port = stat.match['in_port']
-			if 'eth_dst' in stat.match:
-				eth_dest = stat.match['eth_dst']
+			#if 'eth_dst' in stat.match:
+			#	eth_dest = stat.match['eth_dst']
 			out_port = stat.instructions[0].actions[0].port
 			CURRENT_BYTES = stat.byte_count
 			if in_port == -1 or out_port == -1:
 				continue
-			self.logger.debug("dpid: %d, eth_dst: %s, out_port: %d, bytes: %d", dpid, eth_dest, out_port, CURRENT_BYTES)
+			self.logger.info("dpid: %d, in_port: %s, out_port: %d, bytes: %d", dpid, in_port, out_port, CURRENT_BYTES)
 			#if switch already exists in dictionary, check if the current flow exists in that subdictionary
 			#update bytes counter only if that flow already exists
 			#else append the flow to the subdictionary list
@@ -131,23 +134,23 @@ class NFM(simple_switch_13.SimpleSwitch13):
 				UPDATED_LINK_UTILIZATION = False
 				flowCounter = 0
 
-				for [IN_P, OUT_P, ETH_D, PREVIOUS_BYTES, DIFF_BYTES] in self.flows[dpid]:
-					if in_port == IN_P and out_port == OUT_P and eth_dest == ETH_D:
+				for [IN_P, OUT_P, PREVIOUS_BYTES, DIFF_BYTES] in self.flows[dpid]:
+					if in_port == IN_P and out_port == OUT_P:
 						#Update link utilization
 						self.logger.info("UPDATING FLOW BYTES; PREVIOUS: %d, DIFF: %d", PREVIOUS_BYTES, DIFF_BYTES)
-						self.flows[dpid][flowCounter][4] = CURRENT_BYTES - PREVIOUS_BYTES
-						self.flows[dpid][flowCounter][3] = CURRENT_BYTES
+						self.flows[dpid][flowCounter][3] = CURRENT_BYTES - PREVIOUS_BYTES
+						self.flows[dpid][flowCounter][2] = CURRENT_BYTES
 						UPDATED_LINK_UTILIZATION = True
 						break
 					flowCounter += 1
 				if not UPDATED_LINK_UTILIZATION:
 					#Append to list
-					self.flows[dpid].append([in_port, out_port, eth_dest, CURRENT_BYTES, prev_bytes])
+					self.flows[dpid].append([in_port, out_port, CURRENT_BYTES, prev_bytes])
 			#else add the complete flow to the dictionary mapping to this switch
 			else:
-				self.flows[dpid] = [[in_port, out_port, eth_dest, CURRENT_BYTES, prev_bytes]]
+				self.flows[dpid] = [[in_port, out_port, CURRENT_BYTES, prev_bytes]]
 		self.responsedSwitches += 1
-		self.logger.info("FLOW STAT RECEIVED: %d/%d", self.responsedSwitches, self.totalSwitches)
+		self.logger.debug("FLOW STAT RECEIVED: %d/%d", self.responsedSwitches, self.totalSwitches)
 
 		#WHEN EVERY SWITCH HAS GIVEN THE NFM ITS FLOW STAT, START CALCULATING THE PATHS
 		if self.responsedSwitches == self.totalSwitches:
@@ -175,10 +178,10 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			if len(str(FROM).split(':')) == 1 and len(str(TO).split(':')) == 1:	
 				FROM_PORT = ATTR['src_port']
 				bytes = self.checkFlowTable(FROM, FROM_PORT)
-
+				
 				LINK_UTILIZATION = float(bytes)*8/(float(ATTR['bw'])*1000000*self.updateTime)
 				lu = "LINK UTILIZATION: {0:.0f}%".format(100*LINK_UTILIZATION)
-				self.logger.info("BYTES SENT FROM SWITCH %d PORT %d: %d [bw=%d Mbit/s] %s", FROM, FROM_PORT, bytes, ATTR['bw'], lu)
+				self.logger.debug("BYTES SENT FROM SWITCH %d PORT %d: %d [bw=%d Mbit/s] %s", FROM, FROM_PORT, bytes, ATTR['bw'], lu)
 				
 				DPID_TO_DPID = str(FROM)+'-'+str(TO)
 				#self.logger.info("LINK UTILIZATION ON LINK %s: %d {0:.2}%".
@@ -192,7 +195,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	def checkFlowTable(self, Sx, Sx_port):
 		if Sx in self.flows:
 			Sx_flows = self.flows[Sx]
-			for [IN_PORT, OUT_PORT, ETH_DST, PREVIOUS_BYTES, DIFF] in Sx_flows:
+			for [IN_PORT, OUT_PORT, PREVIOUS_BYTES, DIFF] in Sx_flows:
 				if OUT_PORT == Sx_port:
 					return DIFF
 		return 0
@@ -207,6 +210,33 @@ class NFM(simple_switch_13.SimpleSwitch13):
 						indent=3, sort_keys=True))
 
 
+
+	def store_port_stat(self, ev):
+		body = ev.msg.body
+		dpid = ev.msg.datapath.id
+		edges = [n for n in self.net.edges(data=True)]
+		#self.logger.info(edges)
+		
+		for stat in sorted(body, key=attrgetter('port_no')):
+			portNr = stat.port_no
+			rx_bytes = stat.rx_bytes
+			tx_bytes = stat.tx_bytes
+			for (FROM, TO, ATTR) in edges:
+				if len(str(FROM).split(':')) == 1 and len(str(TO).split(':')) == 1:
+					FROM_PORT = ATTR['src_port']
+					if portNr == FROM_PORT:
+						
+						
+						if dpid in self.transmittedBytes:
+							if portNr is 
+							//DO SOMETHING
+						else:
+
+							self.transmittedBytes[dpid] = [[portNr, tx_bytes]]
+						
+						LINK_UTILIZATION = float(tx_bytes)*8/(float(ATTR['bw'])*1000000*self.updateTime)
+						lu = "{0:.2f}%".format(100*LINK_UTILIZATION)
+						self.logger.info("Transmitted bytes on switch %d port %d: %d {bw=%d Mbit/s, LINK UTILIZATION %s}", dpid, portNr, tx_bytes, ATTR['bw'], lu)
 	"""
 	Calculate dropped packets from the acquired port statistics
 	Method: Sum up all the received packets for the switch. Sum up all the transmitted
@@ -225,6 +255,8 @@ class NFM(simple_switch_13.SimpleSwitch13):
 
 		#Sum up all the recieved and transmitted packets
 		for stat in sorted(body, key=attrgetter('port_no')):
+			#self.logger.info("[PORT STAT] BYTES SENT FROM SWITCH %d PORT %d: %d", ev.msg.datapath.id, stat.port_no, stat.tx_bytes)
+			#self.logger.info("[PORT STAT] BYTES RECEIVED FROM SWITCH %d PORT %d: %d",ev.msg.datapath.id, stat.port_no, stat.rx_bytes)
 			rx_packets += stat.rx_packets
 			tx_packets += stat.tx_packets
 
@@ -239,12 +271,12 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			diff_tx = tx_packets - stored_tx_packets
 			dropped = diff_rx - diff_tx
 			#print("[DEBUG] diff_rx, diff_tx", diff_rx, diff_tx)
-			percentage = 0
+			percentage = 0.0
 			if diff_rx != 0:
 				#print("[DEBUG] dropped, diff", dropped, diff_rx)
-				percentage = float(dropped) / diff_rx
+				percentage = float(dropped) / float(diff_rx)
 				#print("[DEBUG] Percentage: ", percentage)
-			percentage_string = "{0:.0}%".format(percentage)
+			percentage_string = "{0:.2f}%".format(100*percentage)
 			self.logger.info('DROPPED PACKETS PERCENTAGE ON SWITCH %x: %s', ev.msg.datapath.id, percentage_string)
 		self.dropped[ev.msg.datapath.id] = {'rx':rx_packets, 'tx':tx_packets} #store the current measured received and transmitted packets
 
@@ -255,6 +287,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	"""
 	@set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
 	def _port_stats_reply_handler(self, ev):
+		self.store_port_stat(ev)
 		self.calculate_dropped_packets(ev)
 
 

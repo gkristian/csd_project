@@ -35,7 +35,8 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		self.DICT_TO_DB = {'module':'nfm'}	#prepare a dictionary for updating and sending to Database
 		self.pathComponents = {}
 		self.updateTime = 1
-		self.flow_request_semaphore = threading.Event();
+		#self.flow_request_semaphore = threading.Event()
+		self.port_stat_request_semaphore = threading.Event()
 		self.switches = []	#list to store all switches dpid
 		self.portDict = {}	
 		self.mininetRunning = False
@@ -44,7 +45,8 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		self.responsedSwitchesPortStatus = 0
 		self.flows = {}		#dictionary to store each switch's flows
 		self.dropped = {}	#dictionary to store dropped packets for each dp
-		self.transmittedBytes = {}
+		self.transmittedBytes = {}	#dictionary to keep track of previous transmitted bytes
+		self.linkUtilizations = {}	#dictionary to keep track of link utilizations
 
 
 	@set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
@@ -77,16 +79,16 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	Main loop of requesting statistics of the switches
 	"""
 	def _monitor(self):
-		self.flow_request_semaphore.set()
+		self.port_stat_request_semaphore.set()
 		hub.sleep(10)
 		while True:
-			self.logger.debug("REQUESTING FLOW STAT...")
+			self.logger.debug("REQUESTING PORT STAT...")
 			hub.sleep(self.updateTime)
-			self.flow_request_semaphore.wait()
+			self.port_stat_request_semaphore.wait()
 			self.logger.info("\n")
 			for dp in self.datapaths.values():
 				self._request_stats(dp)
-			self.flow_request_semaphore.clear()
+			self.port_stat_request_semaphore.clear()
 			
 	"""
 	Function to request flow statistics and port statistics of a datapath (switch)
@@ -95,24 +97,28 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		self.logger.debug('send stats....')
 		ofproto = datapath.ofproto
 		parser = datapath.ofproto_parser
-		req = parser.OFPFlowStatsRequest(datapath)
-		datapath.send_msg(req)
+		#req = parser.OFPFlowStatsRequest(datapath)		DON'T USE THIS NOW
+		#datapath.send_msg(req)							DON'T USE THIS NOW
 		req = parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY)
 		datapath.send_msg(req)
 
 
 			
 	"""
+
+	NOT USED RIGHT NOW - MAY BE PERMANTENTLY REMOVED
+
 	Main callback function of retreiving flow statistics.
 	This will use the event which occured, to get necessary information such as IN_PORT, OUT_PORT, ETHERNET DESTINATION etc...
 	It will add these flows to the class global dictionary if not already added. In the case of already existing flow in the dict, 
 	update the bytes information.
 	"""
+	"""
 	@set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
 	def _flow_stats_reply_handler(self, ev):
 		body = ev.msg.body
 		dpid = ev.msg.datapath.id
-
+		
 		for stat in [flow for flow in body if flow.priority >= 1 and flow.priority <= 33000]:
 			in_port = -1
 			out_port = -1
@@ -157,11 +163,16 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			self.logger.debug("Responsed Switches %d", self.responsedSwitches)
 			self.responsedSwitches = 0
 			self.calculatePaths()
-			self.flow_request_semaphore.set()		
+			self.flow_request_semaphore.set()
+		"""	
 
 	"""
+
+	NOT USED - SAME AS ABOVE
+
 	CHECK EVERY POSSIBLE LINK TO SEE IF THERE IS A FLOW ON THAT LINK 
 	AND COMPUTE THE LINK UTILIZATION
+	"""
 	"""
 	def calculatePaths(self):
 
@@ -188,9 +199,14 @@ class NFM(simple_switch_13.SimpleSwitch13):
 				self.DICT_TO_DB['link_utilization'][DPID_TO_DPID] = LINK_UTILIZATION
 		#self.logger.info("NFM ATTEMPTING A PUSH TO DB")		
 		#self.DMclient.postme(self.DICT_TO_DB)
+	"""
+
 
 	"""
+	NOT USED
+
 	Function to return amounts of bytes sent on a specific port from last check
+	"""
 	"""
 	def checkFlowTable(self, Sx, Sx_port):
 		if Sx in self.flows:
@@ -200,7 +216,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 					return DIFF
 		return 0
 			
-
+	"""
 	"""
 	Function to print the event statistics as json dump
 	"""
@@ -210,33 +226,74 @@ class NFM(simple_switch_13.SimpleSwitch13):
 						indent=3, sort_keys=True))
 
 
-
+	"""
+	Calculate link utilization [unidirectional] of the port statistics
+	"""
 	def store_port_stat(self, ev):
 		body = ev.msg.body
 		dpid = ev.msg.datapath.id
-		edges = [n for n in self.net.edges(data=True)]
-		#self.logger.info(edges)
-		
-		for stat in sorted(body, key=attrgetter('port_no')):
+		for stat in sorted(body, key=attrgetter('port_no')):	#loop through all stats
 			portNr = stat.port_no
 			rx_bytes = stat.rx_bytes
 			tx_bytes = stat.tx_bytes
+			[IS_SWITCH_LINK, TO, BW] = self.port_to_switch(dpid, portNr)	#get the link's other switch and bw
+			if IS_SWITCH_LINK:		#If this link is towards another switch (check port_to_swith function for details)
+				if dpid in self.transmittedBytes:	#if dpid already stored in dictionary of transmitted bytes
+					tx_dict = self.transmittedBytes[dpid]
+					if portNr in tx_dict:			#if port number stored in this dpid transmitted bytes dict
+						previous_tx_bytes = tx_dict[portNr]		#get previous monitored transmitted bytes
+						diff_tx_bytes = tx_bytes - previous_tx_bytes	#calculate the transmitted bytes from last monitor call
+						LINK_UTILIZATION = 100*(float(diff_tx_bytes)*8/(float(BW)*1000000*self.updateTime)) #calculate link utilization for this link (from this switch to the other [unidirectional] )
+						if dpid in self.linkUtilizations:
+							self.linkUtilizations[dpid][TO] = LINK_UTILIZATION	#store link utilization
+						else:
+							self.linkUtilizations[dpid] = {TO:LINK_UTILIZATION}	#store link utilization
+					self.transmittedBytes[dpid][portNr] = tx_bytes	#store current transmitted bytes
+				else:
+					self.transmittedBytes[dpid] = {portNr:tx_bytes} #store current transmitted bytes
+
+			"""
+			PREVIOUS ALGORITHM - NOT USED		
+		
 			for (FROM, TO, ATTR) in edges:
-				if len(str(FROM).split(':')) == 1 and len(str(TO).split(':')) == 1:
+				#self.logger.info((FROM, TO, ATTR))
+				if len(str(FROM).split(':')) == 1 and len(str(TO).split(':')) == 1 and FROM == dpid:
+					self.logger.info("S: %d  P: %d", dpid, portNr)
 					FROM_PORT = ATTR['src_port']
 					if portNr == FROM_PORT:
 						
 						
 						if dpid in self.transmittedBytes:
-							if portNr is 
-							//DO SOMETHING
+							tx_bytes_dict = self.transmittedBytes[dpid]
+							if portNr in tx_bytes_dict:
+								
+								previous_tx_bytes = tx_bytes_dict[portNr]
+								diff_tx_bytes = tx_bytes - previous_tx_bytes
+								self.transmittedBytes[dpid][portNr] = diff_tx_bytes
+								self.logger.info("DPID: %d PORTNR: %d CURRENT: %d PREVIOUS: %d DIFFERENCE: %d", dpid, portNr, tx_bytes, previous_tx_bytes, diff_tx_bytes)
+							else:
+								self.transmittedBytes[dpid][portNr] = tx_bytes
 						else:
 
-							self.transmittedBytes[dpid] = [[portNr, tx_bytes]]
+							self.transmittedBytes[dpid] = {portNr:tx_bytes}
 						
-						LINK_UTILIZATION = float(tx_bytes)*8/(float(ATTR['bw'])*1000000*self.updateTime)
+						LINK_UTILIZATION = float(self.transmittedBytes[dpid][portNr])*8/(float(ATTR['bw'])*1000000*self.updateTime)
 						lu = "{0:.2f}%".format(100*LINK_UTILIZATION)
 						self.logger.info("Transmitted bytes on switch %d port %d: %d {bw=%d Mbit/s, LINK UTILIZATION %s}", dpid, portNr, tx_bytes, ATTR['bw'], lu)
+			"""
+
+
+	"""
+	Loop through the graph object and find the edge that matches dpid and port number. Return that links opposite dpid and bandwidth and True if this link is towards another switch and not host.
+	"""
+	def port_to_switch(self, dpid, port_no):
+		edges = [n for n in self.net.edges(data=True)]
+		for (FROM, TO, ATTR) in edges:
+			if len(str(FROM).split(':')) == 1 and len(str(TO).split(':')) == 1 and FROM == dpid and ATTR['src_port'] == port_no:
+				#self.logger.info((FROM, TO, ATTR))
+				return [True, TO, ATTR['bw']]
+		return [False, None, None]
+
 	"""
 	Calculate dropped packets from the acquired port statistics
 	Method: Sum up all the received packets for the switch. Sum up all the transmitted
@@ -246,17 +303,12 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	"""
 	def calculate_dropped_packets(self, ev):
 
-		#TODO
-		#Still a bug that will print out negative percentage of dropped packet sometimes
-
 		body = ev.msg.body
 		rx_packets = 0
 		tx_packets = 0
 
 		#Sum up all the recieved and transmitted packets
 		for stat in sorted(body, key=attrgetter('port_no')):
-			#self.logger.info("[PORT STAT] BYTES SENT FROM SWITCH %d PORT %d: %d", ev.msg.datapath.id, stat.port_no, stat.tx_bytes)
-			#self.logger.info("[PORT STAT] BYTES RECEIVED FROM SWITCH %d PORT %d: %d",ev.msg.datapath.id, stat.port_no, stat.rx_bytes)
 			rx_packets += stat.rx_packets
 			tx_packets += stat.tx_packets
 
@@ -270,16 +322,35 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			diff_rx = rx_packets - stored_rx_packets
 			diff_tx = tx_packets - stored_tx_packets
 			dropped = diff_rx - diff_tx
-			#print("[DEBUG] diff_rx, diff_tx", diff_rx, diff_tx)
 			percentage = 0.0
 			if diff_rx != 0:
-				#print("[DEBUG] dropped, diff", dropped, diff_rx)
 				percentage = float(dropped) / float(diff_rx)
-				#print("[DEBUG] Percentage: ", percentage)
+				if percentage < 0:
+					percentage = 0
 			percentage_string = "{0:.2f}%".format(100*percentage)
 			self.logger.info('DROPPED PACKETS PERCENTAGE ON SWITCH %x: %s', ev.msg.datapath.id, percentage_string)
 		self.dropped[ev.msg.datapath.id] = {'rx':rx_packets, 'tx':tx_packets} #store the current measured received and transmitted packets
 
+	"""
+	Calculate TOTAL link utilization
+	Function store_port_stat above will store transmitted bytes and calculate link utilzation BUT only for link in one direction. This function will loop through all those saved utilizations and match the correct ones and add this upp. EX:
+	FROM SWITCH 1 TO SWITCH 2: UTILIZATION = 30%
+	FROM SWITCH 2 TO SWITCH 1: UTILIZATION = 9%
+	TOTAL = 30 + 9 %
+	"""
+	def calculate_link_utilization(self):	
+		for FROM, value in self.linkUtilizations.iteritems():
+			for TO, FROM_UTIL in value.iteritems():
+				try:
+					TO_UTILS = self.linkUtilizations[TO]
+					TO_UTIL = TO_UTILS[FROM]
+					TOTAL_UTIL = FROM_UTIL + TO_UTIL
+					TOTAL_UTIL_STRING = "{0:.2f}%".format(TOTAL_UTIL)
+					self.logger.info("TOTAL UTILIZATION %d -> %d: %s", FROM, TO, TOTAL_UTIL_STRING)
+				except:
+					self.logger.info("[ERROR] Link only has one directional utilization, check opposite switch")
+
+					
 
 
 	"""
@@ -289,6 +360,13 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	def _port_stats_reply_handler(self, ev):
 		self.store_port_stat(ev)
 		self.calculate_dropped_packets(ev)
+		self.responsedSwitches += 1
+		if self.responsedSwitches == self.totalSwitches:
+			self.logger.debug("Responsed Switches %d", self.responsedSwitches)
+			self.responsedSwitches = 0
+			self.calculate_link_utilization()
+			self.port_stat_request_semaphore.set()
+			
 
 
 

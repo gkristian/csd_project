@@ -558,8 +558,8 @@ class ProjectController(app_manager.RyuApp):
         ##################################################### Graph node representation idea 2 #####################################################
         #just put switches as node names and add the below dictionary as data to edges
         # Storing the src and dst dpid key in the dictionary is redundant but I want to experiment with something later.
-        links_onedirection_L=[(link.src.dpid,link.dst.dpid,{'src_port':link.src.port_no, 'dst_port':link.dst.port_no, 'src_dpid': link.src.dpid, 'dst_dpid':link.dst.dpid}) for link in links_list]
-        links_opp_direction_L=[(link.dst.dpid, link.src.dpid, {'dst_port': link.dst.port_no, 'src_port':link.src.port_no, 'src_dpid': link.src.dpid, 'dst_dpid':link.dst.dpid}) for link in links_list]
+        links_onedirection_L=[(link.src.dpid,link.dst.dpid,{'src_port':link.src.port_no, 'dst_port':link.dst.port_no, 'src_name': link.src.name, 'dst_name':link.dst.name}) for link in links_list]
+        links_opp_direction_L=[(link.dst.dpid, link.src.dpid, {'dst_port': link.dst.port_no, 'src_port':link.src.port_no, 'src_name': link.src.name, 'dst_name':link.dst.name}) for link in links_list]
 
         #
         # for l in links_list:

@@ -40,7 +40,7 @@ try:
 
 	server_quit = {'interrupted' : False}
 
-	time_intervall = 5 # set time between pushes to db
+	time_intervall = 1 # set time between pushes to db
 	#rpm_keys = []
 	#hum_keys = []
 	#nfm_keys = ['flow', 'delay']

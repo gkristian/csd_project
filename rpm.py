@@ -19,13 +19,15 @@ import sys
 from client import client_side
 import threading
 
+from datetime import datetime
+
 
 if len(sys.argv) > 4:
 	rate = int(sys.argv[2])
 	mods_nr = int(sys.argv[3])
 	update = int(sys.argv[4])
 
-	if (1/rate) > 0.03125 and update > 3: # minimum values
+	if (1/rate) > 0.002 and update > 3: # minimum values
 		print "Taking arguments send %s barrier request every sec , send %s flow mod messages, send updates every %s sec" % (rate, mods_nr, update)
 		UPDATE_TIME = update
 	else:
@@ -35,14 +37,17 @@ if len(sys.argv) > 4:
 else:
 	print "Setting default sleeping value to 0.5 seconds"
 	#self.sleeping = 0.03125
-	rate = 1
+	rate = 10
 	mods_nr = 3
-	UPDATE_TIME = 5
+	UPDATE_TIME = 1
 
 SLEEPING = 1/rate
-SLEEPING =  0.25
+
+MIN_SLEEP = 0.002 # current, wich means that between each round it will be at least 0.006 seconds
+SLEEPING =  SLEEPING - MIN_SLEEP*3
 MODS_NR = mods_nr
 LOCK = threading.Lock()
+UPDATE_TIME = 1
 
 
 
@@ -104,26 +109,40 @@ class RPM(app_manager.RyuApp):
 		# set of switches
 		dpids = self.switches_DPIDs.viewkeys()
 		# set starting time counter for sending updates to DM
-		last_update_time = int(round(time.time() * 1000))
+		#last_update_time = int(round(time.time() * 1000))
+		last_update_time = datetime.now().second
 		
 		# TODO minimum waiting time may change with topology changes, investigate.
 
 		# Sending loop
-		#while True:
-		for n in range(10):
-			print "Round nr %d" % n		
+		update_counter = 0
+		looping = True
+		while looping:
+
+		#for n in range(100000):  #for testing purposes
+			#print "Round nr %d" % n		
 			#self._print("SENDING FLOW MODS...")
+
 			for dpid in dpids:
 				with lock:
 					# if it has gone min UPDATE_TIME seconds since last update
 					# send an update to DM 
-					current_time = int(round(time.time() * 1000))
-					if current_time - last_update_time >= UPDATE_TIME*1000:
+					current_updatetime = int(round(time.time() * 1000))
+					#current_updatetime = datetime.now()
+
+					if (current_updatetime - last_update_time) >= UPDATE_TIME*1000:
 						self._print("SEND UPDATE TO DM")
-						self.DICT_TO_DB['timestamp'] = current_time
+						self.DICT_TO_DB['timestamp'] = current_updatetime
 						print self.DICT_TO_DB.viewitems()
 						self.client.postme(self.DICT_TO_DB) #kanske blockerande
 						last_update_time = int(round(time.time() * 1000))
+						#last_update_time = datetime.now().second
+						
+						# For testing, to get a specific number of samples
+						update_counter += 1
+						if update_counter >= 100:
+							looping = False
+							break
 
 				with lock:
 					# Get the datapath object
@@ -155,19 +174,23 @@ class RPM(app_manager.RyuApp):
 					#self._print("FLOW MODS SENT")
 
 					# set start time for measurment
-					self.switches_data[dpid]["start_time"] = int(time.time() * 1000)
+					#self.switches_data[dpid]["start_time"] = int(time.time() * 1000)
+					self.switches_data[dpid]["start_time"] = datetime.now().microsecond
 					# set xid to be able to identify the response
 					xid += 1
 					self.switches_data[dpid]["xid"] = xid
 					# send the barrier request
 					self.send_barrier_request(dp, xid)
-					self._print("BARRIER REQ WITH ID %d SENT" %xid)
+					#self._print("BARRIER REQ WITH ID %d SENT" %xid)
 				
 					#self._print("Data before barrier req: " + str(self.switches_data.viewitems()))
 
-					# wait to send new monitoring requests,
+					# wait to send new monitoring requests to another switch,
 					# let the other thread handle events for a while
-					time.sleep(SLEEPING)
+					time.sleep(MIN_SLEEP)
+
+			# sleep time between each request round
+			time.sleep(SLEEPING)
 
 			#testing
 			#break
@@ -286,7 +309,7 @@ class RPM(app_manager.RyuApp):
 	"""
 	@set_ev_cls(ofp_event.EventOFPBarrierReply, MAIN_DISPATCHER)
 	def _handle_barrier(self, ev):
-		self._print('OFPBarrierReply received')
+		#self._print('OFPBarrierReply received')
 		
 		msg = ev.msg
 		xid = msg.xid
@@ -298,9 +321,15 @@ class RPM(app_manager.RyuApp):
 
 		if req_xid == xid:
 			with LOCK:
-				current_time = int(time.time() * 1000) 			# current time in milliseconds
+				#current_time = int(time.time() * 1000) 					# current time in milliseconds
+				current_time = datetime.now().microsecond
 				starting_time = self.switches_data[dpid]["start_time"] 	# also in milliseconds
 				timed = current_time - starting_time					# measured time between barrier request and response 
+				
+				MAX = 999999
+				if timed < 0: # Timer started over from 0
+					timed = (MAX - starting_time) + current_time
+
 			
 				# Store the measured time
 				self.switches_data[dpid]["measured_time"] = timed
@@ -309,13 +338,13 @@ class RPM(app_manager.RyuApp):
 				self.DICT_TO_DB['delays'][dpid] = timed
 		
 				# Time taken for installation of all current waiting rules and RTT 
-				self._print("Timer from barrier req to resp: %d (ms) for datapath %d" % (timed, datapath.id)) # why is this longer for a slower sending rate?!
-				self._print("Request xid %d, reply xid %d" % (self.switches_data[dpid]["xid"], xid))
+				self._print("Timer from barrier req to resp: %d (microsecond) for datapath %d xid %d" % (timed, datapath.id, xid)) # why is this longer for a slower sending rate?!
+				self._print("Start time %d current time %d" % (starting_time, current_time))
 		else:
 			if xid > req_xid:
 				self._print("Sending rate exceeds handling rate")
 			else:
-				self._print("?!? Something weird is going on")
+				self._print("?!? Something weird is going on, recieving xids out of order")
 
 	"""
 	Switch state change handler. Called every time a switch state changes, creates a dict dpid -> datapath

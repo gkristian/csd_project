@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import psutil, os, sys, time
 print "-"*15
-print "Core Utilization"
+print "Cores Utilization"
 print "-"*15
 def core_usage():
     cpu_perc = psutil.cpu_percent(interval=1, percpu=True)

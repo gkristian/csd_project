@@ -12,6 +12,3 @@ def core_usage():
 for i in range(10):
     time.sleep(5)
     core_usage()
-
-
-print "-"*15

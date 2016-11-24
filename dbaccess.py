@@ -28,9 +28,9 @@ class dbaccess(object):
 		#print(inputdict)
 
 		#Do insertion to db based on module type. Create table first if it doesnt exist
-		nfmdict = inputdict['nfm']
-		rpmdict = inputdict['rpm']
-		humdict = inputdict['hum']
+		nfmdict = json.loads(inputdict['nfm'])
+		rpmdict = json.loads(inputdict['rpm'])
+		humdict = json.loads(inputdict['hum'])
 		#print "NFM Dict";print nfmdict
 
 		#TODO Processing for other modules
@@ -42,17 +42,19 @@ class dbaccess(object):
 			|'0033'   |'3-4'|0.3 |
 			|'0034'   |'1-2'|0.6 |
 		"""
-		q1 = "CREATE TABLE IF NOT EXISTS nfm(timestamp VARCHAR(30),link VARCHAR(20),util FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,link))" 
+		q1_nfm = "CREATE TABLE IF NOT EXISTS nfm(timestamp VARCHAR(30),link VARCHAR(20),util FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,link))" 
+		q1_rpm = "CREATE TABLE IF NOT EXISTS rpm(timestamp VARCHAR(30),switch VARCHAR(20),latency FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,switch))" 
 		q2 = "SELECT * FROM nfm"
 
 		#Create table
 		try:
-			cursor.execute(q1)
+			cursor.execute(q1_nfm)
+			cursor.execute(q1_rpm)
 			print "Table created"
 		except:
 			print "Table exist"
 
-		#Parsing NFM data dictionary and insert to table
+		# #Parsing NFM data dictionary and insert to table
 		try:
 			timestamp = nfmdict['timestamp']
 			link_utilization = nfmdict['link_utilization']
@@ -62,6 +64,24 @@ class dbaccess(object):
 				#Commit changes in the database
 				db.commit()
 			print "SUCCESS : Insert into SQL DB"
+		except MySQLdb.Error, e:
+			print "ERROR : Insertion failed %s" % str(e)
+			# Rollback in case there is any error
+			db.rollback()
+
+		#Parsing RPM data dictionary and insert to table
+		try:
+			timestamp = rpmdict['timestamp']
+			delays = rpmdict['delays']
+			for dpid in delays:
+				latency = delays[dpid]
+				# -1 means no latency yet recorded
+				if latency != -1:
+					q_insert = "INSERT INTO rpm(timestamp,switch,latency) VALUES ('%s','%s',%f)" % (timestamp, dpid, delays[dpid])
+					cursor.execute(q_insert)
+					#Commit changes in the database
+					db.commit()
+			print "SUCCESS : Insert rpm info into SQL DB"
 		except MySQLdb.Error, e:
 			print "ERROR : Insertion failed %s" % str(e)
 			# Rollback in case there is any error

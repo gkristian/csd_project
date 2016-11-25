@@ -175,19 +175,25 @@ class ProjectController(app_manager.RyuApp):
         src_mac = spath_dq.popleft()  # removes first element from the list, not that classical python list manipulations are slow as compared to this
         return (src_mac, dst_mac, list(spath_dq))
 
-    def __install_path_flow(self,spath):
+    def __install_path_flow(self,spath_with_macs):
         """
         input is a networkx shortest path list of the format [src_mac, switch1, sw2,..., swN, dst_mac]
         it installs flows in all the switches1..N
         :param spath
         :return: true if operation was successful or else false
         """
-        self.logger.debug("Installing flows for the path %r", spath)
+        self.logger.debug("Installing flows for the path %r", spath_with_macs)
         #we don't do src_mac=spath[0] since I  have already done a deque operation of pops and I just dont want to repeat it
-        (src_mac,dst_mac,spath_without_macs) = self.__remove_macs_from_shortest_path(spath)
+
+        (src_mac,dst_mac,spath_without_macs) = self.__remove_macs_from_shortest_path(spath_with_macs)
         self.logger.debug("install_path_flow: src_mac = %r, dst_mac = %r, spath_without_macs = %r", src_mac, dst_mac, spath_without_macs)
-        #for dpid in spath_without_macs:
+        """
+        for dpid in spath_without_macs:
+            self.net[sw_a][sw_b]['in_port']
+            self.net[sw_a][sw_b]['out_port']
+            self.net[sw_a][sw_b]['in_port']
             #self.add_flow(dpid)
+        """
 
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)

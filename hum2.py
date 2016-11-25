@@ -23,12 +23,3 @@ while True:
     core_usage()
     mem_usage()
 
-
-
-#for i in range(10):
-#    time.sleep(5)
-#    core_usage()
-#    mem_usage()
-
-
-print "-"*15

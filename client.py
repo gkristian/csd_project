@@ -6,8 +6,7 @@ from repeattimer import RepeatedTimer
 
 class client_side:
     def __init__(self,url):
-        print '**Client_Side Server has been initiated**'
-        print '\n'
+        print '\n**Client_Side Server has been initiated**'
         self.jsonfile=""
         self.url = url
 
@@ -17,7 +16,7 @@ class client_side:
         if resp.status_code !=201:
             print 'Sending POST req: recieved error code %s' % resp.status_code
         else:
-            print 'POST request successful'
+            print 'HUM : POST request successful'
 
     def getme(self, data_dict):
         payload = data_dict

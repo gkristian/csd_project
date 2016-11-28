@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+
 import MySQLdb
 import json
 
@@ -44,12 +45,13 @@ class dbaccess(object):
 		"""
 		q1_nfm = "CREATE TABLE IF NOT EXISTS nfm(timestamp VARCHAR(30),link VARCHAR(20),util FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,link))" 
 		q1_rpm = "CREATE TABLE IF NOT EXISTS rpm(timestamp VARCHAR(30),switch VARCHAR(20),latency FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,switch))" 
-		q2 = "SELECT * FROM nfm"
+		q1_hum = "CREATE TABLE IF NOT EXISTS hum(timestamp VARCHAR(30),core LONGTEXT,memory FLOAT, PRIMARY KEY (timestamp))"
 
 		#Create table
 		try:
 			cursor.execute(q1_nfm)
 			cursor.execute(q1_rpm)
+			cursor.execute(q1_hum)
 			print "Table created"
 		except:
 			print "Table exist"
@@ -63,9 +65,26 @@ class dbaccess(object):
 				cursor.execute(q3)
 				#Commit changes in the database
 				db.commit()
-			print "SUCCESS : Insert into SQL DB"
+			print "SUCCESS : Insert NFM into SQL DB"
 		except MySQLdb.Error, e:
-			print "ERROR : Insertion failed %s" % str(e)
+			print "ERROR : NFM insertion failed %s" % str(e)
+			# Rollback in case there is any error
+			db.rollback()
+
+        # #Parsing HUM data dictionary and insert to table
+		try:
+			timestamp = humdict['timestamp']
+			core_usage = json.dumps(humdict['core'])
+			memory_usage = humdict['memory']
+			print core_usage
+			print type(core_usage)
+			q4 = "INSERT INTO hum(timestamp,core,memory) VALUES ('%s','%s',%f)" %(timestamp,core_usage,memory_usage)
+			cursor.execute(q4)
+			#Commit changes in the database
+			db.commit()
+			print "SUCCESS : Insert HUM into SQL DB"
+		except MySQLdb.Error, e:
+			print "ERROR : HUM insertion failed %s" % str(e)
 			# Rollback in case there is any error
 			db.rollback()
 
@@ -81,9 +100,9 @@ class dbaccess(object):
 					cursor.execute(q_insert)
 					#Commit changes in the database
 					db.commit()
-			print "SUCCESS : Insert rpm info into SQL DB"
+			print "SUCCESS : Insert RPM into SQL DB"
 		except MySQLdb.Error, e:
-			print "ERROR : Insertion failed %s" % str(e)
+			print "ERROR : RPM insertion failed %s" % str(e)
 			# Rollback in case there is any error
 			db.rollback()
 

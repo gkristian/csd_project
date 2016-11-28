@@ -22,10 +22,9 @@ class NotCache:
 
         #dummy variables
         nfm_keys = ["timestamp", "module", "link_utilization"]
-        hum_keys = ["timestamp", "module", "key3"]
+        hum_keys = ["timestamp", "module", "core","memory"]
         rpm_keys = ["timestamp", "module", "delays"]
 
-        
         # current layer of values
         nfm_dict = dict.fromkeys(nfm_keys) #all except module is dummy value keys
         nfm_dict.update({k : 0 for k in nfm_dict.iterkeys()}) # set default values
@@ -33,18 +32,20 @@ class NotCache:
         nfm_dict['timestamp'] = "0"
         nfm_dict['link_utilization'] = {}
 
- 
+
         hum_dict = dict.fromkeys(hum_keys) #TODO
         hum_dict.update({k : 0 for k in hum_dict.iterkeys()}) # set default values
         hum_dict['module'] = 'hum'
         hum_dict['timestamp'] = "0"
-    
+        hum_dict['core'] = {}
+        hum_dict['memory']= -1
+
         rpm_dict = dict.fromkeys(rpm_keys) #TODO
         rpm_dict.update({k : 0 for k in rpm_dict.iterkeys()}) # set default values
         rpm_dict['module'] = 'rpm'
         rpm_dict['timestamp'] = "0"
         rpm_dict['delays'] = {}
-  
+
         # json string of dicts containing older values
         nfm_old = json.dumps(nfm_dict) # TODO change to ordinary dicts 
         hum_old = json.dumps(hum_dict)
@@ -231,7 +232,7 @@ class NotCache:
         :rtype: json string
         """
         data = {'nfm' : self.module_caches_old['nfm'], 'rpm' : self.module_caches_old['rpm'], 'hum' : self.module_caches_old['hum']}
-        print data.viewitems()
+        #print data.viewitems()
         return data
 
     def get_state(self):

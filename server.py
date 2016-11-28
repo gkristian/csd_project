@@ -127,21 +127,19 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                         all_start_time = time.time()
                         self.cache.set_all_values(self.data)
                         self.initialized['init_cache'] = True
-                        print("Time to initialize cache: %s seconds ---" % (time.time() - all_start_time))
+                        #print("Time to initialize cache: %s seconds ---" % (time.time() - all_start_time))
                     else:
                         some_start_time = time.time()
                         self.cache.set_values(self.data)
-                        print("Time to set values cache: %s seconds ---" % (time.time() - some_start_time))
+                        #print("Time to set values cache: %s seconds ---" % (time.time() - some_start_time))
                 else:
                     print "1 not a correct json dict"
-   
+
             else:
                 print "2 not a correct json dict"
             print  self.initialized
-
-                   
-        
-            print "{}".format(j_data)
+            #print "{}".format(j_data)
+            print module_name
             ServerHandler.manam= j_data
 
             print "POST handling done"
@@ -152,5 +150,5 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             sys.exit
         print("Time to process a POST request %s seconds ---" % (time.time() - post_start_time))
 
-        
+
 

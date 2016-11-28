@@ -18,7 +18,7 @@ try:
 		PORT = port
 		h=ServerHandler
 		httpd=Server(("",PORT), h)
-		print '\nServing %s at Port: %d' % (name, PORT)
+		print 'Serving %s at Port: %d' % (name, PORT)
 		httpd.serve_forever(cache, quit)
 
 	# function to push from cache, used in our repeattimer
@@ -26,8 +26,13 @@ try:
 		start_time = time.time()
 		if cache.get_state() == True:
 			try:
-				print "\nData pushed from cache:"
+				print "\nData pushed from cache to DB:"
 				datatosql = cache.push()
+				print "-------------"
+				print "NFM :"; print datatosql['nfm']
+				print "RPM :"; print datatosql['rpm']
+				print "HUM :"; print datatosql['hum']
+				print "-------------"
 				db.insert(datatosql)
 				print "Push finished \n"
 			except BaseException as e:
@@ -35,7 +40,7 @@ try:
 				print e
 		else:
 			print "Cache not initialized"
-		print("Time taken to push from cache to db %s seconds " % (time.time() - start_time))
+		#print("Time taken to push from cache to db %s seconds " % (time.time() - start_time))
 
 
 	server_quit = {'interrupted' : False}

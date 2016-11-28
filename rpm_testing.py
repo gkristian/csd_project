@@ -21,9 +21,8 @@ import threading
 
 from datetime import datetime
 
-
 # calculate sleeping time for rate request rounds initiated per second
-rate = 10
+rate = 100
 SLEEPING = 1/rate
 
 # current it means that between each round it will be
@@ -35,8 +34,7 @@ if SLEEPING < 0:
 MODS_NR = 3
 LOCK = threading.Lock()
 UPDATE_TIME = 1
-
-
+#SLEEPING = 0.5
 
 
 class RPM(app_manager.RyuApp):
@@ -49,17 +47,32 @@ class RPM(app_manager.RyuApp):
 		# used by RyuApp
 		self.datapaths = {} 
 
-		self.net = app_manager._CONTEXTS['network']	#fetch graph object of physical network
+		#self.net = app_manager._CONTEXTS['network']	#fetch graph object of physical network
+
+		# TODO HARDCODED, should be recived from controller by CONTEXT or events.
+		self.net = nx.DiGraph([(1,2,{'src_port':1,'dst_port':1,'src_dpid':1,'dst_dpid':2,'bw':10}),
+								(1,3,{'src_port':2,'dst_port':2,'src_dpid':1,'dst_dpid':3,'bw':30}),
+								(2,3,{'src_port':2,'dst_port':1,'src_dpid':2,'dst_dpid':3,'bw':20}),
+								(2,1,{'src_port':1,'dst_port':1,'src_dpid':2,'dst_dpid':1,'bw':10}),
+								(3,1,{'src_port':2,'dst_port':2,'src_dpid':3,'dst_dpid':1,'bw':30}),
+								(3,2,{'src_port':1,'dst_port':2,'src_dpid':2,'dst_dpid':3,'bw':20}),
+								(1,'00:00:00:00:01:01',{'src_port':3,'dst_port':3,'src_dpid':1,'dst_dpid':'00:00:00:00:01:01','bw':5}),
+								('00:00:00:00:01:01',1,{'src_port':3,'dst_port':3,'src_dpid':'00:00:00:00:01:01','dst_dpid':1,'bw':5}),
+								(2,'00:00:00:00:02:01',{'src_port':3,'dst_port':3,'src_dpid':2,'dst_dpid':'00:00:00:00:02:01','bw':5}),
+								('00:00:00:00:02:01',2,{'src_port':3,'dst_port':3,'src_dpid':'00:00:00:00:02:01','dst_dpid':2,'bw':5}),
+								(3,'00:00:00:00:03:01',{'src_port':3,'dst_port':3,'src_dpid':3,'dst_dpid':'00:00:00:00:03:01','bw':5}),
+								('00:00:00:00:03:01',3,{'src_port':3,'dst_port':3,'src_dpid':'00:00:00:00:03:01','dst_dpid':3,'bw':5})])
 		
-		self.totalSwitchesNr = self.determineNumberOfSwitches()	#calculate total switches by the graph topology object		
+		self.totalSwitchesNr = self.determineNumberOfSwitches()	#calculate total switches by the graph topology object
+		self._print("TOTAL SWITCHES: %d" % self.totalSwitchesNr)
+		
 		self.logger.debug("TOTAL SWITCHES: %d", self.totalSwitchesNr)
 
 		# Communication with DM
 		url = 'http://127.0.0.1:8000/Tasks.txt'
 		self.client = client_side(url)
-
-		#prepare a dictionary for updating and sending to Database
-		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}}	
+		# TODO proper format
+		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}}	#prepare a dictionary for updating and sending to Database
 		
 		self.switches_DPIDs = {}	# dict to store all datapath ojects by key dpid
 		
@@ -112,7 +125,7 @@ class RPM(app_manager.RyuApp):
 						
 						# For testing, to get a specific number of samples
 						update_counter += 1
-						if update_counter >= 100:
+						if update_counter >= 51:
 							looping = False
 							break
 

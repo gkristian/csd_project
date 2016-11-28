@@ -67,6 +67,7 @@ class RPM(app_manager.RyuApp):
 
 		# format {"dpid1": {"start_time": 100, "measured_time": 13, "xid": 1234}}
 		self.switches_data = {}
+		self.started_monitoring = False
 
 	"""
 	Main loop of sending  install/update/delete flow mods to the switches,
@@ -337,7 +338,7 @@ class RPM(app_manager.RyuApp):
 
 		DPIDS = self.switches_DPIDs.viewkeys()
 
-		if len(DPIDS) == self.totalSwitchesNr:
+		if len(DPIDS) == self.totalSwitchesNr and self.started_monitoring == False:
 			print DPIDS
 			for key in DPIDS:
 				print key
@@ -348,6 +349,7 @@ class RPM(app_manager.RyuApp):
 			# Start monitoring thread sending flow mods and barrier requests
 			self.monitoring_thread = hub.spawn(self._monitor)
 			self._print("Monitoring thread started")
+			self.started_monitoring = True
 			
 			
 

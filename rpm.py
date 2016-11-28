@@ -21,35 +21,20 @@ import threading
 
 from datetime import datetime
 
-
-if len(sys.argv) > 4:
-	rate = int(sys.argv[2])
-	mods_nr = int(sys.argv[3])
-	update = int(sys.argv[4])
-
-	if (1/rate) > 0.002 and update > 3: # minimum values
-		print "Taking arguments send %s barrier request every sec , send %s flow mod messages, send updates every %s sec" % (rate, mods_nr, update)
-		UPDATE_TIME = update
-	else:
-		print "Arguments lower than minimum values, going with default values 2 reqs every second, updates every 10 seconds"
-		rate = 2
-		UPDATE_TIME = 10
-else:
-	print "Setting default sleeping value to 0.5 seconds"
-	#self.sleeping = 0.03125
-	rate = 10
-	mods_nr = 3
-	UPDATE_TIME = 1
-
+# calculate sleeping time for rate request rounds initiated per second
+rate = 100
 SLEEPING = 1/rate
 
-MIN_SLEEP = 0.002 # current, wich means that between each round it will be at least 0.006 seconds
-SLEEPING =  SLEEPING - MIN_SLEEP*3
-MODS_NR = mods_nr
+# current it means that between each round it will be
+# at least 3*MIN_SLEEP seconds as there are 3 switches
+MIN_SLEEP = 0.03125
+SLEEPING =  SLEEPING - MIN_SLEEP*3 # keep the request round rate if possible
+if SLEEPING < 0:
+	SLEEPING = 0
+MODS_NR = 3
 LOCK = threading.Lock()
 UPDATE_TIME = 1
-
-
+#SLEEPING = 0.5
 
 
 class RPM(app_manager.RyuApp):
@@ -109,8 +94,8 @@ class RPM(app_manager.RyuApp):
 		# set of switches
 		dpids = self.switches_DPIDs.viewkeys()
 		# set starting time counter for sending updates to DM
-		#last_update_time = int(round(time.time() * 1000))
-		last_update_time = datetime.now().second
+		last_update_time = int(round(time.time() * 1000))
+		#last_update_time = datetime.now().second
 		
 		# TODO minimum waiting time may change with topology changes, investigate.
 
@@ -140,7 +125,7 @@ class RPM(app_manager.RyuApp):
 						
 						# For testing, to get a specific number of samples
 						update_counter += 1
-						if update_counter >= 100:
+						if update_counter >= 51:
 							looping = False
 							break
 
@@ -174,8 +159,8 @@ class RPM(app_manager.RyuApp):
 					#self._print("FLOW MODS SENT")
 
 					# set start time for measurment
-					#self.switches_data[dpid]["start_time"] = int(time.time() * 1000)
-					self.switches_data[dpid]["start_time"] = datetime.now().microsecond
+					self.switches_data[dpid]["start_time"] = int(time.time() * 1000000)
+					#self.switches_data[dpid]["start_time"] = datetime.now().microsecond
 					# set xid to be able to identify the response
 					xid += 1
 					self.switches_data[dpid]["xid"] = xid
@@ -321,14 +306,15 @@ class RPM(app_manager.RyuApp):
 
 		if req_xid == xid:
 			with LOCK:
-				#current_time = int(time.time() * 1000) 					# current time in milliseconds
-				current_time = datetime.now().microsecond
+				current_time = int(time.time() * 1000000) 					# current time in 
+				#current_time = datetime.now().microsecond
 				starting_time = self.switches_data[dpid]["start_time"] 	# also in milliseconds
 				timed = current_time - starting_time					# measured time between barrier request and response 
 				
-				MAX = 999999
-				if timed < 0: # Timer started over from 0
-					timed = (MAX - starting_time) + current_time
+				#for datetime
+				#MAX = 999999
+				#if timed < 0: # Timer started over from 0
+				#	timed = (MAX - starting_time) + current_time
 
 			
 				# Store the measured time

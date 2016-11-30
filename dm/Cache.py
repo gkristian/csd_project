@@ -31,7 +31,7 @@ class NotCache:
         nfm_dict['module'] = 'nfm'
         nfm_dict['timestamp'] = "0"
         nfm_dict['link_utilization'] = {}
-        nfm_dict['packet dropped'] = {}
+        nfm_dict['packet_dropped'] = {}
 
 
         hum_dict = dict.fromkeys(hum_keys) #TODO

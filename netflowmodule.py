@@ -190,12 +190,12 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			percentage_string = "{0:.2f}%".format(100*percentage)
 			self.logger.info('DROPPED PACKETS PERCENTAGE ON SWITCH %x: %s', ev.msg.datapath.id, percentage_string)
 			DPID = str(ev.msg.datapath.id)
-			self.DICT_TO_DB['packet_drop'][DPID] = percentage # write into dict prepared to be sent to DM
+			self.DICT_TO_DB['packet_dropped'][DPID] = percentage # write into dict prepared to be sent to DM
 		self.dropped[ev.msg.datapath.id] = {'rx':rx_packets, 'tx':tx_packets} #store the current measured received and transmitted packets
 
 	"""
 	Calculate TOTAL link utilization
-		&
+		& after all date updated, push it to DM
 	Function store_port_stat above will store transmitted bytes and calculate link utilzation BUT only for link in one direction. This function will loop through all those saved utilizations and match the correct ones and add this upp. EX:
 	FROM SWITCH 1 TO SWITCH 2: UTILIZATION = 30%
 	FROM SWITCH 2 TO SWITCH 1: UTILIZATION = 9%

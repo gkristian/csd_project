@@ -161,7 +161,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	"""
 	def calculate_dropped_packets(self, ev):
 
-		self.DICT_TO_DB['packet_drop'] = {}
+		self.DICT_TO_DB['packet_dropped'] = {}
 
 		body = ev.msg.body
 		rx_packets = 0

@@ -10,7 +10,8 @@ class dbaccess(object):
 	CURRENT PROGRESS : Just to insert data to SQL database
 	input example :
 	{'nfm':nfmdict,'rpm':rpmdict,'hum':humdict}
-	nfmdict : {'timestamp':'201610221144','link_utilization':{'1-2':0.5,'4-5':0.4}}
+	
+	nfmdict : {'timestamp':'201610221144','link_utilization':{'1-2':0.5,'4-5':0.4}, 'packet_dropped': {DPID, %}}
 	"""
 
 	def __init__ (self):
@@ -38,34 +39,48 @@ class dbaccess(object):
 
 		#Predefined queries
 		#Table structure. Primary key : composite of timestamp and link
-		"""	|timestamp|link |util|
-			|'0033'	  |'1-2'|0.7 |
-			|'0033'   |'3-4'|0.3 |
-			|'0034'   |'1-2'|0.6 |
+		"""	|timestamp|link |util|dropped|
+			|'0033'	  |'1-2'|0.7 |0.1	|
+			|'0033'   |'3-4'|0.3 |0.3	|
+			|'0034'   |'1-2'|0.6 |0.2	|
 		"""
-		q1_nfm = "CREATE TABLE IF NOT EXISTS nfm(timestamp VARCHAR(30),link VARCHAR(20),util FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,link))" 
+		q1_nfm_util = "CREATE TABLE IF NOT EXISTS nfm_util(timestamp VARCHAR(30),link VARCHAR(20),util FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,link))"
+		q1_nfm_dropped = "CREATE TABLE IF NOT EXISTS nfm_dropped(timestamp VARCHAR(30),DPID VARCHAR(20),dropped FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,DPID))" 
 		q1_rpm = "CREATE TABLE IF NOT EXISTS rpm(timestamp VARCHAR(30),switch VARCHAR(20),latency FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,switch))" 
 		q1_hum = "CREATE TABLE IF NOT EXISTS hum(timestamp VARCHAR(30),core LONGTEXT,memory FLOAT, PRIMARY KEY (timestamp))"
 
 		#Create table
 		try:
-			cursor.execute(q1_nfm)
+			cursor.execute(q1_nfm_util)
+			cursor.execute(q1_nfm_dropped)
 			cursor.execute(q1_rpm)
 			cursor.execute(q1_hum)
 			print "Table created"
 		except:
 			print "Table exist"
 
+		# TODO, make the table insertion more orderly
+
 		# #Parsing NFM data dictionary and insert to table
 		try:
 			timestamp = nfmdict['timestamp']
 			link_utilization = nfmdict['link_utilization']
 			for key in link_utilization:
-				q3 = "INSERT INTO nfm(timestamp,link,util) VALUES ('%s','%s',%f)" %(timestamp,key,link_utilization[key])
+				q3 = "INSERT INTO nfm_util(timestamp,link,util) VALUES ('%s','%s',%f)" %(timestamp,key,link_utilization[key])
 				cursor.execute(q3)
 				#Commit changes in the database
 				db.commit()
-			print "SUCCESS : Insert NFM into SQL DB"
+			print "SUCCESS : Insert NFM util into SQL DB"
+
+			timestamp = nfmdict['timestamp']
+			dropped = nfmdict['packet_dropped']
+			for key in dropped:
+				q3 = "INSERT INTO nfm_dropped(timestamp,DPID,dropped) VALUES ('%s','%s',%f)" %(timestamp,key,dropped[key])
+				cursor.execute(q3)
+				# Commit changes in the database
+				db.commit()
+			print "SUCCESS : Insert NFM dropped into SQL DB"
+
 		except MySQLdb.Error, e:
 			print "ERROR : NFM insertion failed %s" % str(e)
 			# Rollback in case there is any error
@@ -88,7 +103,7 @@ class dbaccess(object):
 			# Rollback in case there is any error
 			db.rollback()
 
-		#Parsing RPM data dictionary and insert to table
+		# Parsing RPM data dictionary and insert to table
 		try:
 			timestamp = rpmdict['timestamp']
 			delays = rpmdict['delays']

@@ -21,9 +21,9 @@ class NotCache:
     	self.initialized = False
 
         #dummy variables
-        nfm_keys = ["timestamp", "module", "link_utilization"]
+        nfm_keys = ["timestamp", "module", "link_utilization", "packet_dropped"]
         hum_keys = ["timestamp", "module", "core","memory"]
-        rpm_keys = ["timestamp", "module", "delays"]
+        rpm_keys = ["timestamp", "module", "delays", "max_delay", "min_delay", "mean_delay"]
 
         # current layer of values
         nfm_dict = dict.fromkeys(nfm_keys) #all except module is dummy value keys
@@ -31,6 +31,7 @@ class NotCache:
         nfm_dict['module'] = 'nfm'
         nfm_dict['timestamp'] = "0"
         nfm_dict['link_utilization'] = {}
+        nfm_dict['packet dropped'] = {}
 
 
         hum_dict = dict.fromkeys(hum_keys) #TODO
@@ -45,6 +46,11 @@ class NotCache:
         rpm_dict['module'] = 'rpm'
         rpm_dict['timestamp'] = "0"
         rpm_dict['delays'] = {}
+        # Session max and min latencies, not stored in DB
+        rpm_dict['max_delay'] = 0
+        rpm_dict['min_delay'] = 0
+        rpm_dict['mean_delay'] = 0
+
 
         # json string of dicts containing older values
         nfm_old = json.dumps(nfm_dict) # TODO change to ordinary dicts 

@@ -23,7 +23,7 @@ from datetime import datetime
 
 
 # calculate sleeping time for rate request rounds initiated per second
-rate = 1000
+rate = 3
 SLEEPING = 1/rate
 
 # current it means that between each round it will be
@@ -34,7 +34,7 @@ if SLEEPING < 0:
 	SLEEPING = 0
 MODS_NR = 3
 LOCK = threading.Lock()
-UPDATE_TIME = 5
+UPDATE_TIME = 1
 
 
 
@@ -106,7 +106,7 @@ class RPM(app_manager.RyuApp):
 					if (current_updatetime - last_update_time) >= UPDATE_TIME*1000:
 						self._print("SEND UPDATE TO DM")
 						self.DICT_TO_DB['timestamp'] = current_updatetime
-						print self.DICT_TO_DB.viewitems()
+						#print self.DICT_TO_DB.viewitems()
 						self.client.postme(self.DICT_TO_DB) #kanske blockerande
 						last_update_time = int(round(time.time() * 1000))
 						#last_update_time = datetime.now().second
@@ -242,14 +242,14 @@ class RPM(app_manager.RyuApp):
 	"""
 	@set_ev_cls(ofp_event.EventOFPFlowRemoved, MAIN_DISPATCHER)
 	def flow_removed_handler(self, ev):
-		self._print("FLOW REMOVED")
+		#self._print("FLOW REMOVED")
 
 		msg = ev.msg
 		dp = msg.datapath
 		ofp = dp.ofproto
 		ofp_id = dp.id
 
-		self._print("Switch with id: %d" % ofp_id)
+		#self._print("Switch with id: %d" % ofp_id)
 
 		if msg.reason == ofp.OFPRR_IDLE_TIMEOUT:
 			reason = 'IDLE TIMEOUT'
@@ -312,8 +312,8 @@ class RPM(app_manager.RyuApp):
 				self.DICT_TO_DB['delays'][dpid] = timed
 		
 				# Time taken for installation of all current waiting rules and RTT 
-				self._print("Timer from barrier req to resp: %d (microsecond) for datapath %d xid %d" % (timed, datapath.id, xid)) # why is this longer for a slower sending rate?!
-				self._print("Start time %d current time %d" % (starting_time, current_time))
+				#self._print("Timer from barrier req to resp: %d (microsecond) for datapath %d xid %d" % (timed, datapath.id, xid)) # why is this longer for a slower sending rate?!
+				#self._print("Start time %d current time %d" % (starting_time, current_time))
 		else:
 			if xid > req_xid:
 				self._print("Sending rate exceeds handling rate")
@@ -339,12 +339,12 @@ class RPM(app_manager.RyuApp):
 		DPIDS = self.switches_DPIDs.viewkeys()
 
 		if len(DPIDS) == self.totalSwitchesNr and self.started_monitoring == False:
-			print DPIDS
+			#print DPIDS
 			for key in DPIDS:
-				print key
+				#print key
 				self.switches_data[key] = {"start_time": -1, "measured_time": -1, "xid": -1}
 				self.DICT_TO_DB['delays'][key] = -1
-			self._print(str(self.switches_data.viewitems()))
+			#self._print(str(self.switches_data.viewitems()))
 
 			# Start monitoring thread sending flow mods and barrier requests
 			self.monitoring_thread = hub.spawn(self._monitor)

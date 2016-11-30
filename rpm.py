@@ -39,6 +39,7 @@ UPDATE_TIME = 1
 
 
 
+
 class RPM(app_manager.RyuApp):
 	OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 	"""
@@ -58,8 +59,8 @@ class RPM(app_manager.RyuApp):
 		url = 'http://127.0.0.1:8000/Tasks.txt'
 		self.client = client_side(url)
 
-		#prepare a dictionary for updating and sending to Database
-		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}}	
+		#prepare a dictionary for updating and sending to DM
+		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}, 'max_delay': -1, 'min_delay': -1, 'mean_delay': -1}	
 		
 		self.switches_DPIDs = {}	# dict to store all datapath ojects by key dpid
 		
@@ -68,6 +69,12 @@ class RPM(app_manager.RyuApp):
 		# format {"dpid1": {"start_time": 100, "measured_time": 13, "xid": 1234}}
 		self.switches_data = {}
 		self.started_monitoring = False
+
+		self.MAX_latency = 0
+		self.MIN_latency = sys.maxint
+		# Mean for the last X rounds
+		self.SUM = 0
+		self.NR = 0
 
 	"""
 	Main loop of sending  install/update/delete flow mods to the switches,
@@ -101,21 +108,24 @@ class RPM(app_manager.RyuApp):
 					# if it has gone min UPDATE_TIME seconds since last update
 					# send an update to DM 
 					current_updatetime = int(round(time.time() * 1000))
+					if self.NR > 0:
+						current_mean = self.SUM/self.NR
 					#current_updatetime = datetime.now()
 
 					if (current_updatetime - last_update_time) >= UPDATE_TIME*1000:
 						self._print("SEND UPDATE TO DM")
 						self.DICT_TO_DB['timestamp'] = current_updatetime
-						#print self.DICT_TO_DB.viewitems()
+						self.DICT_TO_DB['mean_delay'] = current_mean
+						print self.DICT_TO_DB.viewitems()
 						self.client.postme(self.DICT_TO_DB) #kanske blockerande
 						last_update_time = int(round(time.time() * 1000))
 						#last_update_time = datetime.now().second
 						
 						# For testing, to get a specific number of samples
-						update_counter += 1
-						if update_counter >= 100:
-							looping = False
-							break
+						#update_counter += 1
+						#if update_counter >= 100:
+						#	looping = False
+						#	break
 
 				with lock:
 					# Get the datapath object
@@ -307,8 +317,20 @@ class RPM(app_manager.RyuApp):
 			
 				# Store the measured time
 				self.switches_data[dpid]["measured_time"] = timed
+
+				# calculate and store minimum and maximum
+				if timed > self.MAX_latency:
+					self.MAX_latency = timed
+					self.DICT_TO_DB['max_delay'] = timed
+				elif timed < self.MIN_latency:
+					self.MIN_latency = timed
+					self.DICT_TO_DB['min_delay'] = timed
+
+				# Calculate and store the base for the saession mean
+				self.SUM += timed
+				self.NR += 1
+
 				# Store the measured time in DB message dict
-			
 				self.DICT_TO_DB['delays'][dpid] = timed
 		
 				# Time taken for installation of all current waiting rules and RTT 

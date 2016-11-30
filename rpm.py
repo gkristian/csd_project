@@ -56,7 +56,7 @@ class RPM(app_manager.RyuApp):
 
 		# Communication with DM
 		url = 'http://127.0.0.1:8000/Tasks.txt'
-		#self.client = client_side(url)
+		self.client = client_side(url)
 
 		#prepare a dictionary for updating and sending to Database
 		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}}	
@@ -107,7 +107,7 @@ class RPM(app_manager.RyuApp):
 						self._print("SEND UPDATE TO DM")
 						self.DICT_TO_DB['timestamp'] = current_updatetime
 						print self.DICT_TO_DB.viewitems()
-						#self.client.postme(self.DICT_TO_DB) #kanske blockerande
+						self.client.postme(self.DICT_TO_DB) #kanske blockerande
 						last_update_time = int(round(time.time() * 1000))
 						#last_update_time = datetime.now().second
 						

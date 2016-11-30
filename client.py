@@ -2,25 +2,20 @@
 import requests
 import json
 import time
-
-#url = 'http://192.168.43.139:8000/Tasks.txt'
-#url = 'http://213.112.228.98:8080/Tasks.txt'
-url = 'http://130.229.180.159:8000/Tasks.txt'
-x1 = {'module': 'nfm', 'id': 10,'flow':88,'delay':1111} #just dummy data
-x2 = {'module': 'nfm', 'id': 20,'flow':99,'delay':4567}
+#from repeattimer import RepeatedTimer
 
 class client_side:
-    def __init__(self,jsonfile):
+    def __init__(self,url):
         print '**Client_Side Server has been initiated**'
         print '\n'
-        self.jsonfile=jsonfile
+        self.jsonfile=""
         self.url = url
 
     def postme(self,jsonfile):
         self.jsonfile=jsonfile
         resp=requests.post(self.url,json=self.jsonfile)
         if resp.status_code !=201:
-            print 'Sending POST req: recieved error code 201 '
+            print 'Sending POST req: recieved error code %s' % resp.status_code
         else:
             print 'POST request successful'
 
@@ -28,7 +23,7 @@ class client_side:
         payload = data_dict
         resp=requests.get(self.url, params=payload)
         if resp.status_code !=200:
-            print ' No response for GET'
+            print ' Sending GET req: recieved error code %s' % resp.status_code
         else:
             # sift out our data
             json_text_list = resp.text.split("200 ")[1]
@@ -39,4 +34,6 @@ class client_side:
             return tuple_list
 
             print 'Positive response for GET'
+
+
 

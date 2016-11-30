@@ -75,7 +75,7 @@ class dbaccess(object):
 			timestamp = nfmdict['timestamp']
 			dropped = nfmdict['packet_dropped']
 			for key in dropped:
-				q3 = "INSERT INTO nfm_dropped(timestamp,DPID,packet_dropped) VALUES ('%s','%s',%f)" %(timestamp,key,dropped[key])
+				q3 = "INSERT INTO nfm_dropped(timestamp,DPID,dropped) VALUES ('%s','%s',%f)" %(timestamp,key,dropped[key])
 				cursor.execute(q3)
 				# Commit changes in the database
 				db.commit()

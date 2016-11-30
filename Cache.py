@@ -21,7 +21,7 @@ class NotCache:
     	self.initialized = False
 
         #dummy variables
-        nfm_keys = ["timestamp", "module", "link_utilization"]
+        nfm_keys = ["timestamp", "module", "link_utilization", "packet_dropped"]
         hum_keys = ["timestamp", "module", "core","memory"]
         rpm_keys = ["timestamp", "module", "delays", "max_delay", "min_delay", "mean_delay"]
 
@@ -31,6 +31,7 @@ class NotCache:
         nfm_dict['module'] = 'nfm'
         nfm_dict['timestamp'] = "0"
         nfm_dict['link_utilization'] = {}
+        nfm_dict['packet dropped'] = {}
 
 
         hum_dict = dict.fromkeys(hum_keys) #TODO

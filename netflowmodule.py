@@ -40,7 +40,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		self.switches = []	#list to store all switches dpid
 		self.portDict = {}
 		self.mininetRunning = False
-		self.DMclient = client_side('http://127.0.0.1:8000/Tasks.txt')	#instance of Database module client
+		self.DMclient = client_side("http://127.0.0.1:8000/Tasks.txt")	#instance of Database module client
 		self.responsedSwitches = 0	#counter for amount of switch flows retrieving after a request
 		self.responsedSwitchesPortStatus = 0
 		self.flows = {}		#dictionary to store each switch's flows

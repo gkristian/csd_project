@@ -16,29 +16,29 @@ $start = $time;
 require('connection.php');
 echo "<html>";
 echo "<meta http-equiv='refresh' content='10'>";
-//echo "<b>Debug Message :</b><br>";
+echo "<b>Debug Message :</b><br>";
 
 //Get all nfm data
-$q1 = "SELECT * FROM nfm";
+$q1 = "SELECT * FROM nfm_util";
 if ($res1 = $con->query($q1)) {
-    //printf("NFM table fetched<br>");
+    printf("NFM table fetched<br>");
 } else {
     printf("No data from NFM table<br>");
 }
 
 //Get NFM's number of keys (#links)
-$q2 = "SELECT count FROM keycount WHERE module='nfm'";
+$q2 = "SELECT count FROM keycount WHERE module='nfm_util'";
 if ($res2 = $con->query($q2)) {
-	//printf("NFM keycount fetched. #links :");
+	printf("NFM keycount fetched. #links :");
 	$row2 = $res2->fetch_assoc();
 	$nfmkeycount = intval($row2['count']); //Convert result string to int
-	//echo $nfmkeycount;
+	echo $nfmkeycount;
 } else {
 	printf("No data from keycount<br>");
 }
 
 //Get link names
-$q3 = "SELECT link FROM nfm LIMIT $nfmkeycount";
+$q3 = "SELECT link FROM nfm_util LIMIT $nfmkeycount";
 if ($res3 = $con->query($q3)) {
     //printf("<br>Link names fetched");
 } else {
@@ -64,7 +64,7 @@ if ($res3->num_rows > 0) { //Means data exist
 	$linkindex=0;
 	foreach ($arrlinkname as &$currentlink) {
 		$timeindex=0;
-		if ($res4 = $con->query("SELECT * FROM nfm WHERE link='$currentlink'")) {
+		if ($res4 = $con->query("SELECT * FROM nfm_util WHERE link='$currentlink'")) {
 		    while($row4 = $res4->fetch_assoc()) {//Data for each row
 				$arrall[$linkindex][$timeindex]=array(
 					$row4['timestamp'],
@@ -108,7 +108,7 @@ for($link=0;$link<$linkcount;$link++){
 	$title=explode("-",$arrlinkname[$link]);
 	if($title[1]>$title[0]){ //Remove duplicate
 		$imploded=implode(":",$tobesend);
-		echo "<img src=plotnfm.php?title=".$arrlinkname[$link]."&data=".urlencode($imploded).">";
+		echo "<img src=nfmplot.php?title=".$arrlinkname[$link]."&data=".urlencode($imploded).">";
 	}
 }
 echo "<br><br>";

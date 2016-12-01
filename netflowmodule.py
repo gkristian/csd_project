@@ -21,7 +21,7 @@ from datetime import datetime
 
 
 class NFM(simple_switch_13.SimpleSwitch13):
-	
+
 	"""
 	Constructor; Retrieving graph object from controller and defining all necessary variables
 	"""
@@ -33,14 +33,16 @@ class NFM(simple_switch_13.SimpleSwitch13):
 		#self.logger.info("TOTAL SWITCHES: %d", self.totalSwitches)
 		self.logger.info(self.totalSwitches)
 		self.DICT_TO_DB = {'module':'nfm'}	#prepare a dictionary for updating and sending to Database
+		self.DICT_TO_DB['keylist'] = {}	#NEW FORMAT
+		self.DICT_TO_DB['keylist']['packet_dropped'] = {}
 		self.pathComponents = {}
 		self.updateTime = 1
 		#self.flow_request_semaphore = threading.Event()
 		self.port_stat_request_semaphore = threading.Event()
 		self.switches = []	#list to store all switches dpid
-		self.portDict = {}	
+		self.portDict = {}
 		self.mininetRunning = False
-		self.DMclient = client_side(" ")	#instance of Database module client
+		self.DMclient = client_side("http://127.0.0.1:8000/Tasks.txt")	#instance of Database module client
 		self.responsedSwitches = 0	#counter for amount of switch flows retrieving after a request
 		self.responsedSwitchesPortStatus = 0
 		self.flows = {}		#dictionary to store each switch's flows
@@ -51,11 +53,11 @@ class NFM(simple_switch_13.SimpleSwitch13):
 
 	@set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
 	def _state_change_handler(self, ev):
-		
+
 		if self.mininetRunning is False:
 			self.monitoring_thread = hub.spawn(self._monitor)
 			self.mininetRunning = True
-		
+
 		datapath = ev.datapath
 		if ev.state == MAIN_DISPATCHER:
 			if datapath.id not in self.datapaths:
@@ -67,7 +69,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 				del self.datapaths[datapath.id]
 
 
-	
+
 	"""
 	Function to calculate the number of switches in the physical topology with the help of graph object
 	"""
@@ -89,7 +91,7 @@ class NFM(simple_switch_13.SimpleSwitch13):
 			for dp in self.datapaths.values():
 				self._request_stats(dp)
 			self.port_stat_request_semaphore.clear()
-			
+
 	"""
 	Function to request flow statistics and port statistics of a datapath (switch)
 	"""
@@ -156,10 +158,12 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	Calculate dropped packets from the acquired port statistics
 	Method: Sum up all the received packets for the switch. Sum up all the transmitted
 	packets and then take the difference. If transmitted packets equals the receieved,
-	then no dropped packets. If transmitted is less than received, then switch has dropped 
+	then no dropped packets. If transmitted is less than received, then switch has dropped
 	packets.
 	"""
 	def calculate_dropped_packets(self, ev):
+
+		#self.DICT_TO_DB['packet_dropped'] = {}	#OLD FORMAT
 
 		body = ev.msg.body
 		rx_packets = 0
@@ -187,16 +191,25 @@ class NFM(simple_switch_13.SimpleSwitch13):
 					percentage = 0
 			percentage_string = "{0:.2f}%".format(100*percentage)
 			self.logger.info('DROPPED PACKETS PERCENTAGE ON SWITCH %x: %s', ev.msg.datapath.id, percentage_string)
+			DPID = str(ev.msg.datapath.id)
+			#self.DICT_TO_DB['packet_dropped'][DPID] = percentage # write into dict prepared to be sent to DM //OLD FORMAT
+			self.DICT_TO_DB['keylist']['packet_dropped'][dpid] = percentage
 		self.dropped[ev.msg.datapath.id] = {'rx':rx_packets, 'tx':tx_packets} #store the current measured received and transmitted packets
 
 	"""
 	Calculate TOTAL link utilization
+		& after all date updated, push it to DM
 	Function store_port_stat above will store transmitted bytes and calculate link utilzation BUT only for link in one direction. This function will loop through all those saved utilizations and match the correct ones and add this upp. EX:
 	FROM SWITCH 1 TO SWITCH 2: UTILIZATION = 30%
 	FROM SWITCH 2 TO SWITCH 1: UTILIZATION = 9%
 	TOTAL = 30 + 9 %
 	"""
-	def calculate_link_utilization(self):	
+	def calculate_link_utilization(self):
+		timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+		#self.DICT_TO_DB['timestamp'] = timestamp #OLD FORMAT
+		self.DICT_TO_DB['keylist']['timestamp'] = timestamp #NEW FORMAT
+		self.DICT_TO_DB['keylist']['link_utilization'] = []	#NEW FORMAT
+		#self.DICT_TO_DB['link_utilization'] = {}
 		for FROM, value in self.linkUtilizations.iteritems():
 			for TO, FROM_UTIL in value.iteritems():
 				try:
@@ -205,8 +218,12 @@ class NFM(simple_switch_13.SimpleSwitch13):
 					TOTAL_UTIL = FROM_UTIL + TO_UTIL
 					TOTAL_UTIL_STRING = "{0:.2f}%".format(TOTAL_UTIL)
 					self.logger.info("TOTAL UTILIZATION %d -> %d: %s", FROM, TO, TOTAL_UTIL_STRING)
+					DPID_TO_DPID = str(FROM)+'-'+str(TO)
+					#self.DICT_TO_DB['link_utilization'][DPID_TO_DPID] = TOTAL_UTIL # write into dict OLD FORMAT
+					self.DICT_TO_DB['keylist']['link_utilization'].append((FROM, TO,{'weight':TOTAL_UTIL})) #NEW FORMAT
 				except:
 					self.logger.info("[ERROR] Link only has one directional utilization, check opposite switch")
+		self.DMclient.postme(self.DICT_TO_DB) # Push to DM
 
 
 	"""
@@ -215,12 +232,10 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	@set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
 	def _port_stats_reply_handler(self, ev):
 		self.store_port_stat(ev)
-		self.calculate_dropped_packets(ev)
+		self.calculate_dropped_packets(ev) # when packet_dropped rate on a swith is calculated, wirte into dict right away
 		self.responsedSwitches += 1
 		if self.responsedSwitches == self.totalSwitches:
 			self.logger.debug("Responsed Switches %d", self.responsedSwitches)
 			self.responsedSwitches = 0
-			self.calculate_link_utilization()
+			self.calculate_link_utilization() # this function also push dict to DM after all new data is included
 			self.port_stat_request_semaphore.set()
-			
-

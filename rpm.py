@@ -114,7 +114,7 @@ class RPM(app_manager.RyuApp):
 
 					if (current_updatetime - last_update_time) >= UPDATE_TIME*1000:
 						self._print("SEND UPDATE TO DM")
-						self.DICT_TO_DB['timestamp'] = current_updatetime
+						self.DICT_TO_DB['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 						self.DICT_TO_DB['mean_delay'] = current_mean
 						print self.DICT_TO_DB.viewitems()
 						self.client.postme(self.DICT_TO_DB) #kanske blockerande

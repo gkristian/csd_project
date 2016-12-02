@@ -17,4 +17,31 @@ and within class its called by self.__someprivateMethod(self,...)
 An interesting difference from Java is that private can still be invoked from outside class.
  http://www.bogotobogo.com/python/python_private_attributes_methods.php
 
+=== Using the topology related data structures ===
+
+1.During  LLDP discovery self.net is initialized with below info, each edge has keywords: src_port, dst_port, src_name, dst_name
+
+	links_onedirection_L=[(link.src.dpid,link.dst.dpid,{'src_port':link.src.port_no, 'dst_port':link.dst.port_no, 'src_name': link.src.name, 'dst_name':link.dst.name}) for link in links_list]
+
+	links_opp_direction_L=[(link.dst.dpid, link.src.dpid, {'dst_port': link.dst.port_no, 'src_port':link.src.port_no, 'src_name': link.src.name, 'dst_name':link.dst.name}) for link in links_l
+
+	self.net.add_edges_from(links_onedirection_L)
+	self.net.add_edges_from(links_opp_direction_L) #since its a directional graph it must contain edges in opposite direction as well.
+
+
+
+2. During my network bootstrap routine  i.e. host discovery process below are updated:
+
+self.l2_dpid_table[dpid]={src_mac:{'in_port':msg.match['in_port'] , 'ip':pkt_arp.src_ip}}
+self.l2_ip2mac_table[pkt_arp.src_ip]=src_mac
+self.l2_mac2ip_table[src_mac]=pkt_arp.src_ip
+
+self.net.add_edge(dpid, src_mac,
+                                  {'src_port': msg.match['in_port'] , 'dst_port': msg.match['in_port'] ,
+                                   'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True})  # src is the src mac
+self.net.add_edge(src_mac, dpid,
+                                  {'src_port': msg.match['in_port'] , 'dst_port': msg.match['in_port'] ,
+                                   'src_dpid': src_mac, 'dst_dpid': dpid, 'end_host': True,
+                                   'ip': pkt_arp.src_ip, 'ip':pkt_arp.src_ip})  # src is the src mac
+
 

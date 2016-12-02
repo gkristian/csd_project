@@ -192,7 +192,7 @@ class ExampleSwitch13(app_manager.RyuApp):
         # install a flow to avoid packet_in next time.
         if out_port != ofproto.OFPP_FLOOD:
             match = parser.OFPMatch(in_port=in_port, eth_dst=dst)
-            self.add_flow(datapath, 1, match, actions)
+            #self.add_flow(datapath, 1, match, actions) #Dont install any flows
 
         # construct packet_out message and send it.
         out = parser.OFPPacketOut(datapath=datapath,

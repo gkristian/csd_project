@@ -63,15 +63,33 @@ class ProjectController(app_manager.RyuApp):
         super(ProjectController, self).__init__(*args, **kwargs)
         #self.mac_to_port = {}
         self.l2_dpid_table = {}
+        """
         #an example from log is: here 21 is the dpid, one can access using l2[21]['00:00:...']['ip']
         # l2_dpid_table: {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}},
         #                   23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
+
         #
+        #below is 'ip' address of mac 'x:x:x' learnt on switch with dpid 3
+        ipofmacX = l2_dpid_table[3]['x:x:x']['ip']
+        #below is the port at which mac 'x:x:x' was learnt by switch with dpid 3
+        port_of_mac_X_on_switch3 = l2_dpid_table[3]['x:x:x']['in_port']
+
+        """
 
         #self.net = kwargs['network']
         #app_manager._CONTEXT = {'network',self.net}
         #self.net = app_manager._CONTEXT['network']
         #_CONTEXT = {'network',self.net}
+
+        """wegiths read from a remote cache/db and injected into the topology graph
+        note that :
+            link_util is for each link so should be stored in each edge of the graph
+            sw_packet_drop_rate is for each switch so should be stored in each node of the graph
+
+        """
+
+        self.edge_weights = dict.fromkeys(['core_util','mem_usage','rpm_weight','link_util','sw_packet_drop_rate'])
+
         self.l2_ip2mac_table = {}
         self.l2_mac2ip_table = {}
         self.topology_api_app = self
@@ -81,7 +99,13 @@ class ProjectController(app_manager.RyuApp):
         self.no_of_nodes = 0
         self.no_of_links = 0
         self.i=0
-        self.defines_D = {'bcast_mac':'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True}
+        self.defines_D = {'bcast_mac':'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,'flow_table_strategy_semi_proactive': True}
+        """
+        flow_table_strategy_semi_proactive: when controller receives the first packet, it reacts to it by proactively installing flows in all switches that lie in the computed
+                                            shortest path for that packet to reach its destination.
+        proactive:  controller before receiving any packet to be routed, installs the paths in the switches
+        reactive: controller installs the rules in one switch
+        """
         self.rxpkts_types_D= {}
         self.logger.info("controller_core module starting up....")
         self.epoc_starttime = int(time.time())
@@ -92,6 +116,8 @@ class ProjectController(app_manager.RyuApp):
         """
         self.network_bootstrap_time = 70 # in seconds and used by type 0
         self.network_bootstrap_discovery_count = 4 #used by type 1, means stop after 4 mac addresses learnt
+
+        self.datapathDb = {}
 
     # Handy function that lists all attributes in the given object
     def ls(self,obj):
@@ -187,13 +213,52 @@ class ProjectController(app_manager.RyuApp):
 
         (src_mac,dst_mac,spath_without_macs) = self.__remove_macs_from_shortest_path(spath_with_macs)
         self.logger.debug("install_path_flow: src_mac = %r, dst_mac = %r, spath_without_macs = %r", src_mac, dst_mac, spath_without_macs)
-        """
-        for dpid in spath_without_macs:
-            self.net[sw_a][sw_b]['in_port']
-            self.net[sw_a][sw_b]['out_port']
-            self.net[sw_a][sw_b]['in_port']
-            #self.add_flow(dpid)
-        """
+
+        #for dpid in spath_without_macs:
+        n = len(spath_without_macs)
+        i = 1
+        while (i< n):
+            in_port = self.net.edge[spath_without_macs[i-1]] [spath_without_macs[i]]['src_port']
+            out_port = self.net.edge[spath_without_macs[i-1]][spath_without_macs[i]]['dst_port']
+
+    def __install_flow(self, dpid_a, dpid_n,spath): #spath is without any macs, only contains switch dpids
+        self.__send_flow_mod(self.datapathDb(dpid), dst_mac, src_mac)
+
+
+    # below method sourced from the ryu api doc at:http://ryu.readthedocs.io/en/latest/ofproto_v1_3_ref.html#modify-state-messages
+    # added dst_mac which is a string e.g. 'ff:ff:ff:ff:ff:ff'
+    #not using in_port for now as a criteria for routing but may be later.
+
+    def __send_flow_mod(self, datapath, dst_mac, src_mac,out_port):
+        ofp = datapath.ofproto
+        ofp_parser = datapath.ofproto_parser
+
+        cookie = cookie_mask = 0
+        table_id = 0
+        idle_timeout = hard_timeout = 0
+        priority = 32768
+        buffer_id = ofp.OFP_NO_BUFFER
+        match = ofp_parser.OFPMatch(in_port=1, eth_dst=dst_mac, eth_src=src_mac)  # 'ff:ff:ff:ff:ff:ff'
+        # match = ofp_parser.OFPMatch(
+        #     in_port=1,
+        #     eth_dst=dst_mac,
+        #     eth_src=src_mac,
+        #     arp_cp='',... see notebook flags or ctr-q up at OFPMatch)  # 'ff:ff:ff:ff:ff:ff'
+        #
+        #actions = [ofp_parser.OFPActionOutput(ofp.OFPP_NORMAL, 0)]
+        actions = [ofp_parser.OFPActionOutput(out_port)]
+        inst = [ofp_parser.OFPInstructionActions(ofp.OFPIT_APPLY_ACTIONS,
+                                                 actions)]
+        req = ofp_parser.OFPFlowMod(datapath, cookie, cookie_mask,
+                                    table_id, ofp.OFPFC_ADD,
+                                    idle_timeout, hard_timeout,
+                                    priority, buffer_id,
+                                    ofp.OFPP_ANY, ofp.OFPG_ANY,
+                                    ofp.OFPFF_SEND_FLOW_REM,
+                                    match, inst)
+        datapath.send_msg(req)
+    def __save_datapath(self,datapath):
+        self.datapathDb[datapath.id]=datapath
 
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
@@ -204,6 +269,8 @@ class ProjectController(app_manager.RyuApp):
 
         msg = ev.msg
         datapath = msg.datapath
+        #we save all datapaths in a dictionary so that the controller can install flowmod rules in any switch it wants
+        self.__save_datapath(datapath)
         ofproto = datapath.ofproto
         in_port = msg.match['in_port']
         if in_port:#if not empty
@@ -276,7 +343,7 @@ class ProjectController(app_manager.RyuApp):
                 #self.l2_lookup_table[dpid] ={src_mac: {}}
                 #self.l2_lookup_table[dpid][src_mac]={'in_port':in_port, 'ip':pkt_arp.src_ip}
 
-                #below three tables could be improved by putting all info in one object and use getters and setters but we dont want to get a performance hit
+                #below three tables could be improved by putting all info in one object and use getters and setters but I dont know if it would be as efficent as having below dictionary as a lookup table
                 self.l2_dpid_table[dpid]={src_mac:{'in_port':msg.match['in_port'] , 'ip':pkt_arp.src_ip}}
                 self.l2_ip2mac_table[pkt_arp.src_ip]=src_mac
                 self.l2_mac2ip_table[src_mac]=pkt_arp.src_ip

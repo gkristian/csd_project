@@ -621,3 +621,131 @@ key params: dir(ofproto)=['DESC_STR_LEN', 'DESC_STR_LEN_STR', 'MAX_XID', 'OFPAT_
 key params: dir(parser)=['Flow', 'FlowWildcards', 'LOG', 'MTArpOp', 'MTArpSha', 'MTArpSpa', 'MTArpTha', 'MTArpTpa', 'MTEthDst', 'MTEthSrc', 'MTEthType', 'MTICMPV4Code', 'MTICMPV4Type', 'MTICMPV6Code', 'MTICMPV6Type', 'MTIPDscp', 'MTIPECN', 'MTIPProto', 'MTIPV4Dst', 'MTIPV4Src', 'MTIPv6', 'MTIPv6Dst', 'MTIPv6ExtHdr', 'MTIPv6Flabel', 'MTIPv6NdSll', 'MTIPv6NdTarget', 'MTIPv6NdTll', 'MTIPv6Src', 'MTInPhyPort', 'MTInPort', 'MTMetadata', 'MTMplsBos', 'MTMplsLabel', 'MTMplsTc', 'MTPbbIsid', 'MTSCTPDst', 'MTSCTPSrc', 'MTTCPDst', 'MTTCPSrc', 'MTTunnelId', 'MTUDPDst', 'MTUDPSrc', 'MTVlanPcp', 'MTVlanVid', 'MsgBase', 'NXAction', 'NXActionBundle', 'NXActionBundleLoad', 'NXActionCT', 'NXActionConjunction', 'NXActionController', 'NXActionController2', 'NXActionDecMplsTtl', 'NXActionDecTtl', 'NXActionDecTtlCntIds', 'NXActionExit', 'NXActionFinTimeout', 'NXActionLearn', 'NXActionMultipath', 'NXActionNAT', 'NXActionNote', 'NXActionOutputReg', 'NXActionOutputReg2', 'NXActionOutputTrunc', 'NXActionPopMpls', 'NXActionPopQueue', 'NXActionPushMpls', 'NXActionRegLoad', 'NXActionRegLoad2', 'NXActionRegMove', 'NXActionResubmit', 'NXActionResubmitTable', 'NXActionSample', 'NXActionSample2', 'NXActionSetMplsLabel', 'NXActionSetMplsTc', 'NXActionSetMplsTtl', 'NXActionSetQueue', 'NXActionSetTunnel', 'NXActionSetTunnel64', 'NXActionStackPop', 'NXActionStackPush', 'NXActionUnknown', 'NXFlowSpecLoad', 'NXFlowSpecMatch', 'NXFlowSpecOutput', 'OFPAction', 'OFPActionCopyTtlIn', 'OFPActionCopyTtlOut', 'OFPActionDecMplsTtl', 'OFPActionDecNwTtl', 'OFPActionExperimenter', 'OFPActionExperimenterUnknown', 'OFPActionGroup', 'OFPActionHeader', 'OFPActionId', 'OFPActionOutput', 'OFPActionPopMpls', 'OFPActionPopPbb', 'OFPActionPopVlan', 'OFPActionPushMpls', 'OFPActionPushPbb', 'OFPActionPushVlan', 'OFPActionSetField', 'OFPActionSetMplsTtl', 'OFPActionSetNwTtl', 'OFPActionSetQueue', 'OFPAggregateStats', 'OFPAggregateStatsReply', 'OFPAggregateStatsRequest', 'OFPBarrierReply', 'OFPBarrierRequest', 'OFPBucket', 'OFPBucketCounter', 'OFPDescStats', 'OFPDescStatsReply', 'OFPDescStatsRequest', 'OFPEchoReply', 'OFPEchoRequest', 'OFPErrorExperimenterMsg', 'OFPErrorMsg', 'OFPExperimenter', 'OFPExperimenterMultipart', 'OFPExperimenterOxmId', 'OFPExperimenterStatsReply', 'OFPExperimenterStatsRequest', 'OFPExperimenterStatsRequestBase', 'OFPFeaturesRequest', 'OFPFlowMod', 'OFPFlowRemoved', 'OFPFlowStats', 'OFPFlowStatsReply', 'OFPFlowStatsRequest', 'OFPFlowStatsRequestBase', 'OFPGetAsyncReply', 'OFPGetAsyncRequest', 'OFPGetConfigReply', 'OFPGetConfigRequest', 'OFPGroupDescStats', 'OFPGroupDescStatsReply', 'OFPGroupDescStatsRequest', 'OFPGroupFeaturesStats', 'OFPGroupFeaturesStatsReply', 'OFPGroupFeaturesStatsRequest', 'OFPGroupMod', 'OFPGroupStats', 'OFPGroupStatsReply', 'OFPGroupStatsRequest', 'OFPHello', 'OFPHelloElemVersionBitmap', 'OFPInstruction', 'OFPInstructionActions', 'OFPInstructionGotoTable', 'OFPInstructionId', 'OFPInstructionMeter', 'OFPInstructionWriteMetadata', 'OFPMatch', 'OFPMatchField', 'OFPMeterBand', 'OFPMeterBandDrop', 'OFPMeterBandDscpRemark', 'OFPMeterBandExperimenter', 'OFPMeterBandHeader', 'OFPMeterBandStats', 'OFPMeterConfigStats', 'OFPMeterConfigStatsReply', 'OFPMeterConfigStatsRequest', 'OFPMeterFeaturesStats', 'OFPMeterFeaturesStatsReply', 'OFPMeterFeaturesStatsRequest', 'OFPMeterMod', 'OFPMeterStats', 'OFPMeterStatsReply', 'OFPMeterStatsRequest', 'OFPMultipartReply', 'OFPMultipartRequest', 'OFPOxmId', 'OFPPacketIn', 'OFPPacketOut', 'OFPPacketQueue', 'OFPPort', 'OFPPortDescStatsReply', 'OFPPortDescStatsRequest', 'OFPPortMod', 'OFPPortStats', 'OFPPortStatsReply', 'OFPPortStatsRequest', 'OFPPortStatus', 'OFPPropBase', 'OFPPropCommonExperimenter4ByteData', 'OFPPropUnknown', 'OFPQueueGetConfigReply', 'OFPQueueGetConfigRequest', 'OFPQueueProp', 'OFPQueuePropExperimenter', 'OFPQueuePropHeader', 'OFPQueuePropMaxRate', 'OFPQueuePropMinRate', 'OFPQueueStats', 'OFPQueueStatsReply', 'OFPQueueStatsRequest', 'OFPRoleReply', 'OFPRoleRequest', 'OFPSetAsync', 'OFPSetConfig', 'OFPSwitchFeatures', 'OFPTableFeatureProp', 'OFPTableFeaturePropActions', 'OFPTableFeaturePropExperimenter', 'OFPTableFeaturePropInstructions', 'OFPTableFeaturePropNextTables', 'OFPTableFeaturePropOxm', 'OFPTableFeaturePropUnknown', 'OFPTableFeaturesStats', 'OFPTableFeaturesStatsReply', 'OFPTableFeaturesStatsRequest', 'OFPTableMod', 'OFPTableStats', 'OFPTableStatsReply', 'OFPTableStatsRequest', 'ONFFlowMonitorRequest', 'ONFFlowMonitorStatsRequest', 'StringifyMixin', 'UINT16_MAX', 'UINT32_MAX', 'UINT64_MAX', '_MSG_PARSERS', '_NXFlowSpec', '__builtins__', '__doc__', '__file__', '__name__', '__package__', '_register_parser', '_set_msg_type', '_set_stats_type', 'addrconv', 'base64', 'ether', 'logging', 'mac', 'msg_pack_into', 'msg_parser', 'nx_actions', 'ofproto', 'ofproto_common', 'ofproto_parser', 'packet', 'six', 'struct', 'utils']
 packet in 1 06:4e:cc:41:07:d0 33:33:00:00:00:fb 2
 Keyboard Interrupt received. Closing RYU application manager...
+loading app flowmod_experiments
+loading app ryu.controller.ofp_handler
+instantiating app ryu.controller.ofp_handler of OFPHandler
+instantiating app flowmod_experiments of ExampleSwitch13
+loading app flowmod_experiments
+loading app ryu.controller.ofp_handler
+instantiating app ryu.controller.ofp_handler of OFPHandler
+instantiating app flowmod_experiments of ExampleSwitch13
+loading app flowmod_experiments
+loading app ryu.controller.ofp_handler
+instantiating app ryu.controller.ofp_handler of OFPHandler
+instantiating app flowmod_experiments of ExampleSwitch13
+BRICK ExampleSwitch13
+  CONSUMES EventOFPSwitchFeatures
+  CONSUMES EventOFPPacketIn
+BRICK ofp_event
+  PROVIDES EventOFPSwitchFeatures TO {'ExampleSwitch13': set(['config'])}
+  PROVIDES EventOFPPacketIn TO {'ExampleSwitch13': set(['main'])}
+  CONSUMES EventOFPHello
+  CONSUMES EventOFPPortStatus
+  CONSUMES EventOFPErrorMsg
+  CONSUMES EventOFPSwitchFeatures
+  CONSUMES EventOFPPortDescStatsReply
+  CONSUMES EventOFPEchoRequest
+  CONSUMES EventOFPEchoReply
+connected socket:<eventlet.greenio.base.GreenSocket object at 0x7f4c0a30dbd0> address:('127.0.0.1', 49244)
+hello ev <ryu.controller.ofp_event.EventOFPHello object at 0x7f4c0a31d590>
+move onto config mode
+connected socket:<eventlet.greenio.base.GreenSocket object at 0x7f4c0a30df50> address:('127.0.0.1', 49246)
+hello ev <ryu.controller.ofp_event.EventOFPHello object at 0x7f4c0a31db90>
+move onto config mode
+EVENT ofp_event->ExampleSwitch13 EventOFPSwitchFeatures
+switch features ev version=0x4,msg_type=0x6,msg_len=0x20,xid=0x47b5f67a,OFPSwitchFeatures(auxiliary_id=0,capabilities=79,datapath_id=1,n_buffers=256,n_tables=254)
+EVENT ofp_event->ExampleSwitch13 EventOFPSwitchFeatures
+switch features ev version=0x4,msg_type=0x6,msg_len=0x20,xid=0x429213f0,OFPSwitchFeatures(auxiliary_id=0,capabilities=79,datapath_id=2,n_buffers=256,n_tables=254)
+move onto main mode
+move onto main mode
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 1 , 1
+packet in 1 00:00:00:00:00:01 ff:ff:ff:ff:ff:ff 1
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 2 , 2
+packet in 2 00:00:00:00:00:01 ff:ff:ff:ff:ff:ff 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 2 , 2
+packet in 2 00:00:00:00:00:02 00:00:00:00:00:01 1
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 1 , 1
+packet in 1 00:00:00:00:00:02 00:00:00:00:00:01 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 1 , 1
+packet in 1 00:00:00:00:00:01 00:00:00:00:00:02 1
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 2 , 2
+packet in 2 00:00:00:00:00:01 00:00:00:00:00:02 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:fb 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:fb 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:fb 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:fb 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:01 2
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:01 2
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:01 2
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:01 2
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:01 2
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:01 2
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:01 2
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:01 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:fb 2
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:fb 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:fb 2
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:fb 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:fb 2
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:fb 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:fb 2
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:fb 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:fb 2
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:fb 2
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+EVENT ofp_event->ExampleSwitch13 EventOFPPacketIn
+datapath id = 1 , 1
+packet in 1 96:e0:46:c0:c4:cb 33:33:00:00:00:fb 2
+datapath id = 2 , 2
+packet in 2 56:3f:8f:f9:a4:70 33:33:00:00:00:fb 2
+Keyboard Interrupt received. Closing RYU application manager...

@@ -215,21 +215,49 @@ class ProjectController(app_manager.RyuApp):
         self.logger.debug("install_path_flow: src_mac = %r, dst_mac = %r, spath_without_macs = %r", src_mac, dst_mac, spath_without_macs)
 
         #for dpid in spath_without_macs:
-        n = len(spath_without_macs)
+        #n = len(spath_without_macs) #nr of switches in the path
+        n = len(spath_with_macs)  # nr of switches in the path
         i = 1
-        while (i< n):
-            in_port = self.net.edge[spath_without_macs[i-1]] [spath_without_macs[i]]['src_port']
-            out_port = self.net.edge[spath_without_macs[i-1]][spath_without_macs[i]]['dst_port']
+        while (i<n):
+            if i == 1: # first loop iteration i.e. installing rules on switch connected to src_mac
+                src_mac = spath_with_macs[i-1] #during first iterations its the src_mac
+                sw_a = spath_with_macs[i] #during last iteration its dst_mac
+                sw_b = spath_with_macs[i+1]  # during last iteration its dst_mac
+                in_port = self.net.edge[src_mac][sw_a]['dst_port']
+                out_port = self.net.edge[sw_a][sw_b]['src_port']
+                self.__send_flow_mod(sw_a, src_mac, in_port, dst_mac, out_port)
+            else:
 
-    def __install_flow(self, dpid_a, dpid_n,spath): #spath is without any macs, only contains switch dpids
-        self.__send_flow_mod(self.datapathDb(dpid), dst_mac, src_mac)
+                if i == n-1: #last loop iteration i.e. installing rules on switch to which dst_mac is connected
+                    dst_mac = spath_with_macs[n-1]
+                    sw_b = spath_with_macs[n-2]
+                    sw_a = spath_with_macs[n-3]
+                    in_port = self.net.edge[sw_a][sw_b]['dst_port']
+                    out_port = self.net.edge[sw_b][dst_mac]['src_port']
+                    self.__send_flow_mod(sw_a, src_mac, in_port, dst_mac, out_port)
+                else:
+                    sw_a = spath_with_macs[i]  # this switch already has flow installed during first iteration
+                    sw_b = spath_with_macs[i+1]  # on sw_b , flow is to be installed
+                    sw_c = spath_with_macs[i+2]  #
+
+                    in_port = self.net.edge[sw_a][sw_b]['dst_port']
+
+                    out_port = self.net.edge[sw_b][sw_c]['src_port']
+                    self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
+            i=i+1
+
+
+    #def __install_flow(self, dpid, src_mac, dst_mac): #spath is without any macs, only contains switch dpids
+    #    self.__send_flow_mod(self.datapathDb(dpid), src_mac,in_port, dst_mac, out_port) #, in_port, out_port)
 
 
     # below method sourced from the ryu api doc at:http://ryu.readthedocs.io/en/latest/ofproto_v1_3_ref.html#modify-state-messages
     # added dst_mac which is a string e.g. 'ff:ff:ff:ff:ff:ff'
     #not using in_port for now as a criteria for routing but may be later.
 
-    def __send_flow_mod(self, datapath, dst_mac, src_mac,out_port):
+    def __send_flow_mod(self, dpid, src_mac, in_port, dst_mac, out_port):
+        self.logger.debug("FLOWMOD_1 : flow_rule to install , dpid = %r, %r's%r TO %r's %r ", dpid, src_mac, in_port, dst_mac,out_port)
+        datapath = self.datapathDb[dpid]
         ofp = datapath.ofproto
         ofp_parser = datapath.ofproto_parser
 
@@ -238,7 +266,7 @@ class ProjectController(app_manager.RyuApp):
         idle_timeout = hard_timeout = 0
         priority = 32768
         buffer_id = ofp.OFP_NO_BUFFER
-        match = ofp_parser.OFPMatch(in_port=1, eth_dst=dst_mac, eth_src=src_mac)  # 'ff:ff:ff:ff:ff:ff'
+        match = ofp_parser.OFPMatch(in_port=in_port, eth_dst=dst_mac, eth_src=src_mac)  # 'ff:ff:ff:ff:ff:ff'
         # match = ofp_parser.OFPMatch(
         #     in_port=1,
         #     eth_dst=dst_mac,
@@ -258,6 +286,8 @@ class ProjectController(app_manager.RyuApp):
                                     match, inst)
         datapath.send_msg(req)
     def __save_datapath(self,datapath):
+        #do we need to check if the datapath is recorded from the most recent packet received by the controller. currently this is the case as we keep overwriting it.
+        #we could have some check to verify if its a valid datapath
         self.datapathDb[datapath.id]=datapath
 
 
@@ -351,13 +381,15 @@ class ProjectController(app_manager.RyuApp):
 
                 self.logger.debug("LEARNING : ARP extractions show about packet details as : arp.src_ip = %r , arp.dst_ip = %r , arp.opcode (1 for Request)  = %r  ", pkt_arp.src_ip, pkt_arp.dst_ip, pkt_arp.opcode)
                 #since its a directonal graph so we need to add two pairs for every single links i.e in each direction
-                self.net.add_edge(dpid, src_mac,
-                                  {'src_port': msg.match['in_port'] , 'dst_port': msg.match['in_port'] ,
-                                   'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True})  # src is the src mac
+
                 self.net.add_edge(src_mac, dpid,
                                   {'src_port': msg.match['in_port'] , 'dst_port': msg.match['in_port'] ,
                                    'src_dpid': src_mac, 'dst_dpid': dpid, 'end_host': True,
-                                   'ip': pkt_arp.src_ip, 'ip':pkt_arp.src_ip})  # src is the src mac
+                                   'ip': pkt_arp.src_ip})  # src is the src mac
+
+                self.net.add_edge(dpid, src_mac,
+                                  {'src_port': msg.match['in_port'], 'dst_port': msg.match['in_port'],
+                                   'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True})  # src is the src mac
 
                 self.print_l2_table()
 

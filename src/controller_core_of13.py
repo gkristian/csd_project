@@ -123,7 +123,21 @@ class ProjectController(app_manager.RyuApp):
     def ls(self,obj):
         print("\n".join([x for x in dir(obj) if x[0] != "_"]))
 
-    #An openflow v1.3 implementation must install a table-miss flow entry rule while version 1.0 doesn't require this.
+
+    """
+    Table miss flow entry looks like below:
+    mininet> sh ovs-ofctl -O OpenFlow13 dump-flows l3
+    OFPST_FLOW reply (OF1.3) (xid=0x2):
+     cookie=0x0, duration=0.352s, table=0, n_packets=1, n_bytes=60, priority=65535,dl_dst=01:80:c2:00:00:0e,dl_type=0x88cc actions=CONTROLLER:65535
+     cookie=0x0, duration=0.399s, table=0, n_packets=2, n_bytes=120, priority=0 actions=CONTROLLER:65535
+
+    mininet> sh ovs-ofctl -O OpenFlow13 dump-flows l1
+    OFPST_FLOW reply (OF1.3) (xid=0x2):
+     cookie=0x0, duration=2.572s, table=0, n_packets=1, n_bytes=60, priority=65535,dl_dst=01:80:c2:00:00:0e,dl_type=0x88cc actions=CONTROLLER:65535
+     cookie=0x0, duration=2.627s, table=0, n_packets=2, n_bytes=120, priority=0 actions=CONTROLLER:65535
+
+    """
+    # An openflow v1.3 implementation must install a table-miss flow entry rule while version 1.0 doesn't require this.
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
         """
@@ -210,17 +224,31 @@ class ProjectController(app_manager.RyuApp):
         """
         self.logger.debug("Installing flows for the path %r", spath_with_macs)
         #we don't do src_mac=spath[0] since I  have already done a deque operation of pops and I just dont want to repeat it
-
-        (src_mac,dst_mac,spath_without_macs) = self.__remove_macs_from_shortest_path(spath_with_macs)
-        self.logger.debug("install_path_flow: src_mac = %r, dst_mac = %r, spath_without_macs = %r", src_mac, dst_mac, spath_without_macs)
+        ########### below works but we want to avoid it
+        ###########(src_mac,dst_mac,spath_without_macs) = self.__remove_macs_from_shortest_path(spath_with_macs)
+        ###########self.logger.debug("install_path_flow: src_mac = %r, dst_mac = %r, spath_without_macs = %r", src_mac, dst_mac, spath_without_macs)
 
         #for dpid in spath_without_macs:
         #n = len(spath_without_macs) #nr of switches in the path
-        n = len(spath_with_macs)  # nr of switches in the path
+        n = len(spath_with_macs)  # nr of switches in the path + 2 i.e.including src mac and dst mac
         i = 1
-        while (i<n):
+        src_mac = spath_with_macs[i-1]  # during first iterations its the src_mac
+        dst_mac = spath_with_macs[n-1]
+        while (i <= n-2): # n-1 is the last node which is the dst mac
+            self.logger.debug("Installing rule on %r nth switch in path ", i)
+            sw_b = spath_with_macs[i];  # this switch already has flow installed during first iteration
+            sw_c = spath_with_macs[i + 1]  # on sw_b , flow is to be installed
+            sw_a = spath_with_macs[i - 1]  #
+
+            in_port = self.net.edge[sw_a][sw_b]['dst_port']
+            out_port = self.net.edge[sw_b][sw_c]['src_port']
+            self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
+            i = i + 1
+
+            """
+            self.logger.debug("Installing rule on %r nth switch in path ", i)
             if i == 1: # first loop iteration i.e. installing rules on switch connected to src_mac
-                src_mac = spath_with_macs[i-1] #during first iterations its the src_mac
+
                 sw_a = spath_with_macs[i] #during last iteration its dst_mac
                 sw_b = spath_with_macs[i+1]  # during last iteration its dst_mac
                 in_port = self.net.edge[src_mac][sw_a]['dst_port']
@@ -228,23 +256,24 @@ class ProjectController(app_manager.RyuApp):
                 self.__send_flow_mod(sw_a, src_mac, in_port, dst_mac, out_port)
             else:
 
-                if i == n-1: #last loop iteration i.e. installing rules on switch to which dst_mac is connected
-                    dst_mac = spath_with_macs[n-1]
+                if i == n-2: #last loop iteration i.e. installing rules on switch to which dst_mac is connected
+
                     sw_b = spath_with_macs[n-2]
                     sw_a = spath_with_macs[n-3]
                     in_port = self.net.edge[sw_a][sw_b]['dst_port']
                     out_port = self.net.edge[sw_b][dst_mac]['src_port']
-                    self.__send_flow_mod(sw_a, src_mac, in_port, dst_mac, out_port)
+                    self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
                 else:
-                    sw_a = spath_with_macs[i]  # this switch already has flow installed during first iteration
-                    sw_b = spath_with_macs[i+1]  # on sw_b , flow is to be installed
-                    sw_c = spath_with_macs[i+2]  #
+                    sw_b = spath_with_macs[i] ; # this switch already has flow installed during first iteration
+                    sw_c = spath_with_macs[i+1]  # on sw_b , flow is to be installed
+                    sw_a = spath_with_macs[i-1]  #
 
                     in_port = self.net.edge[sw_a][sw_b]['dst_port']
-
                     out_port = self.net.edge[sw_b][sw_c]['src_port']
                     self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
-            i=i+1
+            i = i + 1
+            """
+
 
 
     #def __install_flow(self, dpid, src_mac, dst_mac): #spath is without any macs, only contains switch dpids
@@ -726,3 +755,6 @@ class ProjectController(app_manager.RyuApp):
                                   actions=actions,
                                   data=pkt.data)
         datapath.send_msg(out)
+
+
+

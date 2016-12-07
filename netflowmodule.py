@@ -163,7 +163,11 @@ class NFM(simple_switch_13.SimpleSwitch13):
 	"""
 	def calculate_dropped_packets(self, ev):
 
+<<<<<<< Updated upstream
 		#self.DICT_TO_DB['packet_dropped'] = {}	#OLD FORMAT
+=======
+		self.DICT_TO_DB['packet_dropped'] = {}
+>>>>>>> Stashed changes
 
 		body = ev.msg.body
 		rx_packets = 0

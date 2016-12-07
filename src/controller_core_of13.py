@@ -118,6 +118,7 @@ class ProjectController(app_manager.RyuApp):
         self.network_bootstrap_discovery_count = 4 #used by type 1, means stop after 4 mac addresses learnt
 
         self.datapathDb = {}
+        self.already_installed_paths_SET = set()
 
     # Handy function that lists all attributes in the given object
     def ls(self,obj):
@@ -219,10 +220,11 @@ class ProjectController(app_manager.RyuApp):
         """
         input is a networkx shortest path list of the format [src_mac, switch1, sw2,..., swN, dst_mac]
         it installs flows in all the switches1..N
+        :rtype: Boolean
         :param spath
         :return: true if operation was successful or else false
         """
-        self.logger.debug("Installing flows for the path %r", spath_with_macs)
+        self.logger.debug("Considering path %r", spath_with_macs)
         #we don't do src_mac=spath[0] since I  have already done a deque operation of pops and I just dont want to repeat it
         ########### below works but we want to avoid it
         ###########(src_mac,dst_mac,spath_without_macs) = self.__remove_macs_from_shortest_path(spath_with_macs)
@@ -318,6 +320,17 @@ class ProjectController(app_manager.RyuApp):
         #do we need to check if the datapath is recorded from the most recent packet received by the controller. currently this is the case as we keep overwriting it.
         #we could have some check to verify if its a valid datapath
         self.datapathDb[datapath.id]=datapath
+    def __isPathNotAlreadyInstalled(self,spath):
+        spath_as_tuple = tuple(spath)  
+        if spath_as_tuple in self.already_installed_paths_SET: #set can only contain a hashable immutable object, a list is not acceptable.
+            #this computed shortest path is already installed in the switches
+            return True
+        else:
+
+            #A list cannot be added to a set because it is not hashable, while a tuple can be added cuz its not mutable but hashable.
+            self.already_installed_paths_SET.add(spath_as_tuple)
+            return False
+
 
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
@@ -468,7 +481,7 @@ class ProjectController(app_manager.RyuApp):
             self.logger.info("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : compute shortest path and install flows if bstrap completed")
             # This is if block ensures that code after it only gets executed once the network has bootstraped i.e. bootstrap time limit has reached
             if self.defines_D['bootstrap_in_progress']:
-                self.logger.info("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows")
+                self.logger.info("RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows")
                 #if int(time.time()) - self.epoc_starttime > self.network_bootstrap_time:
                 #    self.defines_D['bootstrap_in_progress'] = False
                 return #below code wont get executed during network bootstrap
@@ -487,7 +500,9 @@ class ProjectController(app_manager.RyuApp):
 
 
                 self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
-                self.__install_path_flow(spath)
+                if self.__isPathNotAlreadyInstalled(spath):
+                    self.logger.debug("Installing path : %r", spath)
+                    self.__install_path_flow(spath)
 
                 #lookup dst mac in our graph, has_path()
                 #if yes find path
@@ -519,7 +534,7 @@ class ProjectController(app_manager.RyuApp):
 
             else: #this is not an lldp packet, this is not arp broadcast, the dst mac is not known but is not broadcast either
                 #check if its a valid openflow packet
-                self.logger.debug("NEW_SPECIFIC_DST_MAC targeted request whose mac we havent learnt yet: Received a new destination mac.  dst_mac=%r src_mac=%r ", dst_mac,src_mac)
+                self.logger.debug("LEARN_NEW_MAC dst_mac=%r src_mac=%r ", dst_mac,src_mac)
                 #self.logger.debug("NEW_SPECIFIC_DST_MAC: We see some traffic - it cant be LLDP though")
                 self.print_l2_table()
 

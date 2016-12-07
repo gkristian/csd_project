@@ -14,7 +14,8 @@ OUTPUT_LOG=/tmp/cc.log
 #ryu-manager --observe-links --verbose --log-file $LOG_FILE --default-log-level 3 $RYU_CC_APP &> $OUTPUT_LOG & 
 ./stop_controller.sh
 echo "Now starting ryu application "
-ryu-manager --observe-links --install-lldp-flow  --verbose --log-file $LOG_FILE --default-log-level 3 $RYU_GUI $RYU_CC_APP $NFM_APP &> $OUTPUT_LOG & 
+#ryu-manager --observe-links --install-lldp-flow  --verbose --log-file $LOG_FILE --default-log-level 3 $RYU_GUI $RYU_CC_APP $NFM_APP &> $OUTPUT_LOG & 
+ryu-manager --observe-links --install-lldp-flow  --verbose --log-file $LOG_FILE --default-log-level 3 $RYU_GUI $RYU_CC_APP &> $OUTPUT_LOG & 
 ps auxw |grep ryu-manager |grep -v grep
 echo "____"
 

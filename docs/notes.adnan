@@ -44,4 +44,6 @@ self.net.add_edge(src_mac, dpid,
                                    'src_dpid': src_mac, 'dst_dpid': dpid, 'end_host': True,
                                    'ip': pkt_arp.src_ip, 'ip':pkt_arp.src_ip})  # src is the src mac
 
+=== Handy Diffs ===
+diff controller_core.current controller_core -ur -x '.gi*'
 

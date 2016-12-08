@@ -1,0 +1,8 @@
+mininet> sh ovs-ofctl -O OpenFlow13 dump-flows l1
+OFPST_FLOW reply (OF1.3) (xid=0x2):
+ cookie=0x0, duration=3422.042s, table=0, n_packets=562, n_bytes=33720, priority=65535,dl_dst=01:80:c2:00:00:0e,dl_type=0x88cc actions=CONTROLLER:65535
+ cookie=0x0, duration=3206.512s, table=0, n_packets=17, n_bytes=1610, send_flow_rem in_port=3,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:01:02 actions=output:4
+ cookie=0x0, duration=3204.157s, table=0, n_packets=16, n_bytes=1512, send_flow_rem in_port=4,dl_src=00:00:00:00:01:02,dl_dst=00:00:00:00:01:01 actions=output:3
+ cookie=0x0, duration=3186.983s, table=0, n_packets=35, n_bytes=3094, send_flow_rem in_port=3,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:02:01 actions=output:3
+ cookie=0x0, duration=2524.947s, table=0, n_packets=187, n_bytes=17318, send_flow_rem in_port=3,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:02:02 actions=output:3
+ cookie=0x0, duration=3422.085s, table=0, n_packets=124, n_bytes=9842, priority=0 actions=CONTROLLER:65535

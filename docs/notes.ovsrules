@@ -1,0 +1,17 @@
+sh ovs-ofctl -O OpenFlow13 add-flow s1 idle_timeout=0,priority=1,in_port=1,actions=output:2
+
+
+
+alias c='tshark -f "port 5060"&
+
+
+sh ovs-ofctl -O OpenFlow13 add-flow s1 idle_timeout=0,priority=1,in_port=1,actions=output:2
+
+
+#default prio if not specificied is 32768
+sh ovs-ofctl -O OpenFlow13 add-flow s1 dl_src=00:00:00:00:00:01,dl_dst=00:00:00:00:00:03,in_port=1,priority=400,actions=output:2
+sh ovs-ofctl -O OpenFlow13  add-flow s2 dl_src=00:00:00:00:00:01,dl_dst=00:00:00:00:00:03,in_port=2,priority=400,actions=output:3
+sh ovs-ofctl -O OpenFlow13  add-flow s3 dl_src=00:00:00:00:00:01,dl_dst=00:00:00:00:00:03,in_port=2,priority=400,actions=output:1
+
+
+idea: rule aging, set idle_age = 0

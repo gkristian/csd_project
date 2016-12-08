@@ -247,6 +247,22 @@ class ProjectController(app_manager.RyuApp):
             self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
             i = i + 1
 
+        #INSTALL REVERSE ROUTES
+
+        dst_mac = spath_with_macs[0]  # during first iterations its the src_mac
+        src_mac = spath_with_macs[n - 1]
+        i = n - 2
+        while (i >= 1):  #  1 is the first switch
+            self.logger.debug("Installing reverse rule on %r nth switch in path ", i)
+            sw_b = spath_with_macs[i];  # this switch already has flow installed during first iteration
+            sw_c = spath_with_macs[i - 1]  # on sw_b , flow is to be installed
+            sw_a = spath_with_macs[i + 1]  #
+
+            in_port = self.net.edge[sw_a][sw_b]['dst_port']
+            out_port = self.net.edge[sw_b][sw_c]['src_port']
+            self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
+            i = i - 1
+
             """
             self.logger.debug("Installing rule on %r nth switch in path ", i)
             if i == 1: # first loop iteration i.e. installing rules on switch connected to src_mac
@@ -287,7 +303,7 @@ class ProjectController(app_manager.RyuApp):
     #not using in_port for now as a criteria for routing but may be later.
 
     def __send_flow_mod(self, dpid, src_mac, in_port, dst_mac, out_port):
-        self.logger.debug("FLOWMOD_1 : flow_rule to install , dpid = %r, %r's%r TO %r's %r ", dpid, src_mac, in_port, dst_mac,out_port)
+        self.logger.debug("FLOWMOD_1 : flow_rule to install , dpid = %r, %r -> %r ====TO=== %r -> %r ", dpid, src_mac, in_port, dst_mac,out_port)
         datapath = self.datapathDb[dpid]
         ofp = datapath.ofproto
         ofp_parser = datapath.ofproto_parser
@@ -295,7 +311,7 @@ class ProjectController(app_manager.RyuApp):
         cookie = cookie_mask = 0
         table_id = 0
         idle_timeout = hard_timeout = 0
-        priority = 32768
+        priority = 32768 #this is default priority assumed if no priority specified
         buffer_id = ofp.OFP_NO_BUFFER
         match = ofp_parser.OFPMatch(in_port=in_port, eth_dst=dst_mac, eth_src=src_mac)  # 'ff:ff:ff:ff:ff:ff'
         # match = ofp_parser.OFPMatch(
@@ -321,7 +337,7 @@ class ProjectController(app_manager.RyuApp):
         #we could have some check to verify if its a valid datapath
         self.datapathDb[datapath.id]=datapath
     def __isPathNotAlreadyInstalled(self,spath):
-        spath_as_tuple = tuple(spath)  
+        spath_as_tuple = tuple(spath)
         if spath_as_tuple in self.already_installed_paths_SET: #set can only contain a hashable immutable object, a list is not acceptable.
             #this computed shortest path is already installed in the switches
             return True
@@ -605,7 +621,7 @@ class ProjectController(app_manager.RyuApp):
 
     """
     def save_topolog_to_file(self):
-        filename='controller_core_network.png'
+        filename='network_with_dst_port.png'
         #nx.draw(self.net, with_labels=True)
 
         ###
@@ -615,6 +631,14 @@ class ProjectController(app_manager.RyuApp):
         pos = nx.spring_layout(self.net)
         #pos = nx.graphviz_layout(self.net,prog='dot')
         nx.draw(self.net, pos, with_labels=True , hold= False)
+        #print in_port and out_port as well
+        label_src = nx.get_edge_attributes(self.net, 'src_port')
+        nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_src)
+        plt.savefig("network_with_src_port.png")
+        label_dst = nx.get_edge_attributes(self.net, 'dst_port')
+        nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_dst)
+
+
         #nx.draw_graphviz(self.net)
         #nx.draw_circular(self.net, with_labels=True)
 

@@ -18,26 +18,8 @@ import time
 import sys
 from client import client_side
 import threading
-
+import numpy
 from datetime import datetime
-
-
-# calculate sleeping time for rate request rounds initiated per second
-rate = 3
-SLEEPING = 1/rate
-
-# current it means that between each round it will be
-# at least 3*MIN_SLEEP seconds as there are 3 switches
-MIN_SLEEP = 0.03125
-SLEEPING =  SLEEPING - MIN_SLEEP*3 # keep the request round rate if possible
-if SLEEPING < 0:
-	SLEEPING = 0
-MODS_NR = 3
-LOCK = threading.Lock()
-UPDATE_TIME = 1
-
-
-
 
 class RPM(app_manager.RyuApp):
 	OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -49,32 +31,83 @@ class RPM(app_manager.RyuApp):
 		# used by RyuApp
 		self.datapaths = {} 
 
-		self.net = app_manager._CONTEXTS['network']	#fetch graph object of physical network
+		self.net = None
+		rate = None
+		self.MIN_SLEEP = None
+		self.UPDATE_TIME = None
+
+		# Fetch parameters
+		# graph object of physical network
+		self.net = app_manager._CONTEXTS['network']
+		# Sending round rate
+		rate = app_manager._CONTEXTS['rpm_rate']
+		# Sleep time between barrier requests
+		self.MIN_SLEEP = app_manager._CONTEXTS['rpm_min_sleep'] 
+		# Time between sending DM updates
+		self.UPDATE_TIME = app_manager._CONTEXTS['rpm_update_time']	
+
+		print "RATE: %d MIN_SLEEP: %d UPDATE_TIME: %d" % (rate, self.MIN_SLEEP, self.UPDATE_TIME)
+
+		#sys.exit()
+
 		
-		self.totalSwitchesNr = self.determineNumberOfSwitches()	#calculate total switches by the graph topology object		
+		#calculate total switches by the graph topology object
+		self.totalSwitchesNr = self.determineNumberOfSwitches()			
 		self.logger.debug("TOTAL SWITCHES: %d", self.totalSwitchesNr)
 
-		# Communication with DM
+		# Set up communication with DM
 		url = 'http://127.0.0.1:8000/Tasks.txt'
 		self.client = client_side(url)
 
-		#prepare a dictionary for updating and sending to Database
-		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}}	
+		#prepare a dictionary for updating and sending to DM
+		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}, 'max_latency': -1, 'min_latency': -1, 'mean_latency': -1, 'mean_latency': -1, 'median_latency': -1, '25th_latency': -1, '75th_latency': -1}	
 		
-		self.switches_DPIDs = {}	# dict to store all datapath ojects by key dpid
-		
-		self.start_time = 0
+		# dict to store all datapath ojects by key dpid
+		self.switches_DPIDs = {}	
 
+		# For latency measurments
 		# format {"dpid1": {"start_time": 100, "measured_time": 13, "xid": 1234}}
 		self.switches_data = {}
 		self.started_monitoring = False
+		# "global" value for latency measurment
+		self.start_time = None
+
+		# Set up monitoring request thread's sending rate
+		# calculate self.SLEEPING time for rate request rounds initiated per second
+		#rate = 1 # app_manager._CONTEXTS['rpm_rate']
+		self.SLEEPING = 1/rate 
+
+		# current it means that between each round it will be
+		# at least 3*self.MIN_SLEEP seconds as there are 3 switches
+		#self.MIN_SLEEP = 0.002 # app_manager._CONTEXTS['rpm_min_sleep']
+		self.SLEEPING = self.SLEEPING - self.MIN_SLEEP*self.totalSwitchesNr # keep the request round rate if possible
+		if self.SLEEPING < 0:
+			self.SLEEPING = 0
+
+		self.MODS_NR = 3
+		self.LOCK = threading.Lock()
+		#self.UPDATE_TIME = 1 # app_manager._CONTEXTS['rpm_update_time']
+		self.UPDATE_COUNTER = 250
+
+		# list keeping this update sessions latencies
+		# the current latency from a a certain switch of number X will be placed 
+		# at index X-1 in the list
+		self.latency_array = range(self.totalSwitchesNr)
+
+	def calculateStats(self):
+		#print self.latency_array
+		self.DICT_TO_DB['mean_latency'] = numpy.mean(self.latency_array)
+		self.DICT_TO_DB['median_latency'] = numpy.median(self.latency_array)
+		self.DICT_TO_DB['max_latency'] = numpy.amax(self.latency_array)
+		self.DICT_TO_DB['min_latency'] = numpy.amin(self.latency_array)
+		self.DICT_TO_DB['25th_latency'] = numpy.percentile(self.latency_array,25)
+		self.DICT_TO_DB['75th_latency'] = numpy.percentile(self.latency_array,75)
+		#print self.DICT_TO_DB.viewitems()
 
 	"""
 	Main loop of sending  install/update/delete flow mods to the switches,
 	currently max sending ca 32 request every second. i.e send request to a switch every nr_of_switches/32 seconds, 
 	any faster sending rate exceeds the serving rate of the event handler and builds up the quequing times.
-
-	TODO Send updates to DM
 	"""
 	def _monitor(self): 
 		lock = threading.Lock()
@@ -85,15 +118,10 @@ class RPM(app_manager.RyuApp):
 		last_update_time = int(round(time.time() * 1000))
 		#last_update_time = datetime.now().second
 		
-		# TODO minimum waiting time may change with topology changes, investigate.
-
 		# Sending loop
 		update_counter = 0
 		looping = True
 		while looping:
-
-		#for n in range(100000):  #for testing purposes
-			#print "Round nr %d" % n		
 			#self._print("SENDING FLOW MODS...")
 
 			for dpid in dpids:
@@ -103,33 +131,39 @@ class RPM(app_manager.RyuApp):
 					current_updatetime = int(round(time.time() * 1000))
 					#current_updatetime = datetime.now()
 
-					if (current_updatetime - last_update_time) >= UPDATE_TIME*1000:
-						self._print("SEND UPDATE TO DM")
+					if (current_updatetime - last_update_time) >= self.UPDATE_TIME*1000:
+						# calculate and insert statistics into the DB dict
+						self.calculateStats()
+						#self._print("SEND UPDATE TO DM")
+						# set timestamp
 						self.DICT_TO_DB['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+						
 						#print self.DICT_TO_DB.viewitems()
-						self.client.postme(self.DICT_TO_DB) #kanske blockerande
+						#print "LOOK AT THE JSON"
+						#print json.dumps(self.DICT_TO_DB)
+
+						# send current values to DM
+						self.client.postme(self.DICT_TO_DB)
 						last_update_time = int(round(time.time() * 1000))
 						#last_update_time = datetime.now().second
 						
 						# For testing, to get a specific number of samples
-						update_counter += 1
-						if update_counter >= 100:
-							looping = False
-							break
+						#update_counter += 1
+						#if update_counter >= self.UPDATE_COUNTER:
+						#	looping = False
+						#	break
 
 				with lock:
 					# Get the datapath object
 					dp = self.switches_DPIDs[dpid]
 
 					# Sending flow mods
-					
 					self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "ADD", "NORMAL")
 
 
 					# number of updates to be sent is equal to toal number of messages to be sent 
 					#minus the add and the delete message
-				
-					updates = MODS_NR - 2
+					updates = self.MODS_NR - 2
 					out_act = "FLOOD"
 					while updates > 0:
 						self.send_flow_mod(dp, 1, '00:00:00:00:00:00', '00:00:00:00:00:00', "UPDATE", out_act)
@@ -149,21 +183,21 @@ class RPM(app_manager.RyuApp):
 					# set start time for measurment
 					self.switches_data[dpid]["start_time"] = int(time.time() * 1000000)
 					#self.switches_data[dpid]["start_time"] = datetime.now().microsecond
+					
 					# set xid to be able to identify the response
 					xid += 1
 					self.switches_data[dpid]["xid"] = xid
 					# send the barrier request
 					self.send_barrier_request(dp, xid)
 					#self._print("BARRIER REQ WITH ID %d SENT" %xid)
-				
 					#self._print("Data before barrier req: " + str(self.switches_data.viewitems()))
 
 					# wait to send new monitoring requests to another switch,
 					# let the other thread handle events for a while
-					time.sleep(MIN_SLEEP)
+					time.sleep(self.MIN_SLEEP)
 
 			# sleep time between each request round
-			time.sleep(SLEEPING)
+			time.sleep(self.SLEEPING)
 
 			#testing
 			#break
@@ -293,11 +327,11 @@ class RPM(app_manager.RyuApp):
 		req_xid = self.switches_data[dpid]["xid"]
 
 		if req_xid == xid:
-			with LOCK:
-				current_time = int(time.time() * 1000000) 					# current time in 
+			with self.LOCK:
+				current_time = int(time.time() * 1000000) 					# current time in microseconds
 				#current_time = datetime.now().microsecond
-				starting_time = self.switches_data[dpid]["start_time"] 	# also in milliseconds
-				timed = current_time - starting_time					# measured time between barrier request and response 
+				starting_time = self.switches_data[dpid]["start_time"] 	
+				timed = current_time - starting_time						# measured time between barrier request and response 
 				
 				#for datetime
 				#MAX = 999999
@@ -305,10 +339,12 @@ class RPM(app_manager.RyuApp):
 				#	timed = (MAX - starting_time) + current_time
 
 			
-				# Store the measured time
+				# Store the measured latency time
 				self.switches_data[dpid]["measured_time"] = timed
+				# Store the latency value for statistics
+				self.latency_array[dpid-1] = timed
+
 				# Store the measured time in DB message dict
-			
 				self.DICT_TO_DB['delays'][dpid] = timed
 		
 				# Time taken for installation of all current waiting rules and RTT 
@@ -316,9 +352,13 @@ class RPM(app_manager.RyuApp):
 				#self._print("Start time %d current time %d" % (starting_time, current_time))
 		else:
 			if xid > req_xid:
-				self._print("Sending rate exceeds handling rate")
+				self._print("ERROR: Sending rate exceeds handling rate")
+				self._print("ERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERROR")
+
 			else:
-				self._print("?!? Something weird is going on, recieving xids out of order")
+				self._print("ERROR: ?!? Something weird is going on, recieving xids out of order")
+				self._print("ERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERROR")
+
 
 	"""
 	Switch state change handler. Called every time a switch state changes, creates a dict dpid -> datapath

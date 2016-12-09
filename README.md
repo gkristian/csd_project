@@ -1,7 +1,14 @@
+How to run?
+All scripts under bin, run as root, make sure ryu is installed as root or (ryu-manager and required python libs indicated in the install docs are in OS PATH )
 
-branch : controller_core
+1. First mininet start script
+2. Then CPM start script
+3. Log viewer ./showlog.sh
+branch : CPM
 This branch implements a RYU controller app that build the network topology including the host mac addresses without flooding the network.
 It uses networkx library to store the network graph.
+
+
 
 ChangeLog after midterm:
 

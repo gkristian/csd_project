@@ -1,0 +1,32 @@
+mininet> sh ovs-ofctl -O OpenFlow13 dump-flows l1
+OFPST_FLOW reply (OF1.3) (xid=0x2):
+ cookie=0x0, duration=1883.593s, table=0, n_packets=318, n_bytes=19080, priority                                               =65535,dl_dst=01:80:c2:00:00:0e,dl_type=0x88cc actions=CONTROLLER:65535
+ cookie=0x0, duration=2236.298s, table=0, n_packets=8, n_bytes=616, send_flow_re                                               m in_port=3,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:01:02 actions=output:4
+ cookie=0x0, duration=2236.297s, table=0, n_packets=7, n_bytes=518, send_flow_re                                               m in_port=4,dl_src=00:00:00:00:01:02,dl_dst=00:00:00:00:01:01 actions=output:3
+ cookie=0x0, duration=2211.160s, table=0, n_packets=10, n_bytes=868, send_flow_r                                               em in_port=3,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:02:01 actions=output:2
+ cookie=0x0, duration=2211.159s, table=0, n_packets=10, n_bytes=868, send_flow_r                                               em in_port=2,dl_src=00:00:00:00:02:01,dl_dst=00:00:00:00:01:01 actions=output:3
+ cookie=0x0, duration=2190.409s, table=0, n_packets=8, n_bytes=672, send_flow_re                                               m in_port=3,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:02:02 actions=output:2
+ cookie=0x0, duration=2190.407s, table=0, n_packets=8, n_bytes=672, send_flow_re                                               m in_port=2,dl_src=00:00:00:00:02:02,dl_dst=00:00:00:00:01:01 actions=output:3
+ cookie=0x0, duration=1883.771s, table=0, n_packets=43, n_bytes=4242, priority=0                                                actions=CONTROLLER:65535
+mininet> sh ovs-ofctl -O OpenFlow13 dump-flows l2
+OFPST_FLOW reply (OF1.3) (xid=0x2):
+ cookie=0x0, duration=1888.607s, table=0, n_packets=637, n_bytes=38220, priority=65535,dl_dst=01:80:c2:00:00:0e,dl_type=0x88cc actions=CONTROLLER:65535
+ cookie=0x0, duration=2216.237s, table=0, n_packets=10, n_bytes=868, send_flow_rem in_port=3,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:02:01 actions=output:4
+ cookie=0x0, duration=2216.236s, table=0, n_packets=10, n_bytes=868, send_flow_rem in_port=4,dl_src=00:00:00:00:02:01,dl_dst=00:00:00:00:01:01 actions=output:3
+ cookie=0x0, duration=2195.484s, table=0, n_packets=8, n_bytes=672, send_flow_rem in_port=3,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:02:02 actions=output:4
+ cookie=0x0, duration=2195.482s, table=0, n_packets=8, n_bytes=672, send_flow_rem in_port=4,dl_src=00:00:00:00:02:02,dl_dst=00:00:00:00:01:01 actions=output:3
+ cookie=0x0, duration=1888.848s, table=0, n_packets=106, n_bytes=18196, priority=0 actions=CONTROLLER:65535
+mininet> sh ovs-ofctl -O OpenFlow13 dump-flows l3
+OFPST_FLOW reply (OF1.3) (xid=0x2):
+ cookie=0x0, duration=1890.690s, table=0, n_packets=481, n_bytes=28860, priority=65535,dl_dst=01:80:c2:00:00:0e,dl_type=0x88cc actions=CONTROLLER:65535
+ cookie=0x0, duration=2218.316s, table=0, n_packets=10, n_bytes=868, send_flow_rem in_port=2,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:02:01 actions=output:4
+ cookie=0x0, duration=2218.316s, table=0, n_packets=10, n_bytes=868, send_flow_rem in_port=4,dl_src=00:00:00:00:02:01,dl_dst=00:00:00:00:01:01 actions=output:2
+ cookie=0x0, duration=2197.560s, table=0, n_packets=8, n_bytes=672, send_flow_rem in_port=2,dl_src=00:00:00:00:01:01,dl_dst=00:00:00:00:02:02 actions=output:5
+ cookie=0x0, duration=2197.560s, table=0, n_packets=8, n_bytes=672, send_flow_rem in_port=5,dl_src=00:00:00:00:02:02,dl_dst=00:00:00:00:01:01 actions=output:2
+ cookie=0x0, duration=2178.737s, table=0, n_packets=10, n_bytes=868, send_flow_rem in_port=4,dl_src=00:00:00:00:02:01,dl_dst=00:00:00:00:02:02 actions=output:5
+ cookie=0x0, duration=2178.736s, table=0, n_packets=10, n_bytes=868, send_flow_rem in_port=5,dl_src=00:00:00:00:02:02,dl_dst=00:00:00:00:02:01 actions=output:4
+ cookie=0x0, duration=1890.929s, table=0, n_packets=48, n_bytes=5230, priority=0 actions=CONTROLLER:65535
+mininet> sh ovs-ofctl -O OpenFlow13 dump-flows l4
+OFPST_FLOW reply (OF1.3) (xid=0x2):
+ cookie=0x0, duration=1893.845s, table=0, n_packets=472, n_bytes=28320, priority=65535,dl_dst=01:80:c2:00:00:0e,dl_type=0x88cc actions=CONTROLLER:65535
+

@@ -237,13 +237,15 @@ class ProjectController(app_manager.RyuApp):
         src_mac = spath_with_macs[i-1]  # during first iterations its the src_mac
         dst_mac = spath_with_macs[n-1]
         while (i <= n-2): # n-1 is the last node which is the dst mac
-            self.logger.debug("Installing rule on %r nth switch in path ", i)
+            self.logger.debug("Installing rule : iteration = %r", i)
             sw_b = spath_with_macs[i];  # this switch already has flow installed during first iteration
             sw_c = spath_with_macs[i + 1]  # on sw_b , flow is to be installed
             sw_a = spath_with_macs[i - 1]  #
 
             in_port = self.net.edge[sw_a][sw_b]['dst_port']
+            self.logger.debug("FWD FLOW in_port computed = self.net.edge[%r][%r]['dst_port'] = %r", sw_a, sw_b, in_port)
             out_port = self.net.edge[sw_b][sw_c]['src_port']
+            self.logger.debug("FWD FLOW out_port computed = self.net.edge[%r][%r]['src_port'] = %r ", sw_b, sw_c, out_port)
             self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
             i = i + 1
 
@@ -253,13 +255,15 @@ class ProjectController(app_manager.RyuApp):
         src_mac = spath_with_macs[n - 1]
         i = n - 2
         while (i >= 1):  #  1 is the first switch
-            self.logger.debug("Installing reverse rule on %r nth switch in path ", i)
+            self.logger.debug("Installing rule : iteration = %r  ", i)
             sw_b = spath_with_macs[i];  # this switch already has flow installed during first iteration
             sw_c = spath_with_macs[i - 1]  # on sw_b , flow is to be installed
             sw_a = spath_with_macs[i + 1]  #
 
             in_port = self.net.edge[sw_a][sw_b]['dst_port']
+            self.logger.debug("REV FLOW in_port computed = self.net.edge[%r][%r]['dst_port/in_port'] = %r", sw_a, sw_b,in_port )
             out_port = self.net.edge[sw_b][sw_c]['src_port']
+            self.logger.debug("REV LOW out_port computed = self.net.edge[%r][%r]['src_port/out_port'] = %r",  sw_b, sw_c, out_port)
             self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
             i = i - 1
 
@@ -303,7 +307,7 @@ class ProjectController(app_manager.RyuApp):
     #not using in_port for now as a criteria for routing but may be later.
 
     def __send_flow_mod(self, dpid, src_mac, in_port, dst_mac, out_port):
-        self.logger.debug("FLOWMOD_1 : flow_rule to install , dpid = %r, %r -> %r ====TO=== %r -> %r ", dpid, src_mac, in_port, dst_mac,out_port)
+        self.logger.debug("FLOWMOD_1 : installing rule: %r -----> %r ==== %r === %r -----> %r ", src_mac, in_port, dpid, out_port , dst_mac)
         datapath = self.datapathDb[dpid]
         ofp = datapath.ofproto
         ofp_parser = datapath.ofproto_parser
@@ -340,11 +344,13 @@ class ProjectController(app_manager.RyuApp):
         spath_as_tuple = tuple(spath)
         if spath_as_tuple in self.already_installed_paths_SET: #set can only contain a hashable immutable object, a list is not acceptable.
             #this computed shortest path is already installed in the switches
+            self.logger.debug("___PATH_ALREADY_INSTALLED____ i.e. %r", spath_as_tuple)
             return True
         else:
 
             #A list cannot be added to a set because it is not hashable, while a tuple can be added cuz its not mutable but hashable.
             self.already_installed_paths_SET.add(spath_as_tuple)
+            self.logger.debug("---PATH_NOT_ALREADY_INSTALLED---- i.e. %r", spath_as_tuple)
             return False
 
 
@@ -494,7 +500,7 @@ class ProjectController(app_manager.RyuApp):
 
         else: #if dst_mac is not broadcat rather some specific address
             #either we have already learnt this address
-            self.logger.info("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : compute shortest path and install flows if bstrap completed")
+            #self.logger.info("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : compute shortest path and install flows if bstrap completed")
             # This is if block ensures that code after it only gets executed once the network has bootstraped i.e. bootstrap time limit has reached
             if self.defines_D['bootstrap_in_progress']:
                 self.logger.info("RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows")
@@ -502,7 +508,9 @@ class ProjectController(app_manager.RyuApp):
                 #    self.defines_D['bootstrap_in_progress'] = False
                 return #below code wont get executed during network bootstrap
 
-            self.logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation")
+            self.logger.debug(
+                "______________________________________________________")
+            self.logger.debug("__________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________")
 
             if dst_mac in self.net:
                 self.logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
@@ -551,8 +559,7 @@ class ProjectController(app_manager.RyuApp):
             else: #this is not an lldp packet, this is not arp broadcast, the dst mac is not known but is not broadcast either
                 #check if its a valid openflow packet
                 self.logger.debug("LEARN_NEW_MAC dst_mac=%r src_mac=%r ", dst_mac,src_mac)
-                #self.logger.debug("NEW_SPECIFIC_DST_MAC: We see some traffic - it cant be LLDP though")
-                self.print_l2_table()
+                ####################################################self.print_l2_table()
 
 
             #here we get dst mac to be fffff all the time
@@ -621,7 +628,7 @@ class ProjectController(app_manager.RyuApp):
 
     """
     def save_topolog_to_file(self):
-        filename='network_with_dst_port.png'
+
         #nx.draw(self.net, with_labels=True)
 
         ###
@@ -637,7 +644,7 @@ class ProjectController(app_manager.RyuApp):
         plt.savefig("network_with_src_port.png")
         label_dst = nx.get_edge_attributes(self.net, 'dst_port')
         nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_dst)
-
+        filename = 'network_with_dst_port.png'
 
         #nx.draw_graphviz(self.net)
         #nx.draw_circular(self.net, with_labels=True)
@@ -654,17 +661,22 @@ class ProjectController(app_manager.RyuApp):
 
 
         #plt.show() #Do not uncomment this in a realtime application. This will invoke a standalone application to view the graph.
+
         plt.savefig(filename)
-        plt.clf() #this cleans the palette for the next time
+        plt.clf() #this cleans the palette for the next time, otherwise it will keep on drawing the same image.
 
 
     def show_graph_stats(self):
-        self.logger.debug( "list of edges: self.net.edges %s ",self.net.edges())
-        self.logger.debug("list of nodes: \n %r", self.net.nodes())
-        self.logger.debug("l2_lookup_table : %r", self.l2_dpid_table)
-        #self.logger.debug("show edge data LOT of output: %r",self.net())
+        if self.defines_D['bootstrap_in_progress']:
 
-        self.print_l2_table()
+            self.logger.debug( "list of edges: self.net.edges %s ",self.net.edges())
+            self.logger.debug("list of nodes: \n %r", self.net.nodes())
+            self.logger.debug("l2_lookup_table : %r", self.l2_dpid_table)
+            #self.logger.debug("show edge data LOT of output: %r",self.net())
+
+            self.print_l2_table()
+        else:
+            self.logger.debug("_________________________bootstrap__completed_______________________")
     #Below method just populates the net graph to which above packet-in method just adds src/dst
     @set_ev_cls(event.EventSwitchEnter)
     def get_topology_data(self, ev):
@@ -731,8 +743,20 @@ class ProjectController(app_manager.RyuApp):
         ##################################################### Graph node representation idea 2 #####################################################
         #just put switches as node names and add the below dictionary as data to edges
         # Storing the src and dst dpid key in the dictionary is redundant but I want to experiment with something later.
+
+        """Below has an error that was fixed in subsequent block
         links_onedirection_L=[(link.src.dpid,link.dst.dpid,{'src_port':link.src.port_no, 'dst_port':link.dst.port_no, 'src_name': link.src.name, 'dst_name':link.dst.name}) for link in links_list]
         links_opp_direction_L=[(link.dst.dpid, link.src.dpid, {'dst_port': link.dst.port_no, 'src_port':link.src.port_no, 'src_name': link.src.name, 'dst_name':link.dst.name}) for link in links_list]
+        """
+        #while installing flow rules observed that src and dst port are opposite to our understanding (BUG: in_port and out_port are the same as infact this)
+        links_onedirection_L = [(link.src.dpid, link.dst.dpid,
+                                 {'dst_port': link.src.port_no, 'src_port': link.dst.port_no, 'dst_name': link.src.name,
+                                  'src_name': link.dst.name}) for link in links_list]
+        links_opp_direction_L = [(link.dst.dpid, link.src.dpid,
+                                  {'src_port': link.dst.port_no, 'dst_port': link.src.port_no,
+                                   'dst_name': link.src.name, 'src_name': link.dst.name}) for link in links_list]
+
+
 
         #
         # for l in links_list:

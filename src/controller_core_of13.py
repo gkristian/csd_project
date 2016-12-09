@@ -638,6 +638,10 @@ class ProjectController(app_manager.RyuApp):
         pos = nx.spring_layout(self.net)
         #pos = nx.graphviz_layout(self.net,prog='dot')
         nx.draw(self.net, pos, with_labels=True , hold= False)
+        #Below is a do it later when have time : plot one topology graph with lot of info
+        #label_src_dst_allinone = nx.get_edge_attributes(self.net, 'src_dst')
+        #nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_src_dst_allinone)
+        #plt.savefig("network_with_src_dst_allinone.png")
         #print in_port and out_port as well
         label_src = nx.get_edge_attributes(self.net, 'src_port')
         nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_src)
@@ -713,7 +717,6 @@ class ProjectController(app_manager.RyuApp):
 	    #************** LINKS **************************
         links_list = get_link(self.topology_api_app, None)
         # self.logger.debug( "type(links_list): %s",type(links_list) ) #this in log shows  <class 'ryu.topology.switches.LinkState'>
-        # self.logger.debug("type(links_list): perentR %r", type(links_list)) #this in log shows  <class 'ryu.topology.switches.LinkState'>
         # self.logger.debug("links_list: %r", links_list) #multiple
         # self.logger.debug("self.ls(links_list): %r", self.ls(links_list)) #this always gives None
 
@@ -749,6 +752,8 @@ class ProjectController(app_manager.RyuApp):
         links_opp_direction_L=[(link.dst.dpid, link.src.dpid, {'dst_port': link.dst.port_no, 'src_port':link.src.port_no, 'src_name': link.src.name, 'dst_name':link.dst.name}) for link in links_list]
         """
         #while installing flow rules observed that src and dst port are opposite to our understanding (BUG: in_port and out_port are the same as infact this)
+
+
         links_onedirection_L = [(link.src.dpid, link.dst.dpid,
                                  {'dst_port': link.src.port_no, 'src_port': link.dst.port_no, 'dst_name': link.src.name,
                                   'src_name': link.dst.name}) for link in links_list]
@@ -756,7 +761,17 @@ class ProjectController(app_manager.RyuApp):
                                   {'src_port': link.dst.port_no, 'dst_port': link.src.port_no,
                                    'dst_name': link.src.name, 'src_name': link.dst.name}) for link in links_list]
 
-
+        """
+        #Below is an attempt to introduce src_dst key and then just plot it in the topology graph instead of having two sepreate graphs
+        links_onedirection_L = [(link.src.dpid, link.dst.dpid,
+                                 {'dst_port': link.src.port_no, 'src_port': link.dst.port_no, 'dst_name': link.src.name,
+                                  'src_name': link.dst.name, 'src_dst': str(link.dst.port_no + '-' + link.src.port_no)})
+                                for link in links_list]
+        links_opp_direction_L = [(link.dst.dpid, link.src.dpid,
+                                  {'src_port': link.dst.port_no, 'dst_port': link.src.port_no,
+                                   'dst_name': link.src.name, 'src_name': link.dst.name,
+                                   'src_dst': str(link.dst.port_no + '-' + link.src.port_no)}) for link in links_list]
+        """
 
         #
         # for l in links_list:

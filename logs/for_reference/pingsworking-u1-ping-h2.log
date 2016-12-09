@@ -1,0 +1,84 @@
+l2_table = {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}}, 23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
+l2_mac2ip = {'00:00:00:00:01:01': '10.1.0.1', '00:00:00:00:01:02': '10.1.0.2', '00:00:00:00:02:01': '10.2.0.1', '00:00:00:00:02:02': '10.2.0.2'}
+l2_ip2mac = {'10.1.0.2': '00:00:00:00:01:02', '10.2.0.2': '00:00:00:00:02:02', '10.2.0.1': '00:00:00:00:02:01', '10.1.0.1': '00:00:00:00:01:01'}
+broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+KEY1 : Found dst_mac '00:00:00:00:01:01' for arp header dst ip '10.1.0.1' , puttin in arp reply
+Crafting an ARP reply
+Sending an arp reply in _send_packet
+crafted arp reply packet-out ethernet(dst='00:00:00:00:02:01',ethertype=2054,src='00:00:00:00:01:01'), arp(dst_ip='10.2.0.1',dst_mac='00:00:00:00:02:01',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.1.0.1',src_mac='00:00:00:00:01:01')
+Sending arp reply reply done
+EVENT ofp_event->switches EventOFPPacketIn
+EVENT ofp_event->ProjectController EventOFPPacketIn
+l2_table = {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}}, 23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
+l2_mac2ip = {'00:00:00:00:01:01': '10.1.0.1', '00:00:00:00:01:02': '10.1.0.2', '00:00:00:00:02:01': '10.2.0.1', '00:00:00:00:02:02': '10.2.0.2'}
+l2_ip2mac = {'10.1.0.2': '00:00:00:00:01:02', '10.2.0.2': '00:00:00:00:02:02', '10.2.0.1': '00:00:00:00:02:01', '10.1.0.1': '00:00:00:00:01:01'}
+broadcast received from src mac = 00:00:00:00:01:01 , switch dpid = 21 at in_port = 3
+RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+KEY1 : Found dst_mac '00:00:00:00:02:02' for arp header dst ip '10.2.0.2' , puttin in arp reply
+Crafting an ARP reply
+Sending an arp reply in _send_packet
+crafted arp reply packet-out ethernet(dst='00:00:00:00:01:01',ethertype=2054,src='00:00:00:00:02:02'), arp(dst_ip='10.1.0.1',dst_mac='00:00:00:00:01:01',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.2.0.2',src_mac='00:00:00:00:02:02')
+Sending arp reply reply done
+EVENT ofp_event->switches EventOFPPacketIn
+EVENT ofp_event->ProjectController EventOFPPacketIn
+l2_table = {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}}, 23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
+l2_mac2ip = {'00:00:00:00:01:01': '10.1.0.1', '00:00:00:00:01:02': '10.1.0.2', '00:00:00:00:02:01': '10.2.0.1', '00:00:00:00:02:02': '10.2.0.2'}
+l2_ip2mac = {'10.1.0.2': '00:00:00:00:01:02', '10.2.0.2': '00:00:00:00:02:02', '10.2.0.1': '00:00:00:00:02:01', '10.1.0.1': '00:00:00:00:01:01'}
+______________________________________________________
+__________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac '00:00:00:00:02:02' that exist in our graph
+Do we have a path to this destination mac? src= '00:00:00:00:02:02' , dst = '00:00:00:00:01:01' 
+Found shortest path from src mac '00:00:00:00:01:01' to dst mac '00:00:00:00:02:02' as ['00:00:00:00:01:01', 21, 22, 23, '00:00:00:00:02:02']
+---PATH_NOT_ALREADY_INSTALLED---- i.e. ('00:00:00:00:01:01', 21, 22, 23, '00:00:00:00:02:02')
+_________________________bootstrap__completed_______________________
+EVENT ofp_event->switches EventOFPPacketIn
+EVENT ofp_event->ProjectController EventOFPPacketIn
+l2_table = {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}}, 23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
+l2_mac2ip = {'00:00:00:00:01:01': '10.1.0.1', '00:00:00:00:01:02': '10.1.0.2', '00:00:00:00:02:01': '10.2.0.1', '00:00:00:00:02:02': '10.2.0.2'}
+l2_ip2mac = {'10.1.0.2': '00:00:00:00:01:02', '10.2.0.2': '00:00:00:00:02:02', '10.2.0.1': '00:00:00:00:02:01', '10.1.0.1': '00:00:00:00:01:01'}
+______________________________________________________
+__________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac '00:00:00:00:02:02' that exist in our graph
+Do we have a path to this destination mac? src= '00:00:00:00:02:02' , dst = '00:00:00:00:01:01' 
+Found shortest path from src mac '00:00:00:00:01:01' to dst mac '00:00:00:00:02:02' as ['00:00:00:00:01:01', 21, 22, 23, '00:00:00:00:02:02']
+___PATH_ALREADY_INSTALLED____ i.e. ('00:00:00:00:01:01', 21, 22, 23, '00:00:00:00:02:02')
+Installing path : ['00:00:00:00:01:01', 21, 22, 23, '00:00:00:00:02:02']
+Considering path ['00:00:00:00:01:01', 21, 22, 23, '00:00:00:00:02:02']
+Installing rule : iteration = 1
+FWD FLOW in_port computed = self.net.edge['00:00:00:00:01:01'][21]['dst_port'] = 3
+FWD FLOW out_port computed = self.net.edge[21][22]['src_port'] = 2 
+FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 3 ==== 21 === 2 -----> '00:00:00:00:02:02' 
+Installing rule : iteration = 2
+FWD FLOW in_port computed = self.net.edge[21][22]['dst_port'] = 3
+FWD FLOW out_port computed = self.net.edge[22][23]['src_port'] = 4 
+FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 3 ==== 22 === 4 -----> '00:00:00:00:02:02' 
+Installing rule : iteration = 3
+FWD FLOW in_port computed = self.net.edge[22][23]['dst_port'] = 2
+FWD FLOW out_port computed = self.net.edge[23]['00:00:00:00:02:02']['src_port'] = 5 
+FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 2 ==== 23 === 5 -----> '00:00:00:00:02:02' 
+Installing rule : iteration = 3  
+REV FLOW in_port computed = self.net.edge['00:00:00:00:02:02'][23]['dst_port/in_port'] = 5
+REV LOW out_port computed = self.net.edge[23][22]['src_port/out_port'] = 2
+FLOWMOD_1 : installing rule: '00:00:00:00:02:02' -----> 5 ==== 23 === 2 -----> '00:00:00:00:01:01' 
+Installing rule : iteration = 2  
+REV FLOW in_port computed = self.net.edge[23][22]['dst_port/in_port'] = 4
+REV LOW out_port computed = self.net.edge[22][21]['src_port/out_port'] = 3
+FLOWMOD_1 : installing rule: '00:00:00:00:02:02' -----> 4 ==== 22 === 3 -----> '00:00:00:00:01:01' 
+Installing rule : iteration = 1  
+REV FLOW in_port computed = self.net.edge[22][21]['dst_port/in_port'] = 2
+REV LOW out_port computed = self.net.edge[21]['00:00:00:00:01:01']['src_port/out_port'] = 3
+FLOWMOD_1 : installing rule: '00:00:00:00:02:02' -----> 2 ==== 21 === 3 -----> '00:00:00:00:01:01' 
+_________________________bootstrap__completed_______________________
+EVENT ofp_event->switches EventOFPPacketIn
+EVENT ofp_event->ProjectController EventOFPPacketIn
+l2_table = {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}}, 23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
+l2_mac2ip = {'00:00:00:00:01:01': '10.1.0.1', '00:00:00:00:01:02': '10.1.0.2', '00:00:00:00:02:01': '10.2.0.1', '00:00:00:00:02:02': '10.2.0.2'}
+l2_ip2mac = {'10.1.0.2': '00:00:00:00:01:02', '10.2.0.2': '00:00:00:00:02:02', '10.2.0.1': '00:00:00:00:02:01', '10.1.0.1': '00:00:00:00:01:01'}
+broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+KEY1 : Found dst_mac '00:00:00:00:01:01' for arp header dst ip '10.1.0.1' , puttin in arp reply
+Crafting an ARP reply
+Sending an arp reply in _send_packet
+crafted arp reply packet-out ethernet(dst='00:00:00:00:02:02',ethertype=2054,src='00:00:00:00:01:01'), arp(dst_ip='10.2.0.2',dst_mac='00:00:00:00:02:02',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.1.0.1',src_mac='00:00:00:00:01:01')
+Sending arp reply reply done

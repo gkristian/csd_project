@@ -1,16 +1,28 @@
-Below are TODO notes by and for ashafi and written quickly and may not make sense to others.
+Below are TODO notes by and for ashafi and written quickly and may not make sense to others but some of theme are just NICE to HAVE and not MUST haves.
 
 This has been implemented now {
 1a - KeyError exception is thrown when a dictionary is searched for a key that does not exist. Thats why defaultdict is needed or better "addict" see [1] to avoid catching such an exception and more flexible dict handling. As a rememdy, introduced a boot_strap_in_progress variable. One of the benefits is to avoid searching dictionaries or graph net object.
 1b - change this bootstrap_in_progress variable so that we don't have to do pingall twice. in previous commits we did only once before introducing this variable 
 1c - Instead of a bootstrap_timer, use a number_of_edge_hosts varaible and put an end to bootstrap once discovered hosts match that number after pingall 
-}
 
 2- merge net object with NFM
 
 3- Determine shortest path
 
 4- Install flows to the switches in the path
+} DONE
+
+5- Implement a good log file strucutre that can help understand the system state when the software is run.
+Read up the bookmarks. Log to multiple files. Create a state object with certain state dictionaries. 
+The code at a certain point just updates those dictionaries variables e.g. bootstrap_complete=true, discovered_hosts=4, etc. but mainly it only
+prints/logs to output only when a certain state has changed so it has to compare current vs past state and then decide to log or not.
+
+6- Implement a logging mechanism for all modules to ease the debugging process and also if the logging output could be parsed by the test software.
+7- Implement a CLI from which commands could be given to RYU app. CLI.py runs as a ryu app. CPM shares a control object through _CONTEXT which CLI reads and updates. CPM based on the control object performs certain actions. A concern is that RYU is a real time application so what is the nature of the CLI.py ryu app, will it run as a thread and if we take input from the end user do we have to spawn a new thread within that or will that thread become blocking in someone and block rest of the apps. See RYU apps.
+
+8- How to make CPM intelligent?
+-master flow tables, arp, ip, tcp, udp based flows, 
+-learn to use Packet library to disect packet yourself.
 
 [1] Python tips: use addict instead of defaultdict
 https://www.airpair.com/python/posts/python-tips-and-traps
@@ -18,3 +30,5 @@ https://www.airpair.com/python/posts/python-tips-and-traps
 [2]
 Good Logging Practises
 https://fangpenlin.com/posts/2012/08/26/good-logging-practice-in-python/
+
+

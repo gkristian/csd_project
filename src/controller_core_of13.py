@@ -449,11 +449,11 @@ class ProjectController(app_manager.RyuApp):
                 self.net.add_edge(src_mac, dpid,
                                   {'src_port': msg.match['in_port'] , 'dst_port': msg.match['in_port'] ,
                                    'src_dpid': src_mac, 'dst_dpid': dpid, 'end_host': True,
-                                   'ip': pkt_arp.src_ip})  # src is the src mac
+                                   'ip': pkt_arp.src_ip,'bw': 10})  # src is the src mac
 
                 self.net.add_edge(dpid, src_mac,
                                   {'src_port': msg.match['in_port'], 'dst_port': msg.match['in_port'],
-                                   'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True})  # src is the src mac
+                                   'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True, 'bw': 10})  # src is the src mac
 
                 self.print_l2_table()
 
@@ -756,10 +756,10 @@ class ProjectController(app_manager.RyuApp):
 
         links_onedirection_L = [(link.src.dpid, link.dst.dpid,
                                  {'dst_port': link.src.port_no, 'src_port': link.dst.port_no, 'dst_name': link.src.name,
-                                  'src_name': link.dst.name}) for link in links_list]
+                                  'src_name': link.dst.name,'bw': 10}) for link in links_list]
         links_opp_direction_L = [(link.dst.dpid, link.src.dpid,
                                   {'src_port': link.dst.port_no, 'dst_port': link.src.port_no,
-                                   'dst_name': link.src.name, 'src_name': link.dst.name}) for link in links_list]
+                                   'dst_name': link.src.name, 'src_name': link.dst.name, 'bw':10}) for link in links_list]
 
         """
         #Below is an attempt to introduce src_dst key and then just plot it in the topology graph instead of having two sepreate graphs

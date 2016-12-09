@@ -1,6 +1,7 @@
 #!/usr/bin/python
-import psutil
+#import psutil
 import time
+import multiprocessing
 #import subprocess
 import os
 import re
@@ -16,12 +17,14 @@ def timestamp():
 	#return timestamp
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
-def core_manual():
+def core_manual(prevdict):
 	#return core usage measurement by manually calculating value in /proc/stat
 	#reference :http://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux?noredirect=1&lq=1
-	previdle = 0
-	prevnonidle = 0
-	prevtotal = 0
+	print "PREVDICT INSIDE",prevdict
+	previdle = prevdict['previdle']
+	prevnonidle = prevdict['prevnonidle']
+	prevtotal = prevdict['prevtotal']
+	print "PER LIST",previdle," ",prevnonidle," ",prevtotal
 	with open('/proc/stat','r') as f:
 		#print "opened"
 		key1="cpu"
@@ -32,21 +35,44 @@ def core_manual():
 			if key in line:
 				valuestr = str(line).split()		#split one line to list. delimiter : space
 				del valuestr[0]						#delete the name cpu[n]
-				val = [int(x) for x in valuestr]	#integer conversion
+				val = [float(x) for x in valuestr]	#integer conversion
 				#print val
 				#calculation of cpu usage in percent
+				print "----------------------------------"
+				print "PREV",previdle," ",prevnonidle," ",prevtotal
+				print "PROCESSOR",key
+				print "n = ",n
+				print val
 				idle = val[3] + val[4]
-				nonidle = val[0]+val[1]+val[2]+val[5]+val[6]+val[7]
-				total = idle + nonidle
-				totald = total - prevtotal
-				idled = idle - previdle
-				cpu_percent = (totald-idled)/totald
-				print cpu_percent
-				previdle = idle
-				prevnonidle = nonidle
-				prevtotal = total
-				n = n+1
+				print "idle",idle
 
+				nonidle = val[0]+val[1]+val[2]+val[5]+val[6]+val[7]
+				print "nonidle",nonidle
+
+				total = idle + nonidle
+				totald = total - prevtotal[n]
+				print "total totald",total," ",totald
+
+				idled = idle - previdle[n]
+				print "idled",idled
+
+				cpu_percent = (totald-idled)/totald #usage in %
+				print "CPU PERCENT",cpu_percent
+
+				print "PREV",previdle," ",prevnonidle," ",prevtotal
+				previdle[n] = idle
+				prevnonidle[n] = nonidle
+				print "prevnonidle",n,prevnonidle[n]
+				prevtotal[n] = total
+				n = n+1
+				print "PREV",previdle," ",prevnonidle," ",prevtotal
+	print "++++++++++++++++++++++++++++++"
+	print "PREV",previdle," ",prevnonidle," ",prevtotal
+	prevdict['previdle']=previdle
+	prevdict['prevnonidle']=prevnonidle
+	prevdict['prevtotal']=prevtotal
+
+	print "===================================================================="
 def core_mpstat():
 	#return core usage measurement (percent) by mpstat
 	#Calculated by substracting 100 with %idle (%usage=100-%idle) to get every type of cpu usage (user,kernel,irq,etc)
@@ -83,13 +109,18 @@ def mem_psutil():
 #MAIN PROGRAM
 #client = client_side(url)
 print "|CPU:psutil	|CPU:mpstat	|MEM:psutil	|MEM:mpstat	|"
-
+previdleval = [0] * multiprocessing.cpu_count()
+prevnonidleval = [0]* multiprocessing.cpu_count()
+prevtotalval = [0]* multiprocessing.cpu_count()
+keylist=['previdle','prevnonidle','prevtotal']
+inputprevdict = dict(zip(keylist,[previdleval,prevnonidleval,prevtotalval]))
+	
 while True:
-	core_manual()
+	core_manual(inputprevdict)
 	#Insert all data to dictionary.
 	DICT_TO_DB['timestamp']=timestamp()
-	DICT_TO_DB['core']=core_mpstat()
-	DICT_TO_DB['memory']=mem_psutil()
+	#DICT_TO_DB['core']=core_mpstat()
+	#DICT_TO_DB['memory']=mem_psutil()
 	#print DICT_TO_DB
 	#client.postme(DICT_TO_DB)
 	time.sleep(1) #set measurement interval here (seconds)

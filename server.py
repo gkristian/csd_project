@@ -36,7 +36,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
     def _set_headers(self, code):
         self.send_response(code)
-        self.send_header('content-type','text/html')
+        self.send_header('content-type','text/html; "charset"="ascii"')
         self.end_headers()
 
 
@@ -46,6 +46,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         self.quit['interrupted']
         if not self.quit['interrupted']:
             print "\nAccepting GET req"
+            #print("HEADERS: ", self.headers)
             # Create GET repsponse, standart 1A so to speak
             #SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
             #print 'Get worked properly'; print
@@ -56,35 +57,75 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             print "view get the GET dict"
             print query_components.viewitems()
 
-            if 'module' and 'keylist' in query_components:
-                # get the module name
-                module_name = query_components["module"][0] 
-                #get required keys from list
-                keylist = query_components["keylist"]
+            module_name = query_components["module"][0] 
+            print module_name
 
-                #sent_timestamp = query_components["timestamp"][0]
-            
+            try:
+                if 'keylist' in query_components:
 
-                # create a dict in the format chache wants
-                data = {'module': module_name, 'keylist': keylist}
+                    keylist = query_components["keylist"]
+                    print keylist
 
-                print module_name
-                print keylist
+                    # create a dict in the format chache wants
+                    data = {'module': module_name, 'keylist': keylist}
                 
-                cache_get_start_time = time.time()
-                cache_data = json.dumps(self.cache.get_values(data))
-                print("Time for cache get %s seconds ---" % (time.time() - cache_get_start_time))
+                    cache_get_start_time = time.time()
+                    cache_data = json.dumps(self.cache.get_values(data), ensure_ascii=True, encoding='ascii')
+                    print cache_data
+           
+                else:
+                    # if no keylist, return a dict of module values
+                    cache_data = self.cache.get_all_module_values(module_name)
+                    print cache_data
 
                 self._set_headers(200)
                 self.send_response(200, cache_data)
+                #self.send_header('content-type','text/html ; "charset"="'ascii'"')
                 self.end_headers()
                 print "GET handling done"
-            else:
+
+            except BaseException as e:
+                print e
                 # No key module or keylist
                 print "Not correct structure of GET components"
                 self._set_headers(400)
                 self.send_response(400)
                 self.end_headers()
+
+
+            # if 'module' and 'keylist' in query_components:
+            #     # get the module name
+            #     module_name = query_components["module"][0] 
+            #     #get required keys from list
+            #     keylist = query_components["keylist"]
+
+            #     #sent_timestamp = query_components["timestamp"][0]
+            #     print module_name
+            #     print keylist[0]
+                
+            #     if keylist[0] == '0':
+            #         # if no keylist, return a dict of module values
+            #         cache_data = self.cache.get_all_module_values(module_name)
+            #     else:
+            #         # create a dict in the format chache wants
+            #         data = {'module': module_name, 'keylist': keylist}
+                
+            #         #cache_get_start_time = time.time()
+            #         cache_data = json.dumps(self.cache.get_values(data), ensure_ascii=True, encoding='ascii')
+            #         print cache_data
+            #         #print("Time for cache get %s seconds ---" % (time.time() - cache_get_start_time))
+
+            #     self._set_headers(200)
+            #     self.send_response(200, cache_data)
+            #     #self.send_header('content-type','text/html ; "charset"="'ascii'"')
+            #     self.end_headers()
+            #     print "GET handling done"
+            # else:
+            #     # No key module or keylist
+            #     print "Not correct structure of GET components"
+            #     self._set_headers(400)
+            #     self.send_response(400)
+            #     self.end_headers()
         else:
             print "get interrupted"
             sys.exit
@@ -98,12 +139,15 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if not self.quit['interrupted']:
             print "\nAccepting POST req"
             # create response to POST req
-            self._set_headers(201)
             self.send_response(201)
+            self.send_header('content-type','text/html ; "charset"="ascii"')
             self.end_headers()
 
             # Read 
             self.data=self.rfile.read(int(self.headers['Content-Length']))
+            #print "DATA FROM RPM IN SERVER"
+            #print type(self.data)
+            #print self.data 
 
             if self.cache == None:
                 print "No cache!"
@@ -115,7 +159,14 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             # initialized['hum'] = False
 
             # Load json from POST req
-            j_data=json.loads(self.data)
+            j_data=json.loads(self.data, encoding='ascii')
+            print type(j_data)
+            print type(j_data['module'])
+            #j_data=json.loads(j_data)
+            #print "MORE DATA FROM RPM IN SERVER"
+            #print j_data.viewitems()
+ 
+
             if 'module' in j_data:
                 module_name = j_data['module']
 
@@ -148,7 +199,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         else:
             print "post interrupted"
             sys.exit
-        print("Time to process a POST request %s seconds ---" % (time.time() - post_start_time))
+        #print("Time to process a POST request %s seconds ---" % (time.time() - post_start_time))
 
 
 

@@ -45,7 +45,7 @@ def core_manual(prevdict):
 				rounded = round(cpu_percent,2)
 				#Save result to dictionary
 				#print "CPU",n," PERCENT",cpu_percent
-				dict_core[n]=str(rounded)
+				dict_core[n]=rounded
 				#Save data for next test
 				previdle[n] = idle
 				prevnonidle[n] = nonidle
@@ -73,7 +73,7 @@ def core_mpstat():
 				res = res.strip()				#remove space and \n
 				cpu_usage = 100-float(res)
 				#print cpu_usage
-				dict_core[n]=str(cpu_usage)
+				dict_core[n]=cpu_usage
 				n=n+1
 	return dict_core
 
@@ -82,7 +82,7 @@ def core_psutil():
 	dict_core = {}
 	cpu_perc = psutil.cpu_percent(interval=0, percpu=True)
 	for i in range(len(cpu_perc)):
-		dict_core[i]=str(cpu_perc[i])
+		dict_core[i]=cpu_perc[i]
 	return dict_core
 
 def mem_psutil():
@@ -92,7 +92,7 @@ def mem_psutil():
 	return memory_usage
 
 #MAIN PROGRAM
-#client = client_side(url)
+client = client_side(url)
 print "|CPU:psutil	|CPU:mpstat	|MEM:psutil	|MEM:mpstat	|"
 
 #Dictionary definition for manual calculation
@@ -104,13 +104,13 @@ inputprevdict = dict(zip(keylist,[previdleval,prevnonidleval,prevtotalval]))
 
 while True:
 	print "+++++++++++++++++++++++++++"
-	print "manual\t",core_manual(inputprevdict)
-	print "mpstat\t",core_mpstat()
-	print "psutil\t",core_psutil()
+	#print "manual\t",core_manual(inputprevdict)
+	#print "mpstat\t",core_mpstat()
+	#print "psutil\t",core_psutil()
 	#Insert all data to dictionary.
 	DICT_TO_DB['timestamp']=timestamp()
-	#DICT_TO_DB['core']=core_mpstat()
-	#DICT_TO_DB['memory']=mem_psutil()
-	#print DICT_TO_DB
-	#client.postme(DICT_TO_DB)
+	DICT_TO_DB['core']=core_psutil()
+	DICT_TO_DB['memory']=mem_psutil()
+	print DICT_TO_DB
+	client.postme(DICT_TO_DB)
 	time.sleep(1) #set measurement interval here (seconds)

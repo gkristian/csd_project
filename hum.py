@@ -1,17 +1,101 @@
 #!/usr/bin/python
+import linux_metrics as lm
+from linux_metrics import cpu_stat
 import psutil
 import time
 import multiprocessing
-#import subprocess
 import os
 import re
 from decimal import *
 from client import client_side
 from datetime import datetime
-#from subprocess import check_output
+import sys, getopt
 
 url = 'http://127.0.0.1:8000/Tasks.txt'
 DICT_TO_DB = {'module':'hum', 'timestamp': -1, 'core':{},'memory':-1}
+
+def main(argv):
+	#Processing of input argument
+	try:
+		opts, args = getopt.getopt(argv,"hvrc:m:")
+	except getopt.GetoptError:
+		print "ERROR"
+		help()
+		sys.exit(2)
+	isVerbose = False
+	isRest = False
+	for opt, arg in opts:
+		if opt == '-h':
+			help()
+			sys.exit()
+		elif opt == '-v':
+			isVerbose=True
+		elif opt == '-r':
+			isRest=True
+		elif opt in ("-c"):
+			cpu_opt = int(arg)
+		elif opt in ("-m"):
+			mem_opt = int(arg)
+
+	#MAIN PROGRAM
+	#Dictionary definition for manual calculation
+	previdleval = [0] * multiprocessing.cpu_count()
+	prevnonidleval = [0]* multiprocessing.cpu_count()
+	prevtotalval = [0]* multiprocessing.cpu_count()
+	keylist=['previdle','prevnonidle','prevtotal']
+	inputprevdict = dict(zip(keylist,[previdleval,prevnonidleval,prevtotalval]))
+
+	print "HUM Started"
+	if isRest:
+		client = client_side(url)
+	while True:
+		#Insert all data to dictionary.
+		if isVerbose:
+			verbose(inputprevdict)
+		if isRest:
+			#Insert timestamp
+			DICT_TO_DB['timestamp']=timestamp()
+
+			#Insert core usage to dict
+			if cpu_opt == 1:
+				DICT_TO_DB['core']=core_manual(inputprevdict)
+			elif cpu_opt == 2:
+				DICT_TO_DB['core']=core_mpstat()
+			elif cpu_opt == 3:
+				DICT_TO_DB['core']=core_psutil()
+			elif cpu_opt == 4:
+				DICT_TO_DB['core']=core_metrics()
+			else:
+				sys.exit("Wrong input arg of CPU")
+
+			#Insert mem usage to dict
+			if mem_opt == 1:
+				DICT_TO_DB['memory']=mem_psutil()
+			elif mem_opt == 2:
+				DICT_TO_DB['memory']=mem_metrics()
+			else:
+				sys.exit("Wrong input arg of Mem")
+		time.sleep(1)
+
+def verbose(inputprevdict2):
+	print "+++++++++++++++++++++++++++"
+	print "CPU USAGE"
+	print "manual\t",core_manual(inputprevdict2)
+	print "mpstat\t",core_mpstat()
+	print "psutil\t",core_psutil()
+	print "metrics\t",core_metrics()
+	print "MEMORY USAGE"
+	print "psutil\t",mem_psutil()
+	print "metrics\t",mem_metrics()
+
+def help():
+	print 'Usage : hum.py <options> -c <cpu option> -m <memory option>'
+	print "Options:"
+	print "-v : verbose output"
+	print "-r : enable rest api (NEED dm_main TO BE RUN)"
+	print "-h : help"
+	print "CPU option : 1:manual ; 2:mpstat ; 3:psutil ; 4:metrics"
+	print "Memory : 1:psutil ; 2:metrics"
 
 #FUNCTION DEFINITION
 def timestamp():
@@ -73,7 +157,7 @@ def core_mpstat():
 				res = res.strip()				#remove space and \n
 				cpu_usage = 100-float(res)
 				#print cpu_usage
-				dict_core[n]=cpu_usage
+				dict_core[n]=round(cpu_usage,2)
 				n=n+1
 	return dict_core
 
@@ -85,32 +169,35 @@ def core_psutil():
 		dict_core[i]=cpu_perc[i]
 	return dict_core
 
+def core_metrics():
+	#print '****CPU****'
+	dict_core = {}
+	#f=multiprocessing.cpu_count()
+	for i in range(multiprocessing.cpu_count()):
+		cpu= cpu_stat.cpu_percents()
+		cpuusage=(100-cpu['idle'])
+		dict_core[i]=round(cpuusage,2)
+		#print ' CPU usage: %.2f' % cpuusage + '%'
+	#print '\n'
+	return dict_core
+
+def mem_metrics():
+	#print '****Memory****'
+	used, total, _, _, _, _ = lm.mem_stat.mem_stats()
+	#print 'mem Used: %s' % used
+	#print 'mem total:  %s' % total
+	fl=(used*100)/total
+	#print 'Percent of usage: ',fl ,'%'
+	#print 'Done!'
+	return fl
+
 def mem_psutil():
-	#return percentage of AVAILABLE physical memory. measurement by psutil
-	memory=psutil.virtual_memory()
-	memory_usage=memory.percent
+	#return percentage of USED physical memory. measurement by psutil
+	mem=psutil.virtual_memory()
+	memory_usage=((mem.total-mem.available)*100)/mem.total
 	return memory_usage
 
-#MAIN PROGRAM
-client = client_side(url)
-print "|CPU:psutil	|CPU:mpstat	|MEM:psutil	|MEM:mpstat	|"
+if __name__ == "__main__":
+	main(sys.argv[1:])
 
-#Dictionary definition for manual calculation
-previdleval = [0] * multiprocessing.cpu_count()
-prevnonidleval = [0]* multiprocessing.cpu_count()
-prevtotalval = [0]* multiprocessing.cpu_count()
-keylist=['previdle','prevnonidle','prevtotal']
-inputprevdict = dict(zip(keylist,[previdleval,prevnonidleval,prevtotalval]))
 
-while True:
-	print "+++++++++++++++++++++++++++"
-	#print "manual\t",core_manual(inputprevdict)
-	#print "mpstat\t",core_mpstat()
-	#print "psutil\t",core_psutil()
-	#Insert all data to dictionary.
-	DICT_TO_DB['timestamp']=timestamp()
-	DICT_TO_DB['core']=core_psutil()
-	DICT_TO_DB['memory']=mem_psutil()
-	print DICT_TO_DB
-	client.postme(DICT_TO_DB)
-	time.sleep(1) #set measurement interval here (seconds)

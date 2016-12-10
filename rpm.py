@@ -1,3 +1,4 @@
+from __future__ import division
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 
@@ -20,6 +21,7 @@ from client import client_side
 import threading
 import numpy
 from datetime import datetime
+
 
 class RPM(app_manager.RyuApp):
 	OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -60,7 +62,7 @@ class RPM(app_manager.RyuApp):
 		self.client = client_side(url)
 
 		#prepare a dictionary for updating and sending to DM
-		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}, 'max_latency': -1, 'min_latency': -1, 'mean_latency': -1, 'mean_latency': -1, 'median_latency': -1, '25th_latency': -1, '75th_latency': -1}	
+		self.DICT_TO_DB = {'module':'rpm', 'timestamp': -1, 'delays':{}, 'normalized_delays':{}, 'max_latency': -1, 'min_latency': -1, 'mean_latency': -1, 'median_latency': -1, '25th_latency': -1, '75th_latency': -1}	
 		
 		# dict to store all datapath ojects by key dpid
 		self.switches_DPIDs = {}	
@@ -86,13 +88,16 @@ class RPM(app_manager.RyuApp):
 
 		self.MODS_NR = 3
 		self.LOCK = threading.Lock()
-		#self.UPDATE_TIME = 1 # app_manager._CONTEXTS['rpm_update_time']
-		self.UPDATE_COUNTER = 250
+		self.UPDATE_TIME = app_manager._CONTEXTS['rpm_update_time']
 
 		# list keeping this update sessions latencies
 		# the current latency from a a certain switch of number X will be placed 
 		# at index X-1 in the list
 		self.latency_array = range(self.totalSwitchesNr)
+
+		# Min and max values for latency normalization
+		self.MAX = 5000
+		self.MIN = 500
 
 	def calculateStats(self):
 		#print self.latency_array
@@ -103,6 +108,15 @@ class RPM(app_manager.RyuApp):
 		self.DICT_TO_DB['25th_latency'] = numpy.percentile(self.latency_array,25)
 		self.DICT_TO_DB['75th_latency'] = numpy.percentile(self.latency_array,75)
 		#print self.DICT_TO_DB.viewitems()
+
+	def normalize(self, value):
+		#print "latency %d" % value
+		#print "value - min: %d" % (value - self.MIN)
+		#print "max - min: %d" % (self.MAX - self.MIN)
+
+		normalized = ((value - self.MIN)/(self.MAX - self.MIN))*100
+		#print "normalized: %d" % (normalized*100)
+		return normalized
 
 	"""
 	Main loop of sending  install/update/delete flow mods to the switches,
@@ -332,6 +346,7 @@ class RPM(app_manager.RyuApp):
 				#current_time = datetime.now().microsecond
 				starting_time = self.switches_data[dpid]["start_time"] 	
 				timed = current_time - starting_time						# measured time between barrier request and response 
+				normalized_timed = round(self.normalize(timed),2)
 				
 				#for datetime
 				#MAX = 999999
@@ -345,7 +360,11 @@ class RPM(app_manager.RyuApp):
 				self.latency_array[dpid-1] = timed
 
 				# Store the measured time in DB message dict
+
 				self.DICT_TO_DB['delays'][dpid] = timed
+				#print "Latency: %d microsec" % timed
+				self.DICT_TO_DB['normalized_delays'][dpid] = normalized_timed
+				#print "Normalized latency: %d" % normalized_timed 
 		
 				# Time taken for installation of all current waiting rules and RTT 
 				#self._print("Timer from barrier req to resp: %d (microsecond) for datapath %d xid %d" % (timed, datapath.id, xid)) # why is this longer for a slower sending rate?!
@@ -384,6 +403,7 @@ class RPM(app_manager.RyuApp):
 				#print key
 				self.switches_data[key] = {"start_time": -1, "measured_time": -1, "xid": -1}
 				self.DICT_TO_DB['delays'][key] = -1
+				self.DICT_TO_DB['normalized_delays'][key] = -1
 			#self._print(str(self.switches_data.viewitems()))
 
 			# Start monitoring thread sending flow mods and barrier requests

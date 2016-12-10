@@ -32,7 +32,7 @@ class NFM(app_manager.RyuApp):
 		self.totalSwitches = self.determineNumberOfSwitches()	#calculate total switches by the graph topology object
 		#self.logger.info("TOTAL SWITCHES: %d", self.totalSwitches)
 		self.logger.info(self.totalSwitches)
-		self.DICT_TO_DB = {'module':'nfm', 'timestamp':0, 'link_utilization':{}, 'packet_dropped':{}}	#prepare a dictionary for updating and sending to Database
+		self.DICT_TO_DB = {'module':'nfm', 'timestamp':0, 'keylist':{}}	#prepare a dictionary for updating and sending to Database
 		#self.DICT_TO_DB['keylist'] = {}	#UNNECESSARY WITH KEYLIST
 		#self.DICT_TO_DB['keylist']['packet_dropped'] = {}
 		self.pathComponents = {}
@@ -192,8 +192,8 @@ class NFM(app_manager.RyuApp):
 			percentage_string = "{0:.2f}%".format(100*percentage)
 			#self.logger.info('DROPPED PACKETS PERCENTAGE ON SWITCH %x: %s', ev.msg.datapath.id, percentage_string)
 			DPID = str(ev.msg.datapath.id)
-			self.DICT_TO_DB['packet_dropped'][DPID] = percentage # write into dict prepared to be sent to DM 
-			#self.DICT_TO_DB['keylist']['packet_dropped'][dpid] = percentage
+			#self.DICT_TO_DB['packet_dropped'][DPID] = percentage # write into dict prepared to be sent to DM 
+			self.DICT_TO_DB['keylist']['packet_dropped'][dpid] = percentage
 		self.dropped[ev.msg.datapath.id] = {'rx':rx_packets, 'tx':tx_packets} #store the current measured received and transmitted packets
 
 	"""
@@ -208,7 +208,7 @@ class NFM(app_manager.RyuApp):
 		timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 		self.DICT_TO_DB['timestamp'] = timestamp
 		#self.DICT_TO_DB['keylist']['timestamp'] = timestamp 
-		#self.DICT_TO_DB['keylist']['link_utilization'] = []	
+		self.DICT_TO_DB['keylist']['link_utilization'] = {}	
 		#self.DICT_TO_DB['link_utilization'] = {}
 		for FROM, value in self.linkUtilizations.iteritems():
 			for TO, FROM_UTIL in value.iteritems():
@@ -220,8 +220,8 @@ class NFM(app_manager.RyuApp):
 					TOTAL_UTIL_STRING = "{0:.2f}%".format(TOTAL_UTIL)
 					#self.logger.info("TOTAL UTILIZATION %d -> %d: %s", FROM, TO, TOTAL_UTIL_STRING)
 					DPID_TO_DPID = str(FROM)+'-'+str(TO)
-					self.DICT_TO_DB['link_utilization'][DPID_TO_DPID] = TOTAL_UTIL # write into dict
-					#self.DICT_TO_DB['keylist']['link_utilization'].append((FROM, TO,{'weight':TOTAL_UTIL}))
+					#self.DICT_TO_DB['link_utilization'][DPID_TO_DPID] = TOTAL_UTIL # write into dict
+					self.DICT_TO_DB['keylist']['link_utilization'][DPID_TO_DPID] = TOTAL_UTIL
 				except:
 					self.logger.info("[ERROR] Link only has one directional utilization, check opposite switch")
 		#self.DMclient.postme(self.DICT_TO_DB) # Push to DM
@@ -239,5 +239,5 @@ class NFM(app_manager.RyuApp):
 		if self.responsedSwitches == self.totalSwitches:
 			self.logger.debug("Responsed Switches %d", self.responsedSwitches)
 			self.responsedSwitches = 0
-			self.calculate_link_utilization() # this function also push dict to DM after all new data is included
+			self.calculate_link_utilization() # this function also send dict to DM after all new data is included
 			self.port_stat_request_semaphore.set()

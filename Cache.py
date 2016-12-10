@@ -23,7 +23,7 @@ class NotCache:
         #dummy variables
         nfm_keys = ["timestamp", "module", "link_utilization", "packet_dropped"]
         hum_keys = ["timestamp", "module", "core","memory"]
-        rpm_keys = ["timestamp", "module", "delays", "max_delay", "min_delay", "mean_delay"]
+        rpm_keys = ["timestamp", "module", "delays", "normalized_delays", "max_latency", "min_latency", "mean_latency","median_latency", "mean_latency"]
 
         # current layer of values
         nfm_dict = dict.fromkeys(nfm_keys) #all except module is dummy value keys
@@ -31,10 +31,10 @@ class NotCache:
         nfm_dict['module'] = 'nfm'
         nfm_dict['timestamp'] = "0"
         nfm_dict['link_utilization'] = {}
-        nfm_dict['packet dropped'] = {}
+        nfm_dict['packet_dropped'] = {}
 
 
-        hum_dict = dict.fromkeys(hum_keys) #TODO
+        hum_dict = dict.fromkeys(hum_keys) 
         hum_dict.update({k : 0 for k in hum_dict.iterkeys()}) # set default values
         hum_dict['module'] = 'hum'
         hum_dict['timestamp'] = "0"
@@ -46,16 +46,19 @@ class NotCache:
         rpm_dict['module'] = 'rpm'
         rpm_dict['timestamp'] = "0"
         rpm_dict['delays'] = {}
-        # Session max and min latencies, not stored in DB
-        rpm_dict['max_delay'] = 0
-        rpm_dict['min_delay'] = 0
-        rpm_dict['mean_delay'] = 0
+        rpm_dict['normalized_delays'] = {}
+        rpm_dict['max_latency'] = 0
+        rpm_dict['min_latency'] = 0
+        rpm_dict['mean_latency'] = 0
+        rpm_dict['median_latency'] = 0
+        rpm_dict['25th_latency'] = 0
+        rpm_dict['75th_latency'] = 0
 
 
         # json string of dicts containing older values
-        nfm_old = json.dumps(nfm_dict) # TODO change to ordinary dicts 
-        hum_old = json.dumps(hum_dict)
-        rpm_old = json.dumps(rpm_dict)
+        nfm_old = json.dumps(nfm_dict, ensure_ascii=True, encoding='ascii') # TODO change to ordinary dicts 
+        hum_old = json.dumps(hum_dict, ensure_ascii=True, encoding='ascii')
+        rpm_old = json.dumps(rpm_dict, ensure_ascii=True, encoding='ascii')
 
         # define a lock for enabling concurrency
         self.lock = threading.Lock()
@@ -128,7 +131,7 @@ class NotCache:
                     list_tuples = json_dict.items()
 
                     # set previous data to old
-                    self.module_caches_old[module_name] = json.dumps(self.module_caches[module_name])
+                    self.module_caches_old[module_name] = json.dumps(self.module_caches[module_name], ensure_ascii=True, encoding='ascii')
 
                     # update timestamp
                     current_dict = self.module_caches[module_name]
@@ -146,7 +149,7 @@ class NotCache:
                     map(setsvalues, list_tuples)
 
                     # for testing purposes, return a view  of the changed dict
-                    return json.dumps(self.module_caches[module_name])
+                    return json.dumps(self.module_caches[module_name], ensure_ascii=True, encoding='ascii')
                 else:
                     raise ModuleNotFoundException("module by name %s does not exists" % module_name)
             else:
@@ -163,7 +166,7 @@ class NotCache:
                 if module_name in self.module_caches:
                     # changes places of pointers
                     if self.initialized == False:
-                    	self.module_caches_old[module_name] = json.dumps(new_dict)  #initializing 
+                    	self.module_caches_old[module_name] = json.dumps(new_dict, ensure_ascii=True, encoding='ascii')  #initializing 
                     	self.module_caches[module_name] = new_dict
                     	self.initialized = True
                     else:
@@ -217,7 +220,7 @@ class NotCache:
         if no such module exists it returns an error string
         :return: list"""
         with self.lock:
-            return json.dumps(self.module_caches)
+            return json.dumps(self.module_caches, ensure_ascii=True, encoding='ascii')
 
     def get_all_module_values(self, module_name):
         """Get all the values from the cache of a given module name,
@@ -228,7 +231,7 @@ class NotCache:
         with self.lock:
             if module_name in self.module_caches.viewkeys():
                 current_dict = self.module_caches[module_name]
-                return json.dumps(current_dict)
+                return json.dumps(current_dict, ensure_ascii=True, encoding='ascii')
             else:
                 raise ModuleNotFoundException("No module %s" % module_name)
 

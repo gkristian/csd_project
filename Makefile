@@ -20,7 +20,7 @@ dmstart:
 #python ./dm/dm_main.py
 #source: http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-3.html
 # python test.py >test.out 2>&1; pyrg <test.out
-	export SHELL=/bin/bash
+	#export SHELL=/bin/bash
 	python ../DM/dm_main.py > /var/www/html/spacey/dm.log 2>&1 &
 #python ../DM/dm_main.py &> /var/www/html/spacey/dm.log
 dmlog:
@@ -35,6 +35,7 @@ stopall:
 	-rm -f /var/www/html/spacey/* 
 	-killall -9 python
 	-killall -9 ryu-manager
+	-killall -9 tail
 	-mn -c
 truncate:
 	 mysql -u root -p12345678 -e 'use testdb; show tables;truncate rpm;truncate rpm_stat;truncate hum;truncate nfm_dropped;truncate nfm_util;show tables; select * from nfm_util, nfm_dropped, rpm, rpm_stat, hum;'
@@ -43,4 +44,17 @@ showtables:
 #	 mysql -u root -p12345678 -e 'use testdb; show tables; select * from nfm_util, nfm_dropped, rpm, rpm_stat, hum;'
 show:
 	-ps auxw |grep python |grep -v grep
-	-ps auxw |grep ryu-manager |grep -v grep
+	-#ps auxw |grep ryu-manager |grep -v grep
+
+spacey:
+	make dmstart;
+	make mstart;
+	#if below statement is commented out, then screen process shall terminate killing all child processes spawned by above make commands. Another way could have been to copy above make commands in startall and run them before make topology as then mininet cli holds the stdout preventing screen from exiting
+	read wait_for_ever_so_that_screen_is_maintained 
+#screen -d -m some_Command will cause screen session to exit once the command ends
+startall:
+	-mn -c 
+	screen -S mininet -d -m make topology
+	screen -S spacey -d -m make spacey
+
+

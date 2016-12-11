@@ -1,1 +1,38 @@
+== screen session commands==
+ctrl-A
+ctrl-D to detach
+ctr-A c : to create a new window
+ctr-A n : to hop in between
+ctr-A H : log screen output
+
+ctr-A M : look for activity and alert
+ctr-A _ :  look for inactivity 
+ctr-A x: lock your screen
+ctr-A k: kill screen , use this if u cant quit it
+screen -S <set_a_name_of_session_that_ull_see_on_ls>
+
+#to wipe dead sessions
+
+screen -wipe 
+#to quit a session
+screen -X -S <name_of_session> quit
+screen -ls
+screen -r <connent_provided_id_in-S>
+
+alias cleanscreen="screen -ls | tail -n +2 | head -n -2 | awk '{print $1}'| xargs -I{} screen -S {} -X quit"
+
+cleanscreen
+
+_______________
+screen -d -m yourcommand #once the command exits the screen session exits as well
+_______________
+Start new session in background with name 'sleppy'
+
+screen -S sleepy -dm sleep 60
+Kill 'sleepy' session
+
+screen -S sleepy -X quit
+
+
+== make ==
 make &> results.txt

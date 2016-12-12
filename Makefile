@@ -4,7 +4,8 @@ mstart:
 	echo HUM commit in use is 0a57570 > /var/www/html/spacey/ryu_apps.log
 #ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow  netflowmodule-not-latest-but-works.py  testController3.py ../RPM/rpm.py ../HUM/hum.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
 	ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow  netflowmodule-not-latest-but-works.py  testController3.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
-#	 ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow netflowmodule.py testController3.py rpm.py > /tmp/cc.log &
+#below runs latest NFM if u use relative path it compains unable to import simple_switch
+#	ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow  netflowmodule.py  testController3.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
 mlog:
 	tail -f /var/www/html/spacey/ryu_apps.log
 mstop:

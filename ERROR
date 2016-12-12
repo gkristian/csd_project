@@ -1,0 +1,137 @@
+tail -f /var/www/html/spacey/dm.log 
+-------------
+NFM :
+{"timestamp": "0", "module": "nfm", "packet_dropped": {}, "link_utilization": {}}
+RPM :
+{"max_latency": 0, "mean_latency": 0, "median_latency": 0, "25th_latency": 0, "timestamp": "0", "delays": {}, "75th_latency": 0, "min_latency": 0, "module": "rpm", "normalized_delays": {}}
+HUM :
+{"timestamp":127.0.0.1 - - [11/Dec/2016 23:51:18] "POST /Tasks.txt HTTP/1.1" 201 -
+127.0.0.1 - - [11/Dec/2016 23:51:19] "POST /Tasks.txt HTTP/1.1" 201 -
+127.0.0.1 - - [11/Dec/2016 23:51:20] "POST /Tasks.txt HTTP/1.1" 201 -
+127.0.0.1 - - [11/Dec/2016 23:51:21] "POST /Tasks.txt HTTP/1.1" 201 -
+ "2016-12-11 23:51:16.822926", "core": {"1": "0.0", "0": "1.0", "3": "0.0", "2": "0.0", "5": "0.0", "4": "0.0"}, "module": "hum", "memory": 7.6}
+-------------
+Created NFM tables
+Created RPM tables
+Created HUM tables
+SUCCESS : Insert NFM util into SQL DB
+SUCCESS : Insert NFM dropped into SQL DB
+{"1": "0.0", "0": "1.0", "3": "0.0", "2": "0.0", "5": "0.0", "4": "0.0"}
+<type 'str'>
+SUCCESS : Insert HUM into SQL DB
+ERROR : RPM insertion failed (1062, "Duplicate entry '0' for key 'PRIMARY'")
+Push finished 
+
+False
+
+Accepting POST req
+<type 'dict'>
+<type 'unicode'>
+{'init_cache': True}
+{'init_cache': True}
+hum
+POST handling done
+
+Data pushed from cache to DB:
+-------------
+NFM :
+{"timestamp": "0", "module": "nfm", "packet_dropped": {}, "link_utilization": {}}
+RPM :
+{"max_latency": 0, "mean_latency": 0, "median_latency": 0, "25th_latency": 0, "timestamp": "0", "delays": {}, "75th_latency": 0, "min_latency": 0, "module": "rpm", "normalized_delays": {}}
+HUM :
+{"timestamp": "2016-12-11 23:51:17.830639", "core": {"1": "0.0", "0": "1.0", "3": "0.0", "2": "0.0", "5": "0.0", "4": "0.0"}, "module": "hum", "memory": 7.5}
+-------------
+Created NFM tables
+Created RPM tables
+Created HUM tables
+SUCCESS : Insert NFM util into SQL DB
+SUCCESS : Insert NFM dropped into SQL DB
+{"1": "0.0", "0": "1.0", "3": "0.0", "2": "0.0", "5": "0.0", "4": "0.0"}
+<type 'str'>
+SUCCESS : Insert HUM into SQL DB
+ERROR : RPM insertion failed (1062, "Duplicate entry '0' for key 'PRIMARY'")
+Push finished 
+
+False
+
+Accepting POST req
+<type 'dict'>
+<type 'unicode'>
+{'init_cache': True}
+{'init_cache': True}
+hum
+POST handling done
+
+Data pushed from cache to DB:
+-------------
+NFM :
+{"timestamp": "0", "module": "nfm", "packet_dropped": {}, "link_utilization": {}}
+RPM :
+{"max_latency": 0, "mean_latency": 0, "median_latency": 0, "25th_latency": 0, "timestamp": "0", "delays": {}, "75th_latency": 0, "min_latency": 0, "module": "rpm", "normalized_delays": {}}
+HUM :
+{"timestamp": "2016-12-11 23:51:18.838761", "core": {"1": "0.0", "0": "1.0", "3": "0.0", "2": "0.0", "5": "0.0", "4": "0.0"}, "module": "hum", "memory": 7.5}
+-------------
+Created NFM tables
+Created RPM tables
+Created HUM tables
+SUCCESS : Insert NFM util into SQL DB
+SUCCESS : Insert NFM dropped into SQL DB
+{"1": "0.0", "0": "1.0", "3": "0.0", "2": "0.0", "5": "0.0", "4": "0.0"}
+<type 'str'>
+SUCCESS : Insert HUM into SQL DB
+ERROR : RPM insertion failed (1062, "Duplicate entry '0' for key 'PRIMARY'")
+Push finished 
+
+False
+
+Accepting POST req
+<type 'dict'>
+<type 'unicode'>
+{'init_cache': True}
+{'init_cache': True}
+hum
+POST handling done
+
+Data pushed from cache to DB:
+-------------
+NFM :
+{"timestamp": "0", "module": "nfm", "packet_dropped": {}, "link_utilization": {}}
+RPM :
+{"max_latency": 0, "mean_latency": 0, "median_latency": 0, "25th_latency": 0, "timestamp": "0", "delays": {}, "75th_latency": 0, "min_latency": 0, "module": "rpm", "normalized_delays": {}}
+HUM :
+{"timestamp": "2016-12-11 23:51:19.846450", "core": {"1": "0.0", "0": "2.0", "3": "0.0", "2": "0.0", "5": "0.0", "4": "0.0"}, "module": "hum", "memory": 7.5}
+-------------
+Created NFM tables
+Created RPM tables
+Created HUM tables
+SUCCESS : Insert NFM util into SQL DB
+SUCCESS : Insert NFM dropped into SQL DB
+{"1": "0.0", "0": "2.0", "3": "0.0", "2": "0.0", "5": "0.0", "4": "0.0"}
+<type 'str'>
+SUCCESS : Insert HUM into SQL DB
+ERROR : RPM insertion failed (1062, "Duplicate entry '0' for key 'PRIMARY'")
+Push finished 
+
+False
+
+Accepting POST req
+<type 'dict'>
+<type 'unicode'>
+{'init_cache': True}
+{'init_cache': True}
+hum
+POST handling done
+
+Data pushed from cache to DB:
+-------------
+NFM :
+{"timestamp": "0", "module": "nfm", "packet_dropped": {}, "link_utilization": {}}
+RPM :
+{"max_latency": 0, "mean_latency": 0, "median_latency": 0, "25th_latency": 0, "timestamp": "0", "delays": {}, "75th_latency": 0, "min_latency": 0, "module": "rpm", "normalized_delays": {}}
+HUM :
+{"timestamp": "2016-12-11 23:51:20.853921", "core": {"1": "0.0", "0": "1.0", "3": "0.0", "2": "0.0", "5": "0.0", "4": "0.0"}, "module": "hum", "memory": 7.5}
+-------------
+Created NFM tables
+Created RPM ta127.0.0.1 - - [11/Dec/2016 23:51:22] "POST /Tasks.txt HTTP/1.1" 201 -
+127.0.0.1 - - [11/Dec/2016 23:51:23] "POST /Tasks.txt HTTP/1.1" 201 -
+127.0.0.1 - - [11/Dec/2016 23:51:24] "POST /Tasks.txt HTTP/1.1" 201 -

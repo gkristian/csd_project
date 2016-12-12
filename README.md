@@ -1,3 +1,4 @@
+Now one can run the whole project through just one command. 
 #To run the project
 make startall
 #To stop the project

@@ -1,5 +1,0 @@
-Host host
-HostName host
-User user
-StrictHostKeyChecking no
-#UserKnownHostsFile /dev/null

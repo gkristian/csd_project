@@ -35,6 +35,13 @@ from ryu.topology.api import get_switch, get_link
 from ryu.app.wsgi import ControllerBase
 from ryu.topology import event, switches 
 import networkx as nx
+#Ryu controller won't run on a linux without x-windows unless an Agg backend is selected
+import os
+import matplotlib as mpl
+if os.environ.get('DISPLAY','') == '':
+    print('no display found. Using non-interactive Agg backend')
+    mpl.use('Agg')
+#Done with Agg backend selection in case an X is not avaialble
 import matplotlib.pyplot as plt
 from ryu.lib.mac import haddr_to_bin
 import time

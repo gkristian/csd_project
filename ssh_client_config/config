@@ -1,0 +1,7 @@
+#place this in ~/.ssh/config
+#set chmod to 400 on this file
+Host host
+HostName host
+User user
+StrictHostKeyChecking no
+#UserKnownHostsFile /dev/null

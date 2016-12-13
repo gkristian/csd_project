@@ -652,7 +652,7 @@ class ProjectController(app_manager.RyuApp):
         #print in_port and out_port as well
         label_src = nx.get_edge_attributes(self.net, 'src_port')
         nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_src)
-        filename_src = self.defines_D['logdir'] + '/CPMnetwork_with_src_port.png'
+        filename_src = self.defines_D['logdir'] + '/CPM_network_with_src_port.png'
         plt.savefig(filename_src)
         label_dst = nx.get_edge_attributes(self.net, 'dst_port')
         nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_dst)

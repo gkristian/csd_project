@@ -106,7 +106,7 @@ class ProjectController(app_manager.RyuApp):
         self.no_of_nodes = 0
         self.no_of_links = 0
         self.i=0
-        self.defines_D = {'bcast_mac':'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,'flow_table_strategy_semi_proactive': True,'logdir':'/var/www/html/spacey/'}
+        self.defines_D = {'bcast_mac':'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,'flow_table_strategy_semi_proactive': True,'logdir':'/var/www/html/spacey'}
         """
         flow_table_strategy_semi_proactive: when controller receives the first packet, it reacts to it by proactively installing flows in all switches that lie in the computed
                                             shortest path for that packet to reach its destination.
@@ -652,11 +652,11 @@ class ProjectController(app_manager.RyuApp):
         #print in_port and out_port as well
         label_src = nx.get_edge_attributes(self.net, 'src_port')
         nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_src)
-        filename_src = self.defines_D['logdir'] + '/network_with_src_port.png'
+        filename_src = self.defines_D['logdir'] + '/CPMnetwork_with_src_port.png'
         plt.savefig(filename_src)
         label_dst = nx.get_edge_attributes(self.net, 'dst_port')
         nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_dst)
-        filename_dst = self.defines_D['logdir'] + 'network_with_dst_port.png'
+        filename_dst = self.defines_D['logdir'] + '/CPM_network_with_dst_port.png'
 
         #nx.draw_graphviz(self.net)
         #nx.draw_circular(self.net, with_labels=True)

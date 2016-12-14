@@ -1,5 +1,9 @@
 #modules:
 #	sh run_ik2200.sh
+
+setup:
+	-mkdir -p /var/www/html/spacey
+	-mysql -u root -p12345678 -e 'create database testdb;'
 mstart:
 	echo HUM commit in use is 0a57570 > /var/www/html/spacey/ryu_apps.log
 #ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow  netflowmodule-not-latest-but-works.py  testController3.py ../RPM/rpm.py ../HUM/hum.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
@@ -46,7 +50,12 @@ truncate:
 	 mysql -u root -p12345678 -e 'use testdb; show tables;truncate rpm;truncate rpm_stat;truncate hum;truncate nfm_dropped;truncate nfm_util;show tables; select * from nfm_util, nfm_dropped, rpm, rpm_stat, hum;'
 showtables:
 #mysql -u root -p12345678 -e 'use testdb; show tables; select * from nfm_util;'
-	 mysql -u root -p12345678 -e 'use testdb; show tables; select * from nfm_util, nfm_dropped, rpm, rpm_stat, hum;'
+	-mysql -u root -p12345678 -e 'use testdb; show tables;'
+	-mysql -u root -p12345678 -e 'use testdb; select * from nfm_util;'
+	-mysql -u root -p12345678 -e 'use testdb; select * from nfm_dropped;'
+	-mysql -u root -p12345678 -e 'use testdb; select * from rpm;'
+	-mysql -u root -p12345678 -e 'use testdb; select * from rpm_stat;'
+	-mysql -u root -p12345678 -e 'use testdb; select * from hum;'
 show:
 	-ps auxw |grep python |grep -v grep
 	-ps auxw |grep screen |grep -v grep
@@ -59,6 +68,7 @@ spacey:
 #if below statement is commented out, then screen process shall terminate killing all child processes spawned by above make commands. Another way could have been to copy above make commands in startall and run them before make topology as then mininet cli holds the stdout preventing screen from exiting
 	read wait_for_ever_so_that_screen_is_maintained 
 #screen -d -m some_Command will cause screen session to exit once the command ends
+#startall: setup
 startall:
 	-mn -c 
 	screen -S mininet -d -m make topology

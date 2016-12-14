@@ -46,6 +46,23 @@ import matplotlib.pyplot as plt
 from ryu.lib.mac import haddr_to_bin
 import time
 #from collections import deque #used to remove first and last element from the list efficently
+#***********************************************************
+#below imports are used to import the database client library
+import sys
+import os
+
+#path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib'))
+if not path in sys.path:
+    sys.path.insert(1, path)
+del path
+
+from datetime import datetime
+from client import client_side
+
+#***********************************************************
+
+
 
 
 
@@ -106,7 +123,7 @@ class ProjectController(app_manager.RyuApp):
         self.no_of_nodes = 0
         self.no_of_links = 0
         self.i=0
-        self.defines_D = {'bcast_mac':'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,'flow_table_strategy_semi_proactive': True,'logdir':'/var/www/html/spacey'}
+        self.defines_D = {'bcast_mac':'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,'flow_table_strategy_semi_proactive': True,'logdir':'/var/www/html/spacey', 'metrics_fetch_rest_url':'http://127.0.0.1:8000/Tasks.txt','fetch_timer_in_seconds':4}
         """
         flow_table_strategy_semi_proactive: when controller receives the first packet, it reacts to it by proactively installing flows in all switches that lie in the computed
                                             shortest path for that packet to reach its destination.
@@ -126,6 +143,10 @@ class ProjectController(app_manager.RyuApp):
 
         self.datapathDb = {}
         self.already_installed_paths_SET = set()
+
+        # Fetch metrics from remote Cache related data structures
+        self.time_of_last_fetch = 0
+
 
     # Handy function that lists all attributes in the given object
     def ls(self,obj):
@@ -526,6 +547,8 @@ class ProjectController(app_manager.RyuApp):
                     #Above line once caused error CSD_CC_1 reported in ERRORS.txt
                     self.logger.debug("Cannot find path from src mac %r to dst_mac %r, returning ie. doing nothing more",src_mac,dst_mac)
                     return
+                #fetch metrics from a remote source and add to graph and compute weight for each link
+                self.__fetch_metrics_and_insert_in_graph('nfm')
                 #dst mac  is in our topology graph
                 spath=nx.shortest_path(self.net,src_mac,dst_mac)
 
@@ -841,6 +864,62 @@ class ProjectController(app_manager.RyuApp):
                                   actions=actions,
                                   data=pkt.data)
         datapath.send_msg(out)
+
+    def clamp(n, smallest, largest):
+        return max(smallest, min(n, largest))
+
+    def __update_graph(self,src_dpid,dst_dpid, key,value):
+        """key can be <module_name><module_key> e.g. 'nfm_link_utilization' """
+        self.logger.info("UPDATE_GRAPH_NFM , weight = %r", value)
+        self.net[src_dpid][dst_dpid]['weight'] = value
+        #self.net[src_dpid][dst_dpid][key] = value
+        self.logger.debug("Assigned value self.net[%r][%r]['weight'] = %r", src_dpid,dst_dpid,self.net[src_dpid][dst_dpid]['weight]'])
+
+
+    def __fetch_metrics_and_insert_in_graph(self,module_name):
+        self.current_time = int(round(time.time()*1000))
+        #every 4 seconds
+        time_max_limit = self.defines_D['fetch_timer_in_seconds'] * 1000
+        self.logger.debug("fetch_metric_and_insert_ingraph, time_max_limit = %r",time_max_limit)
+        if not (self.curent_time - self.time_of_last_fetch > time_max_limit):
+            return
+        else:
+            self.time_of_last_fetch = current_time
+            self.logger.debug("FETCH_TIME_CHECK_OK, about to fetch_KPI")
+
+
+        if module_name == 'nfm':
+            url = self.defines_D['metrics_fetch_rest_url']
+            DMclient = client_side(url)
+            nfm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization']}
+            response = DMclient.getme(nfm_what_metrics_to_fetch)
+            self.logger.debug("FETCH_METRICS_NFM: getme response = %r ",response)
+            response1 = response[0]
+            #graph = response [0][1]
+            graph = response1[1]
+            del response1
+            del response
+
+            self.logger.debug("FETCH_METRICS_NFM:  graph = %r", graph)
+            # tthe output in log was :
+            # graph =  {u'2-1': 0.0, u'1-2': 0.0}
+
+            for gkey in graph:
+                gkey = gkey.encode('ascii', 'ignore')
+                print gkey, 'corresponds to', graph[gkey]
+                src_dpid, dst_dpid = gkey.split('-')  # returns a lista
+                src_dpid = src_dpid.strip()  # default to removing white spaces
+                dst_dpid = dst_dpid.strip()  # defaults to removing white spaces
+
+                link_util_value = clamp(graph[gkey], 0, 100)  # the link_utilization value must be between 0 to 100
+
+                # value = clamp(-300.0023,0,100) #the link_utilization value must be between 0 to 100
+                # value2 = clamp(300.0023,0,100) #the link_utilization value must be between 0 to 100
+
+                self.logger.debug("FETECH_METRICS_NFM: src_dpid = %r , '-', dst_dpid = %r, '====', value =%r",src_dpid, dst_dpid , link_util_value)
+                self.__update_graph(src_dpid,dst_dpid,'nfm_link_util',link_util_value)
+            # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
+
 
 
 

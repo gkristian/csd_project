@@ -75,6 +75,12 @@ def main(argv):
 				DICT_TO_DB['memory']=mem_metrics()
 			else:
 				sys.exit("Wrong input arg of Mem")
+			#Send to DM
+			try:
+				client.postme(DICT_TO_DB)
+			except:
+				print "Cannot connect to DM"
+
 		time.sleep(1)
 
 def verbose(inputprevdict2):
@@ -176,7 +182,8 @@ def core_metrics():
 	for i in range(multiprocessing.cpu_count()):
 		cpu= cpu_stat.cpu_percents()
 		cpuusage=(100-cpu['idle'])
-		dict_core[i]=round(cpuusage,2)
+		res=round(cpuusage,2)
+		dict_core[i]=res
 		#print ' CPU usage: %.2f' % cpuusage + '%'
 	#print '\n'
 	return dict_core

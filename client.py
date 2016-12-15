@@ -15,8 +15,8 @@ class client_side:
         resp=requests.post(self.url,json=self.jsonfile)
         if resp.status_code !=201:
             print 'Sending POST req: recieved error code %s' % resp.status_code
-        else:
-            print 'HUM : POST request successful'
+        #else:
+            #print 'HUM : POST request successful'
 
     def getme(self, data_dict):
         payload = data_dict
@@ -28,7 +28,7 @@ class client_side:
             json_text_list = resp.text.split("200 ")[1]
             json_text_list = json_text_list.split("Server")[0]
             tuple_list = json.loads(json_text_list)
-            
+
             # return these values in some format
             return tuple_list
 

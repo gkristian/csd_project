@@ -54,29 +54,33 @@ class dbaccess(object):
 		try:
 			cursor.execute(q1_nfm_util)
 		except BaseException as e:
-			print "Table exist"
+			pass
+			#print "Table exist"
 		try:
 			cursor.execute(q1_nfm_dropped)
 			print "Created NFM tables"
 		except BaseException as e:
-			print "Table exist"
-		
+			pass
+			#print "Table exist"
+
 		try:
 			cursor.execute(q1_rpm)
 		except BaseException as e:
-			print "Table exist"
+			pass
+			#print "Table exist"
 		try:
 			cursor.execute(q1_rpm_stat)
 			print "Created RPM tables"
 		except BaseException as e:
-			print "Table exist"
-		
+			pass
+			#print "Table exist"
 		try:
 			cursor.execute(q1_hum)
 			print "Created HUM tables"
 		except BaseException as e:
-			print "Table exist"
-		
+			pass
+			#print "Table exist"
+
 
 		# TODO, make the table insertion more orderly
 
@@ -90,6 +94,7 @@ class dbaccess(object):
 				#Commit changes in the database
 				db.commit()
 			print "SUCCESS : Insert NFM util into SQL DB"
+
 
 			timestamp = nfmdict['timestamp']
 			dropped = nfmdict['packet_dropped']
@@ -110,8 +115,8 @@ class dbaccess(object):
 			timestamp = humdict['timestamp']
 			core_usage = json.dumps(humdict['core'])
 			memory_usage = humdict['memory']
-			print core_usage
-			print type(core_usage)
+			#print core_usage
+			#print type(core_usage)
 			q4 = "INSERT INTO hum(timestamp,core,memory) VALUES ('%s','%s',%f)" %(timestamp,core_usage,memory_usage)
 			cursor.execute(q4)
 			#Commit changes in the database

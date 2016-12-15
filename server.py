@@ -137,7 +137,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         print self.quit['interrupted']
         if not self.quit['interrupted']:
-            print "\nAccepting POST req"
+            print "\nAccepting POST"
             # create response to POST req
             self.send_response(201)
             self.send_header('content-type','text/html ; "charset"="ascii"')
@@ -160,8 +160,8 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
             # Load json from POST req
             j_data=json.loads(self.data, encoding='ascii')
-            print type(j_data)
-            print type(j_data['module'])
+            #print type(j_data)
+            #print type(j_data['module'])
             #j_data=json.loads(j_data)
             #print "MORE DATA FROM RPM IN SERVER"
             #print j_data.viewitems()
@@ -173,7 +173,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 # put the json data in the cache
                 #if first time from module x use set_all_values, module name and timestamp 1?
                 if 'timestamp' in j_data:
-                    print self.initialized
+                    #print self.initialized
                     if not self.initialized['init_cache']:
                         all_start_time = time.time()
                         self.cache.set_all_values(self.data)
@@ -188,7 +188,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
             else:
                 print "2 not a correct json dict"
-            print  self.initialized
+            #print  self.initialized
             #print "{}".format(j_data)
             print module_name
             ServerHandler.manam= j_data

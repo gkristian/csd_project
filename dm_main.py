@@ -26,15 +26,15 @@ try:
 		start_time = time.time()
 		if cache.get_state() == True:
 			try:
-				print "\nData pushed from cache to DB:"
+				print "\nPush data from cache to DB:"
 				datatosql = cache.push()
-				print "-------------"
-				print "NFM :"; print datatosql['nfm']
-				print "RPM :"; print datatosql['rpm']
-				print "HUM :"; print datatosql['hum']
-				print "-------------"
+				#print "-------------"
+				#print "NFM :"; print datatosql['nfm']
+				#print "RPM :"; print datatosql['rpm']
+				#print "HUM :"; print datatosql['hum']
+				#print "-------------"
 				db.insert(datatosql)
-				print "Push finished \n"
+				#print "Push finished \n"
 			except BaseException as e:
 				#rt_push.stop()
 				print e
@@ -45,7 +45,7 @@ try:
 
 	server_quit = {'interrupted' : False}
 
-	time_intervall = 1 # set time between pushes to db
+	time_intervall = 5 # set time between pushes to db
 	#rpm_keys = []
 	#hum_keys = []
 	#nfm_keys = ['flow', 'delay']

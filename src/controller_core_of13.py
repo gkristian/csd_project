@@ -85,6 +85,20 @@ class ProjectController(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(ProjectController, self).__init__(*args, **kwargs)
+
+        self.cpmlogger = logging.getLogger("cpm" + __name__)
+        self.cpmlogger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler("/tmp/temp.log")
+        handler.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        self.cpmlogger.addHandler(handler)
+        self.cpmlogger.info("Starting up cpmlogger")
+
+
+
+
+
         #self.mac_to_port = {}
         self.l2_dpid_table = {}
         """
@@ -865,26 +879,32 @@ class ProjectController(app_manager.RyuApp):
                                   data=pkt.data)
         datapath.send_msg(out)
 
-    def clamp(n, smallest, largest):
+    def clamp(self,n, smallest, largest):
         return max(smallest, min(n, largest))
 
     def __update_graph(self,src_dpid,dst_dpid, key,value):
         """key can be <module_name><module_key> e.g. 'nfm_link_utilization' """
-        self.logger.info("UPDATE_GRAPH_NFM , weight = %r", value)
-        self.net[src_dpid][dst_dpid]['weight'] = value
-        #self.net[src_dpid][dst_dpid][key] = value
-        self.logger.debug("Assigned value self.net[%r][%r]['weight'] = %r", src_dpid,dst_dpid,self.net[src_dpid][dst_dpid]['weight]'])
+        self.logger.info("FETCH UPDATE_GRAPH_NFM , weight = %r", value)
+        try:
+            self.net.edge[src_dpid][dst_dpid]['weight'] = value
+            #self.net[src_dpid][dst_dpid][key] = value
+            self.logger.debug("FETCH Assigned value self.net.edge[%r][%r]['weight'] = %r", src_dpid,dst_dpid,self.net.edge[src_dpid][dst_dpid]['weight]'])
+        except KeyError:
+            raise
+        except Exception,e:
+            #self.logger.exception("Unable to update this key in the graph on fetch %r",e)
+            self.logger.error('Unable to update this key in the graph, here is the traceback',exc_info=True)
 
 
     def __fetch_metrics_and_insert_in_graph(self,module_name):
         self.current_time = int(round(time.time()*1000))
         #every 4 seconds
         time_max_limit = self.defines_D['fetch_timer_in_seconds'] * 1000
-        self.logger.debug("fetch_metric_and_insert_ingraph, time_max_limit = %r",time_max_limit)
-        if not (self.curent_time - self.time_of_last_fetch > time_max_limit):
+        self.logger.debug("FETCH fetch_metric_and_insert_ingraph, time_max_limit = %r",time_max_limit)
+        if not (self.current_time - self.time_of_last_fetch > time_max_limit) or self.defines_D['bootstrap_in_progress']:
             return
         else:
-            self.time_of_last_fetch = current_time
+            self.time_of_last_fetch = self.current_time
             self.logger.debug("FETCH_TIME_CHECK_OK, about to fetch_KPI")
 
 
@@ -894,6 +914,7 @@ class ProjectController(app_manager.RyuApp):
             nfm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization']}
             response = DMclient.getme(nfm_what_metrics_to_fetch)
             self.logger.debug("FETCH_METRICS_NFM: getme response = %r ",response)
+            self.cpmlogger.debug("cpmlogger : response ",response)
             response1 = response[0]
             #graph = response [0][1]
             graph = response1[1]
@@ -906,17 +927,19 @@ class ProjectController(app_manager.RyuApp):
 
             for gkey in graph:
                 gkey = gkey.encode('ascii', 'ignore')
-                print gkey, 'corresponds to', graph[gkey]
+                self.logger.debug("%r corresponds to %r",gkey,graph[gkey])
                 src_dpid, dst_dpid = gkey.split('-')  # returns a lista
                 src_dpid = src_dpid.strip()  # default to removing white spaces
                 dst_dpid = dst_dpid.strip()  # defaults to removing white spaces
+                #if len(graph[gkey]) > 1:
+                #    self.logger.warn("grap[gkey] > 1 and is = %r",graph[gkey])
 
-                link_util_value = clamp(graph[gkey], 0, 100)  # the link_utilization value must be between 0 to 100
+                link_util_value = self.clamp(graph[gkey], 0, 100)  # the link_utilization value must be between 0 to 100
 
                 # value = clamp(-300.0023,0,100) #the link_utilization value must be between 0 to 100
                 # value2 = clamp(300.0023,0,100) #the link_utilization value must be between 0 to 100
 
-                self.logger.debug("FETECH_METRICS_NFM: src_dpid = %r , '-', dst_dpid = %r, '====', value =%r",src_dpid, dst_dpid , link_util_value)
+                self.logger.debug("FETCH_METRICS_NFM: src_dpid = %r , '-', dst_dpid = %r, '====', value =%r",src_dpid, dst_dpid , link_util_value)
                 self.__update_graph(src_dpid,dst_dpid,'nfm_link_util',link_util_value)
             # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
 

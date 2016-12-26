@@ -1,0 +1,3 @@
+INFO:2016-12-26 00:18:25,663:2 found in graph
+INFO:2016-12-26 00:18:25,663:G has edge 1,2 which has weight = {'weight': 12}
+INFO:2016-12-26 00:18:25,663:G has node 1

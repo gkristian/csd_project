@@ -886,11 +886,14 @@ class ProjectController(app_manager.RyuApp):
         """key can be <module_name><module_key> e.g. 'nfm_link_utilization' """
         self.logger.info("FETCH UPDATE_GRAPH_NFM , weight = %r", value)
         try:
-            self.net.edge[src_dpid][dst_dpid]['weight'] = value
+            self.net.edge[src_dpid][dst_dpid][key] = value
             #self.net[src_dpid][dst_dpid][key] = value
             self.logger.debug("FETCH Assigned value self.net.edge[%r][%r]['weight'] = %r", src_dpid,dst_dpid,self.net.edge[src_dpid][dst_dpid]['weight]'])
-        except KeyError:
-            raise
+        except (KeyError):
+            self.logger.error("FETCH KeyError when updating graph")
+            #raise
+        except (NameError):
+            self.logger.error("FETCH NameError when updating graph")
         except Exception,e:
             #self.logger.exception("Unable to update this key in the graph on fetch %r",e)
             self.logger.error('Unable to update this key in the graph, here is the traceback',exc_info=True)

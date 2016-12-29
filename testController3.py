@@ -13,7 +13,8 @@ import simple_switch_13
 
 
 
-class TestController(simple_switch_13.SimpleSwitch13):
+#class TestController(simple_switch_13.SimpleSwitch13):
+class TestController(app_manager.RyuApp):
 	app_manager._CONTEXTS = {
 		'network' : nx.DiGraph([(1,'00:00:00:00:00:01',{'src_port':2,'dst_port':2,'src_dpid':1,'dst_dpid':'00:00:00:00:00:01','bw':5}),('00:00:00:00:00:01',1,{'src_port':2,'dst_port':2,'src_dpid':'00:00:00:00:00:01','dst_dpid':1,'bw':5}), (2,'00:00:00:00:00:02',{'src_port':2,'dst_port':2,'src_dpid':2,'dst_dpid':'00:00:00:00:00:02','bw':5}), ('00:00:00:00:00:02',2,{'src_port':2,'dst_port':2,'src_dpid':'00:00:00:00:00:02','dst_dpid':2,'bw':5}),
 (1,2,{'src_port':1,'dst_port':1,'src_dpid':1,'dst_dpid':2,'bw':10}),

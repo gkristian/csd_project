@@ -20,8 +20,7 @@ from client import client_side
 from datetime import datetime
 
 
-#class NFM(simple_switch_13.SimpleSwitch13):
-class NFM(app_manager.RyuApp):
+class NFM(simple_switch_13.SimpleSwitch13):
 
 	"""
 	Constructor; Retrieving graph object from controller and defining all necessary variables
@@ -30,11 +29,8 @@ class NFM(app_manager.RyuApp):
 		super(NFM, self).__init__(*args, **kwargs)
 		self.datapaths = {}		#store datapaths
 		self.net = app_manager._CONTEXTS['network']	#fetch graph object of physical network
-		self.cpm_bootstrap_complete = app_manager._CONTEXTS['bootstrap_complete']  # fetch graph object of physical network
-		self.logger.debug("NFM - self.net has nodes = %r",self.net.nodes())
 		self.totalSwitches = self.determineNumberOfSwitches()	#calculate total switches by the graph topology object
-
-		self.logger.info("TOTAL SWITCHES: %d", self.totalSwitches)
+		#self.logger.info("TOTAL SWITCHES: %d", self.totalSwitches)
 		self.logger.info(self.totalSwitches)
 		self.DICT_TO_DB = {'module':'nfm'}	#prepare a dictionary for updating and sending to Database
 		self.pathComponents = {}
@@ -55,13 +51,7 @@ class NFM(app_manager.RyuApp):
 
 	@set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
 	def _state_change_handler(self, ev):
-		if not self.cpm_bootstrap_complete:
-			self.logger.error(" ----------------- NFM  NO xxxxxxxx bootstrap NOT complete - doing nothing xxxxxxxx  ------------")
-			return
 
-		self.logger.error(" -------------- NFM  YES booooooooootstrap COMPLETE ------------- ")
-		self.net = app_manager._CONTEXTS['network']
-		self.logger.error(" -------------- NFM  nodes = %r || edges = %r", self.net.nodes(),self.net.edges())
 		if self.mininetRunning is False:
 			self.monitoring_thread = hub.spawn(self._monitor)
 			self.mininetRunning = True
@@ -104,7 +94,7 @@ class NFM(app_manager.RyuApp):
 	Function to request flow statistics and port statistics of a datapath (switch)
 	"""
 	def _request_stats(self, datapath):
-		self.logger.error('NFM: send stats....')
+		self.logger.debug('send stats....')
 		ofproto = datapath.ofproto
 		parser = datapath.ofproto_parser
 		#req = parser.OFPFlowStatsRequest(datapath)		DON'T USE THIS NOW
@@ -118,8 +108,8 @@ class NFM(app_manager.RyuApp):
 	Function to print the event statistics as json dump
 	"""
 	def print_json(self, ev):
-		self.logger.error('datapath id: %016x', ev.msg.datapath.id)
-		self.logger.error('%s', json.dumps(ev.msg.to_jsondict(), ensure_ascii=True,
+		self.logger.info('datapath id: %016x', ev.msg.datapath.id)
+		self.logger.info('%s', json.dumps(ev.msg.to_jsondict(), ensure_ascii=True,
 						indent=3, sort_keys=True))
 
 
@@ -226,8 +216,7 @@ class NFM(app_manager.RyuApp):
 					DPID_TO_DPID = str(FROM)+'-'+str(TO)
 					self.DICT_TO_DB['link_utilization'][DPID_TO_DPID] = TOTAL_UTIL # write into dict
 				except:
-					self.logger.error("[ERROR] Link only has one directional utilization, check opposite switch")
-		self.logger.error("NFM : DICT_TO_DB = %r",self.DICT_TO_DB)
+					self.logger.info("[ERROR] Link only has one directional utilization, check opposite switch")
 		self.DMclient.postme(self.DICT_TO_DB) # Push to DM
 
 
@@ -236,11 +225,6 @@ class NFM(app_manager.RyuApp):
 	"""
 	@set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
 	def _port_stats_reply_handler(self, ev):
-		if not self.cpm_bootstrap_complete:
-			self.logger.debug(" ----------------- NFM  NO xxxxxxxx bootstrap NOT complete - doing nothing PORTSTAT BOCK xxxxxxxx  ------------")
-			return
-
-		self.logger.debug(" -------------- NFM  YES booooooooootstrap COMPLETE . PORTSTAT BLOCK------------- ")
 		self.store_port_stat(ev)
 		self.calculate_dropped_packets(ev) # when packet_dropped rate on a swith is calculated, wirte into dict right away
 		self.responsedSwitches += 1

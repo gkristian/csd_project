@@ -248,11 +248,6 @@ class ProjectController(app_manager.RyuApp):
                     self.logger.debug("Bootstrap type %d just Completed", self.network_bootstrap_type)
         #Update the below variable that is shared through _CONTEXT_ we keep this variable seperate for now
         self.bootstrap_complete = not self.defines_D['bootstrap_in_progress']
-        #Delete below block
-        if self.bootstrap_complete:
-            self.cpmlogger.info("CPM: BOOTSTRAP TO NFM COMPLETE")
-        else:
-            self.cpmlogger.info("CPM: BOOTSTRAP NFM xxxxxxx NOT COMPLETE")
 
     #@staticmethod #I dont know how RYU shall deal with staticmethods though its use is justified here so I ll stick to what has worked in past
     def __remove_macs_from_shortest_path(self,spath):

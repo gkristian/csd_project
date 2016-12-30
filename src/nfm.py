@@ -15,7 +15,7 @@
 
 from ryu.base import app_manager
 from ryu.controller import ofp_event
-from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
+from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER,DEAD_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 from ryu.lib.packet import packet
@@ -29,8 +29,24 @@ class TestNFM1(app_manager.RyuApp):
         #self.shared_context =  app_manager._CONTEXTS['network']
         self.shared_context = kwargs['network']
         self.net = self.shared_context.learnt_topology
-        self.bcomplete = self.shared_context.bootstrap_complete
+        #self.bcomplete = self.shared_context.bootstrap_complete
         #self.netnfm_k = kwargs['network']
+
+    @set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
+    def _state_change_handler(self, ev):
+        if not self.shared_context.bootstrap_complete:
+            self.logger.info(
+                " ----------------- NFM  NO xxxxxxxx bootstrap NOT complete - doing nothing xxxxxxxx  ------------")
+            self.logger.debug("NFM1:  self.net.nodes() = %r ||| self.net.edge() = %r", self.net.nodes(),
+                              self.net.edges())
+            # self.logger.debug("TESTNFM1: self.bcomplete = %r",self.bcomplete)
+            self.logger.debug("NFM1: self.bcomplete = %r", self.shared_context.bootstrap_complete)
+            return
+        self.logger.info(" -------------- NFM  YES booooooooootstrap COMPLETE ------------- ")
+        self.logger.debug("NFM2:  self.net.nodes() = %r ||| self.net.edge() = %r", self.net.nodes(),
+                          self.net.edges())
+        # self.logger.debug("TESTNFM1: self.bcomplete = %r",self.bcomplete)
+        self.logger.debug("NFM2: self.bcomplete = %r", self.shared_context.bootstrap_complete)
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):

@@ -97,8 +97,9 @@ class ProjectController(app_manager.RyuApp):
         super(ProjectController, self).__init__(*args, **kwargs)
         self.shared_context = kwargs['network']  # fetch graph object of physical network
 
-        self.net = self.shared_context.learnt_topology
-        self.bootstrap_complete = self.shared_context.bootstrap_complete
+        self.net = self.shared_context.learnt_topology #this creates a reference
+        #use self.shared_context.bootstrap_complete boolean var directly
+        #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
 
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff',
                           'bootstrap_in_progress': True,

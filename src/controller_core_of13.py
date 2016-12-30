@@ -60,14 +60,27 @@ del path
 from datetime import datetime
 from client import client_side
 
+
+class SharedContext (object):
+    def __init__(self):
+        self.learnt_topology = nx.DiGraph()
+        self.bootstrap_complete = False
+
 #***********************************************************
 
 class ProjectController(app_manager.RyuApp):
     'CPM module for CSD Team4 project'
-    net = nx.DiGraph()
-    bootstrap_complete = False
-    app_manager._CONTEXTS = {'network': net ,
-                            'bootstrap_complete': bootstrap_complete }
+    _CONTEXTS = {'network': SharedContext}
+    #_CONTEXTS = {'network': nx.DiGraph() }
+    #app_manager._CONTEXTS = {'network': SharedContext ,'bootstrap_complete': bootstrap_complete }
+    #net = nx.DiGraph()
+    #s = SharedContext
+    #net = s.learnt_topology
+
+    #bootstrap_complete = False
+    ######bootstrap_complete = s.bootstrap_complete
+
+
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     #my custom logger only works if i use the ryu's logger: self.logger.info in the code and then use my custom logger, even then I noticed
     #my logger seemed to be affected by ryu's logger config since both use the logging module. Did not spend any time discovering it further
@@ -82,6 +95,10 @@ class ProjectController(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(ProjectController, self).__init__(*args, **kwargs)
+        self.shared_context = kwargs['network']  # fetch graph object of physical network
+
+        self.net = self.shared_context.learnt_topology
+        self.bootstrap_complete = self.shared_context.bootstrap_complete
 
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff',
                           'bootstrap_in_progress': True,
@@ -113,7 +130,6 @@ class ProjectController(app_manager.RyuApp):
         ipofmacX = l2_dpid_table[3]['x:x:x']['ip']
         #below is the port at which mac 'x:x:x' was learnt by switch with dpid 3
         port_of_mac_X_on_switch3 = l2_dpid_table[3]['x:x:x']['in_port']
-
         """
 
         #self.net = kwargs['network']
@@ -247,7 +263,8 @@ class ProjectController(app_manager.RyuApp):
                     self.defines_D['bootstrap_in_progress'] = False
                     self.logger.debug("Bootstrap type %d just Completed", self.network_bootstrap_type)
         #Update the below variable that is shared through _CONTEXT_ we keep this variable seperate for now
-        self.bootstrap_complete = not self.defines_D['bootstrap_in_progress']
+        self.bootstrap_complete = not self.defines_D['bootstrap_in_progress'] #xxxxxxxxxxxxxxxxx
+        self.shared_context.bootstrap_complete = not self.defines_D['bootstrap_in_progress']
         #Delete below block
         if self.bootstrap_complete:
             self.cpmlogger.info("CPM: BOOTSTRAP TO NFM COMPLETE")

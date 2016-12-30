@@ -66,7 +66,6 @@ from client import client_side
 
 
 
-
 class CPMdummy(app_manager.RyuApp):
     'CPM module for CSD Team4 project'
     net = nx.DiGraph()

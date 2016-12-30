@@ -26,10 +26,15 @@ class TestNFM1(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(TestNFM1, self).__init__(*args, **kwargs)
-        self.netnfm = app_manager._CONTEXTS['network']
+        #self.shared_context =  app_manager._CONTEXTS['network']
+        self.shared_context = kwargs['network']
+        self.net = self.shared_context.learnt_topology
+        self.bcomplete = self.shared_context.bootstrap_complete
         #self.netnfm_k = kwargs['network']
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
-        self.logger.debug("TESTNFM1, self.net.nodes() = %r ||| self.net.edge() = %r",self.netnfm.nodes(), self.netnfm.edges())
+        self.logger.debug("TESTNFM1:  self.net.nodes() = %r ||| self.net.edge() = %r",self.net.nodes(), self.net.edges())
+        #self.logger.debug("TESTNFM1: self.bcomplete = %r",self.bcomplete)
+        self.logger.debug("TESTNFM1: self.bcomplete = %r", self.shared_context.bootstrap_complete)
         # self.logger.debug("TESTNFM1, self.net_k.nodes() = %r ||| self.net_k.edge() = %r", self.netnfm_k.nodes(),self.netnfm_k.edges())

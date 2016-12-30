@@ -2,9 +2,9 @@ topology:
 	# *** Joakim simplest topology, does not have 4 host macs
 	#sudo python SimpleTopoMain.py 127.0.0.1 6633
 	# *** My midterm topology without bw params, with 4 host macs
-	#mn --custom ../controller_core/src/midterm_topology-nobw.py  --topo topo2 --controller remote --switch ovs,protocols=OpenFlow13  --mac -v debug
+	mn --custom ../controller_core/src/midterm_topology-nobw.py  --topo topo2 --controller remote --switch ovs,protocols=OpenFlow13  --mac -v debug
 	# *** Mininet default topologies with 4 host macs
-	mn  --topo linear,4 --controller remote --switch ovs,protocols=OpenFlow13  --mac -v debug
+	#mn  --topo linear,4 --controller remote --switch ovs,protocols=OpenFlow13  --mac -v debug
 
 #modules:
 #	sh run_ik2200.sh

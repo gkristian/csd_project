@@ -1,6 +1,6 @@
 from operator import attrgetter
 
-
+import logging
 import simple_switch_13
 from ryu.base import app_manager
 from ryu.controller import ofp_event
@@ -29,9 +29,28 @@ class NFM(app_manager.RyuApp):
 	def __init__(self, *args, **kwargs):
 		super(NFM, self).__init__(*args, **kwargs)
 		self.datapaths = {}		#store datapaths
-		self.net = app_manager._CONTEXTS['network']	#fetch graph object of physical network
-		self.cpm_bootstrap_complete = app_manager._CONTEXTS['bootstrap_complete']  # fetch graph object of physical network
-		self.logger.debug("NFM - self.net has nodes = %r",self.net.nodes())
+		#self.net = app_manager._CONTEXTS['network']	#fetch graph object of physical network
+		self.shared_context = kwargs['network']  # fetch graph object of physical network
+
+		self.net = self.shared_context.learnt_topology  ## net is a reference to learn_topology
+		#self.cpm_bootstrap_complete = app_manager._CONTEXTS['bootstrap_complete']  # fetch graph object of physical network
+		#self.cpm_bootstrap_complete = self.shared_context.bootstrap_complete ## this is NOT a reference to bootstrap complete because
+		# boostrap_complete isa primitive (see mutable/immutable discussion in python by refernce and pass by value)
+		self.csdlogger = logging.getLogger("NFM" + __name__)
+		self.csdlogger.setLevel(logging.DEBUG)
+		handler = logging.FileHandler('/var/www/html/spacey/nfmlog.log')
+		handler.setLevel(logging.DEBUG)
+		# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+		formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+		handler.setFormatter(formatter)
+		self.csdlogger.addHandler(handler)
+		self.csdlogger.info("Starting up NFMlogger. edges are %r", self.net.edges())
+
+
+		self.csdlogger.debug("NFM - self.net has nodes = %r",self.net.nodes())
+		self.csdlogger.debug("self.shared_context.bootstrap_complete = %r", self.shared_context.bootstrap_complete)
+		self.logger.debug("NFM - self.net has edges = %r", self.net.edges())
+
 		self.totalSwitches = self.determineNumberOfSwitches()	#calculate total switches by the graph topology object
 
 		self.logger.info("TOTAL SWITCHES: %d", self.totalSwitches)
@@ -52,16 +71,16 @@ class NFM(app_manager.RyuApp):
 		self.transmittedBytes = {}	#dictionary to keep track of previous transmitted bytes
 		self.linkUtilizations = {}	#dictionary to keep track of link utilizations
 
-
 	@set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
 	def _state_change_handler(self, ev):
-		if not self.cpm_bootstrap_complete:
+		if not self.shared_context.bootstrap_complete:
 			self.logger.error(" ----------------- NFM  NO xxxxxxxx bootstrap NOT complete - doing nothing xxxxxxxx  ------------")
 			return
-
+		self.csdlogger("-- ** -- NFM: In EventOFPStateChange implies bstrap complete -- ** ")
 		self.logger.error(" -------------- NFM  YES booooooooootstrap COMPLETE ------------- ")
-		self.net = app_manager._CONTEXTS['network']
+		#self.net = app_manager._CONTEXTS['network']
 		self.logger.error(" -------------- NFM  nodes = %r || edges = %r", self.net.nodes(),self.net.edges())
+		self.csdlogger.debug(" -------------- NFM  nodes = %r || edges = %r", self.net.nodes(), self.net.edges())
 		if self.mininetRunning is False:
 			self.monitoring_thread = hub.spawn(self._monitor)
 			self.mininetRunning = True
@@ -93,6 +112,7 @@ class NFM(app_manager.RyuApp):
 		hub.sleep(10)
 		while True:
 			self.logger.debug("REQUESTING PORT STAT...")
+			self.csdlogger.debug("REQUESTING PORT STAT...")
 			hub.sleep(self.updateTime)
 			self.port_stat_request_semaphore.wait()
 			self.logger.info("\n")
@@ -104,7 +124,8 @@ class NFM(app_manager.RyuApp):
 	Function to request flow statistics and port statistics of a datapath (switch)
 	"""
 	def _request_stats(self, datapath):
-		self.logger.error('NFM: send stats....')
+		self.logger.info('NFM: send stats....')
+		self.csdlogger.info('NFM: send stats....')
 		ofproto = datapath.ofproto
 		parser = datapath.ofproto_parser
 		#req = parser.OFPFlowStatsRequest(datapath)		DON'T USE THIS NOW
@@ -236,16 +257,19 @@ class NFM(app_manager.RyuApp):
 	"""
 	@set_ev_cls(ofp_event.EventOFPPortStatsReply, MAIN_DISPATCHER)
 	def _port_stats_reply_handler(self, ev):
-		if not self.cpm_bootstrap_complete:
+		if not self.shared_context.bootstrap_complete:
 			self.logger.debug(" ----------------- NFM  NO xxxxxxxx bootstrap NOT complete - doing nothing PORTSTAT BOCK xxxxxxxx  ------------")
+			self.csdlogger.debug(" ----------------- NFM  NO xxxxxxxx bootstrap NOT complete - doing nothing PORTSTAT BOCK xxxxxxxx  ------------")
 			return
 
 		self.logger.debug(" -------------- NFM  YES booooooooootstrap COMPLETE . PORTSTAT BLOCK------------- ")
+		self.csdlogger.debug(" -------------- NFM  YES booooooooootstrap COMPLETE . PORTSTAT BLOCK------------- ")
 		self.store_port_stat(ev)
 		self.calculate_dropped_packets(ev) # when packet_dropped rate on a swith is calculated, wirte into dict right away
 		self.responsedSwitches += 1
 		if self.responsedSwitches == self.totalSwitches:
 			self.logger.debug("Responsed Switches %d", self.responsedSwitches)
+			self.csdlogger.debug("Responsed Switches %d", self.responsedSwitches)
 			self.responsedSwitches = 0
 			self.calculate_link_utilization() # this function also push dict to DM after all new data is included
 			self.port_stat_request_semaphore.set()

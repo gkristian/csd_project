@@ -47,14 +47,14 @@ class NFM(app_manager.RyuApp):
 		self.csdlogger.info("Starting up NFMlogger. edges are %r", self.net.edges())
 
 
-		self.csdlogger.debug("NFM - self.net has nodes = %r",self.net.nodes())
-		self.csdlogger.debug("self.shared_context.bootstrap_complete = %r", self.shared_context.bootstrap_complete)
-		self.logger.debug("NFM - self.net has edges = %r", self.net.edges())
+		self.csdlogger.debug("NFM init  - self.net has nodes = %r",self.net.nodes())
+		self.csdlogger.debug("init self.shared_context.bootstrap_complete = %r", self.shared_context.bootstrap_complete)
+		self.logger.debug("NFM init - self.net has edges = %r", self.net.edges())
 
 		self.totalSwitches = self.determineNumberOfSwitches()	#calculate total switches by the graph topology object
 
-		self.logger.info("TOTAL SWITCHES: %d", self.totalSwitches)
-		self.logger.info(self.totalSwitches)
+		self.logger.info("NFM init TOTAL SWITCHES: %d", self.totalSwitches)
+		self.csdlogger.info("NFM init TOTAL SWITCHES: %d", self.totalSwitches)
 		self.DICT_TO_DB = {'module':'nfm'}	#prepare a dictionary for updating and sending to Database
 		self.pathComponents = {}
 		self.updateTime = 1
@@ -74,13 +74,15 @@ class NFM(app_manager.RyuApp):
 	@set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
 	def _state_change_handler(self, ev):
 		if not self.shared_context.bootstrap_complete:
-			self.logger.error(" ----------------- NFM  NO xxxxxxxx bootstrap NOT complete - doing nothing xxxxxxxx  ------------")
+			self.logger.debug(" ----------------- NFM  NO xxxxxxxx bootstrap NOT complete - doing nothing xxxxxxxx  ------------")
+			self.csdlogger.debug(" ----------------- NFM  NO xxxxxxxx bootstrap NOT complete - doing nothing xxxxxxxx  ------------")
 			return
-		self.csdlogger("-- ** -- NFM: In EventOFPStateChange implies bstrap complete -- ** ")
-		self.logger.error(" -------------- NFM  YES booooooooootstrap COMPLETE ------------- ")
+		self.csdlogger.debug("-- ** -- NFM: In EventOFPStateChange implies bstrap complete -- ** ")
+		self.csdlogger.debug(" -------------- NFM  YES booooooooootstrap COMPLETE ------------- ")
 		#self.net = app_manager._CONTEXTS['network']
-		self.logger.error(" -------------- NFM  nodes = %r || edges = %r", self.net.nodes(),self.net.edges())
+		self.logger.debug(" -------------- NFM  nodes = %r || edges = %r", self.net.nodes(),self.net.edges())
 		self.csdlogger.debug(" -------------- NFM  nodes = %r || edges = %r", self.net.nodes(), self.net.edges())
+		self.csdlogger.debug(" -------------- NFM  bstrapcomplete = %r ", self.shared_context.bootstrap_complete)
 		if self.mininetRunning is False:
 			self.monitoring_thread = hub.spawn(self._monitor)
 			self.mininetRunning = True
@@ -219,7 +221,7 @@ class NFM(app_manager.RyuApp):
 				if percentage < 0:
 					percentage = 0
 			percentage_string = "{0:.2f}%".format(100*percentage)
-			self.logger.info('DROPPED PACKETS PERCENTAGE ON SWITCH %x: %s', ev.msg.datapath.id, percentage_string)
+			self.csdlogger.info('DROPPED PACKETS PERCENTAGE ON SWITCH %x: %s', ev.msg.datapath.id, percentage_string)
 			DPID = str(ev.msg.datapath.id)
 			self.DICT_TO_DB['packet_dropped'][DPID] = percentage # write into dict prepared to be sent to DM
 		self.dropped[ev.msg.datapath.id] = {'rx':rx_packets, 'tx':tx_packets} #store the current measured received and transmitted packets
@@ -248,7 +250,9 @@ class NFM(app_manager.RyuApp):
 					self.DICT_TO_DB['link_utilization'][DPID_TO_DPID] = TOTAL_UTIL # write into dict
 				except:
 					self.logger.error("[ERROR] Link only has one directional utilization, check opposite switch")
-		self.logger.error("NFM : DICT_TO_DB = %r",self.DICT_TO_DB)
+					self.csdlogger.error("[ERROR] Link only has one directional utilization, check opposite switch")
+		self.logger.debug("NFM : REST pushing this now : DICT_TO_DB = %r",self.DICT_TO_DB)
+		self.csdlogger.debug("NFM : REST pushing this now : DICT_TO_DB = %r", self.DICT_TO_DB)
 		self.DMclient.postme(self.DICT_TO_DB) # Push to DM
 
 

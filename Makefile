@@ -70,6 +70,7 @@ showtables:
 show:
 	-ps auxw |grep python |grep -v grep
 	-ps auxw |grep screen |grep -v grep
+	-ps auxw |grep mn |grep -v grep
 	-screen -ls
 #-ps auxw |grep ryu-manager |grep -v grep
 

@@ -43,3 +43,6 @@ echo Following needs to be manually performed...
 echo For mysql set the required password for the root user to 12345678
 echo create database with name "testdb" 
 
+
+#
+pip install virtualenv

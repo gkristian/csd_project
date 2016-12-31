@@ -57,6 +57,10 @@ G.edge[1][2]['nfm'] = 10
 G.edge[1][2]['rpm'] = 5
 G.edge[1][2]['hum'] = 10
 
+G.edge[1][2]['bw'] = 1
+G.edge[1][2]['bw'] = 2
+G.edge[1][2]['bw'] = 3
+
 logger.info("G.edge[1][2] = %r",G.edge[1][2])
 
 if 'nfm' in G.edge[1][2]:
@@ -74,12 +78,26 @@ if key in G.edge[1][2]:
 #________________________________________________________________________________
 #key3 is not intialized so it throws exception NameError : name 'key3' is not defined
 try:
-    if key3 in G.edge[1][2]:
+    if key in G.edge[1][2]:
         logger.info("nfm_key foundin graph")
 except (NameError):
     logger.error("key3 is not defined")
 
 
 logger.info("hmm")
+
+
+## Iterating a graph over edges
+#for node, data in G.nodes_iter(data=True):
+for src,dst,data in G.edges_iter(data=True):
+    logger.info("EDGE_ITERATOR node = %r,%r and bw value = %r", src,dst,data)
+    #if (data['weight'] == 1):
+
+
+# get all edges out from these nodes
+# then recursively follow using a filter for a specific statement_id
+
+# or get all edges with a specific statement id
+# look for  with a node attribute of "cat"
 
 

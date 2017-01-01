@@ -129,6 +129,14 @@ class NFMdummy(app_manager.RyuApp):
             self.nfmpush['packet_dropped'][src_to_dst_node] = 1
             self.nfmpush['packet_dropped'][dst_to_src_node] = 1
 
+            # over load a certain link to test if weighted routing can avoid it.
+            if src_to_dst_node == 21 and dst_to_src_node == 11:
+                self.nfmpush['link_utilization'][src_to_dst_node] = 93
+                self.nfmpush['link_utilization'][dst_to_src_node] = 93
+                self.nfmpush['packet_dropped'][src_to_dst_node] = 1
+                self.nfmpush['packet_dropped'][dst_to_src_node] = 1
+
+
         self.rest_nfm_post()
 
             #if (data['bw'] == 10):

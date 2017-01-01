@@ -9,4 +9,4 @@ Contains PHP files to visualize data in table and graph
 1. Install LAMP
 2. Download JPGraph
 3. Put JPGraph and these code in /var/www/html (or elsewhere configured)
-4. Run files from browser. Open http://<url>/nfm.php
+4. Run files from browser. Open http://url/nfm.php for example

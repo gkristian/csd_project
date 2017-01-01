@@ -80,6 +80,8 @@ class ProjectController(app_manager.RyuApp):
     #bootstrap_complete = False
     ######bootstrap_complete = s.bootstrap_complete
 
+    # Fetch metrics from remote Cache related data structures
+    time_of_last_fetch = 0
 
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     #my custom logger only works if i use the ryu's logger: self.logger.info in the code and then use my custom logger, even then I noticed
@@ -176,10 +178,6 @@ class ProjectController(app_manager.RyuApp):
 
         self.datapathDb = {}
         self.already_installed_paths_SET = set()
-
-        # Fetch metrics from remote Cache related data structures
-        self.time_of_last_fetch = 0
-
         self.cpmlogger.info("BOOTSTRAP, type = %r , host_count = %r",self.network_bootstrap_type, self.network_bootstrap_discovery_count)
 
 
@@ -592,7 +590,7 @@ class ProjectController(app_manager.RyuApp):
                     self.logger.debug("Cannot find path from src mac %r to dst_mac %r, returning ie. doing nothing more",src_mac,dst_mac)
                     return
                 #fetch metrics from a remote source and add to graph and compute weight for each link
-                self.__fetch_metrics_and_insert_in_graph('nfm')
+                self.__fetch_NFM_metrics_and_insert_in_topology_graph('nfm')
                 #dst mac  is in our topology graph
                 spath=nx.shortest_path(self.net,src_mac,dst_mac)
 
@@ -929,7 +927,7 @@ class ProjectController(app_manager.RyuApp):
             self.logger.error('Unable to update this key in the graph, here is the traceback',exc_info=True)
 
 
-    def __fetch_metrics_and_insert_in_graph(self,module_name):
+    def __fetch_NFM_metrics_and_insert_in_topology_graph(self, module_name):
         self.current_time = int(round(time.time()*1000))
         #every 4 seconds
         time_max_limit = self.defines_D['fetch_timer_in_seconds'] * 1000
@@ -975,6 +973,57 @@ class ProjectController(app_manager.RyuApp):
                 self.logger.debug("FETCH_METRICS_NFM: src_dpid = %r , '-', dst_dpid = %r, '====', value =%r",src_dpid, dst_dpid , link_util_value)
                 self.__update_graph(src_dpid,dst_dpid,'nfm_link_util',link_util_value)
             # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
+
+
+    def __fetch_RPM_metrics_and_insert_in_topology_graph(self, module_name):
+        self.current_time = int(round(time.time() * 1000))
+        # every 4 seconds
+        time_max_limit = self.defines_D['fetch_timer_in_seconds'] * 1000
+        self.logger.debug("FETCH fetch_metric_and_insert_ingraph, time_max_limit = %r", time_max_limit)
+        if not (self.current_time - self.time_of_last_fetch > time_max_limit) or self.defines_D['bootstrap_in_progress']:
+            return
+        else:
+            self.time_of_last_fetch = self.current_time
+            self.logger.debug("FETCH_TIME_CHECK_OK, about to fetch_KPI")
+
+        if module_name == 'nfm':
+            url = self.defines_D['metrics_fetch_rest_url']
+            DMclient = client_side(url)
+            nfm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization']}
+            response = DMclient.getme(nfm_what_metrics_to_fetch)
+            self.logger.debug("FETCH_METRICS_NFM: getme response = %r ", response)
+            self.cpmlogger.debug("cpmlogger : response = %r", response)
+            response1 = response[0]
+            # graph = response [0][1]
+            graph = response1[1]
+            del response1
+            del response
+
+            self.logger.debug("FETCH_METRICS_NFM:  graph = %r", graph)
+            # tthe output in log was :
+            # graph =  {u'2-1': 0.0, u'1-2': 0.0}
+
+            for gkey in graph:
+                gkey = gkey.encode('ascii', 'ignore')
+                self.logger.debug("%r corresponds to %r", gkey, graph[gkey])
+                src_dpid, dst_dpid = gkey.split('-')  # returns a lista
+                src_dpid = src_dpid.strip()  # default to removing white spaces
+                dst_dpid = dst_dpid.strip()  # defaults to removing white spaces
+                # if len(graph[gkey]) > 1:
+                #    self.logger.warn("grap[gkey] > 1 and is = %r",graph[gkey])
+
+                link_util_value = self.clamp(graph[gkey], 0, 100)  # the link_utilization value must be between 0 to 100
+
+                # value = clamp(-300.0023,0,100) #the link_utilization value must be between 0 to 100
+                # value2 = clamp(300.0023,0,100) #the link_utilization value must be between 0 to 100
+
+                self.logger.debug("FETCH_METRICS_NFM: src_dpid = %r , '-', dst_dpid = %r, '====', value =%r", src_dpid,
+                                  dst_dpid, link_util_value)
+                self.__update_graph(src_dpid, dst_dpid, 'nfm_link_util', link_util_value)
+                # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
+
+
+
 
 
 

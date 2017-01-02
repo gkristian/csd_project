@@ -13,12 +13,15 @@ setup:
 	-mkdir -p /var/www/html/spacey
 	-mysql -u root -p12345678 -e 'create database testdb;'
 mstart:
-	echo HUM commit in use is 0a57570 > /var/www/html/spacey/ryu_apps.log
+	#echo HUM commit in use is 0a57570 > /var/www/html/spacey/ryu_apps.log
 	#ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow  netflowmodule-not-latest-but-works.py  testController3.py ../RPM/rpm.py ../HUM/hum.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
 	#ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow  netflowmodule-not-latest-but-works.py  testController3.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
 	#ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow  netflowmodule-not-latest-but-works.py ../controller_core/src/controller_core_of13.py ../RPM/rpm.py   > /var/www/html/spacey/ryu_apps.log 2>&1 &
-	#below may not log properly, while above is test to work
-	ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow --verbose --default-log-level 3  --log-file /var/www/html/spacey/cpm_nfm.log ../controller_core/src/controller_core_of13.py netflowmodule-not-latest-but-works.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
+	#below may not log properly, while above is test to work,
+	#ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow --verbose --default-log-level 3  --log-file /var/www/html/spacey/cpm_nfm.log ../controller_core/src/controller_core_of13.py netflowmodule-not-latest-but-works.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
+	#ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow --verbose --default-log-level 10  --log-file /var/www/html/spacey/cpm_nfm.log ../controller_core/src/controller_core_of13.py ../controller_core/src/nfmdummy.py ../RPM/rpm.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
+	ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow --verbose --default-log-level 10  --log-file /var/www/html/spacey/cpm_nfm.log ../controller_core/src/controller_core_of13.py ../controller_core/src/nfmdummy.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
+		
 
 #below runs latest NFM if u use relative path it compains unable to import simple_switch
 #	ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow  netflowmodule.py  testController3.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
@@ -47,7 +50,7 @@ dmstart:
 dmlog:
 	tail -f /var/www/html/spacey/dm.log 
 dmstop:
-	kill -9 `ps a |grep DM |grep -v grep | cut -d ' ' -f 1`
+	kill -9 `ps a |grep DM |grep -v grep | cut -d ' ' -f 2`
 # the dash below before the command is very important. It causes make to still continue run all the commands that start with the - . Without dash if the first command fails to run i.e. return a bad exit code, the make will not run the rest of the commands in that block. Another way is to use make -k that works for gnu make and causes make to keep running despite a command failure, however. make documentation recommends the dash based approach to be better.
 stopall:
 	-rm -f /var/www/html/spacey/* 
@@ -74,8 +77,13 @@ show:
 	-screen -ls
 #-ps auxw |grep ryu-manager |grep -v grep
 
+humstart:
+	cd ../HUM;make hum > /var/www/html/spacey/hum.log 2>&1 &
+
+
 spacey:
 	make dmstart;
+	make humstart;
 	make mstart;
 #if below statement is commented out, then screen process shall terminate killing all child processes spawned by above make commands. Another way could have been to copy above make commands in startall and run them before make topology as then mininet cli holds the stdout preventing screen from exiting
 	read wait_for_ever_so_that_screen_is_maintained 

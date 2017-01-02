@@ -23,7 +23,7 @@ class NotCache:
         #dummy variables
         nfm_keys = ["timestamp", "module", "link_utilization", "packet_dropped"]
         hum_keys = ["timestamp", "module", "core","memory"]
-        rpm_keys = ["timestamp", "module", "delays", "normalized_delays", "max_latency", "min_latency", "mean_latency","median_latency", "mean_latency"]
+        rpm_keys = ["timestamp", "module", "latencies"]
 
         # current layer of values
         nfm_dict = dict.fromkeys(nfm_keys) #all except module is dummy value keys
@@ -45,14 +45,8 @@ class NotCache:
         rpm_dict.update({k : 0 for k in rpm_dict.iterkeys()}) # set default values
         rpm_dict['module'] = 'rpm'
         rpm_dict['timestamp'] = "0"
-        rpm_dict['delays'] = {}
-        rpm_dict['normalized_delays'] = {}
-        rpm_dict['max_latency'] = 0
-        rpm_dict['min_latency'] = 0
-        rpm_dict['mean_latency'] = 0
-        rpm_dict['median_latency'] = 0
-        rpm_dict['25th_latency'] = 0
-        rpm_dict['75th_latency'] = 0
+        rpm_dict['latenices'] = {}
+
 
 
         # json string of dicts containing older values

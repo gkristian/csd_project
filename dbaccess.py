@@ -46,8 +46,8 @@ class dbaccess(object):
 		"""
 		q1_nfm_util = "CREATE TABLE IF NOT EXISTS nfm_util(timestamp VARCHAR(30),link VARCHAR(20),util FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,link))"
 		q1_nfm_dropped = "CREATE TABLE IF NOT EXISTS nfm_dropped(timestamp VARCHAR(30),DPID VARCHAR(20),dropped FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,DPID))" 
-		q1_rpm = "CREATE TABLE IF NOT EXISTS rpm(timestamp VARCHAR(30),switch VARCHAR(20),latency FLOAT, normalized_latency FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,switch))"
-		q1_rpm_stat = "CREATE TABLE IF NOT EXISTS rpm_stat(timestamp VARCHAR(30), max FLOAT, min FLOAT, mean FLOAT, median FLOAT, 25th FLOAT, 75th FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp))" 
+		q1_rpm = "CREATE TABLE IF NOT EXISTS rpm(timestamp VARCHAR(30),switch VARCHAR(20),median FLOAT, 25th FLOAT, 75th FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,switch))"
+		#q1_rpm_stat = "CREATE TABLE IF NOT EXISTS rpm_stat(timestamp VARCHAR(30), max FLOAT, min FLOAT, mean FLOAT, median FLOAT, 25th FLOAT, 75th FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp))" 
 		q1_hum = "CREATE TABLE IF NOT EXISTS hum(timestamp VARCHAR(30),core LONGTEXT,memory FLOAT, PRIMARY KEY (timestamp))"
 
 		#Create table
@@ -58,7 +58,6 @@ class dbaccess(object):
 			#print "Table exist"
 		try:
 			cursor.execute(q1_nfm_dropped)
-			print "Created NFM tables"
 		except BaseException as e:
 			pass
 			#print "Table exist"
@@ -68,15 +67,13 @@ class dbaccess(object):
 		except BaseException as e:
 			pass
 			#print "Table exist"
-		try:
-			cursor.execute(q1_rpm_stat)
-			print "Created RPM tables"
-		except BaseException as e:
-			pass
-			#print "Table exist"
+		# try:
+		# 	cursor.execute(q1_rpm_stat)
+		# except BaseException as e:
+		# 	pass
+		# 	#print "Table exist"
 		try:
 			cursor.execute(q1_hum)
-			print "Created HUM tables"
 		except BaseException as e:
 			pass
 			#print "Table exist"
@@ -93,7 +90,7 @@ class dbaccess(object):
 				cursor.execute(q3)
 				#Commit changes in the database
 				db.commit()
-			print "SUCCESS : Insert NFM util into SQL DB"
+			#print "SUCCESS : Insert NFM util into SQL DB"
 
 
 			timestamp = nfmdict['timestamp']
@@ -103,7 +100,7 @@ class dbaccess(object):
 				cursor.execute(q3)
 				# Commit changes in the database
 				db.commit()
-			print "SUCCESS : Insert NFM dropped into SQL DB"
+			#print "SUCCESS : Insert NFM dropped into SQL DB"
 
 		except MySQLdb.Error, e:
 			print "ERROR : NFM insertion failed %s" % str(e)
@@ -121,7 +118,7 @@ class dbaccess(object):
 			cursor.execute(q4)
 			#Commit changes in the database
 			db.commit()
-			print "SUCCESS : Insert HUM into SQL DB"
+			#print "SUCCESS : Insert HUM into SQL DB"
 		except MySQLdb.Error, e:
 			print "ERROR : HUM insertion failed %s" % str(e)
 			# Rollback in case there is any error
@@ -130,24 +127,24 @@ class dbaccess(object):
 		# Parsing RPM data dictionary and insert to table
 		try:
 			timestamp = rpmdict['timestamp']
-			q_insert = "INSERT INTO rpm_stat(timestamp,max,min,mean,median,25th,75th) VALUES ('%s','%f','%f','%f','%f','%f','%f')" % (timestamp, rpmdict['max_latency'],rpmdict['min_latency'], rpmdict['mean_latency'], rpmdict['median_latency'], rpmdict['25th_latency'], rpmdict['75th_latency'])
-			cursor.execute(q_insert)
+			#q_insert = "INSERT INTO rpm_stat(timestamp,max,min,mean,median,25th,75th) VALUES ('%s','%f','%f','%f','%f','%f','%f')" % (timestamp, rpmdict['max_latency'],rpmdict['min_latency'], rpmdict['mean_latency'], rpmdict['median_latency'], rpmdict['25th_latency'], rpmdict['75th_latency'])
+			#cursor.execute(q_insert)
 			#Commit changes in the database
-			db.commit()
+			#db.commit()
 
-			delays = rpmdict['delays']
-			normalized_delays = rpmdict['normalized_delays']
-			for dpid in delays:
-				latency = delays[dpid]
+			latencies = rpmdict['latencies']
+			for dpid in latencies:
+				latency = latencies[dpid]["median_latency"]
 				# -1 means no latency yet recorded
 				if latency != -1:
-					q_insert = "INSERT INTO rpm(timestamp,switch,latency,normalized_latency) VALUES ('%s','%s',%f,%f)" % (timestamp, dpid, delays[dpid], normalized_delays[dpid])
+					q_insert = "INSERT INTO rpm(timestamp,switch,median,25th,75th) VALUES ('%s','%s',%f,%f,%f)" % (timestamp, dpid, latencies[dpid]["median_latency"], latencies[dpid]["25th_latency"], latencies[dpid]["75th_latency"])
 					cursor.execute(q_insert)
 					#Commit changes in the database
 					db.commit()
-					print "SUCCESS : Insert RPM into SQL DB"
 		except MySQLdb.Error, e:
+			print "HO"
 			print "ERROR : RPM insertion failed %s" % str(e)
+			print "HUM"
 			# Rollback in case there is any error
 			db.rollback()
 

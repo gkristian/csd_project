@@ -104,7 +104,7 @@ class ProjectController(app_manager.RyuApp):
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.enabled_modules = {'RPM': False,'HUM': True,'NFM': True}
+        self.modules_enabled = {'RPM': False,'HUM': True,'NFM': True}
 
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff',
                           'bootstrap_in_progress': True,
@@ -942,12 +942,10 @@ class ProjectController(app_manager.RyuApp):
         -add this computed weight to the link in the topology
         :return:
         """
-        return  #<-----------------remove this
-
         self.current_time = int(round(time.time() * 1000))
         # every 4 seconds
         time_max_limit = self.defines_D['fetch_timer_in_seconds'] * 1000
-        self.logger.debug("FETCH fetch_metric_and_insert_ingraph, time_max_limit = %r", time_max_limit)
+        self.logger.debug("FETCH_ALL fetch_metric_and_insert, fetch every time_max_limit seconds = %r", time_max_limit)
         if not (self.current_time - self.time_of_last_fetch > time_max_limit) or self.defines_D[
             'bootstrap_in_progress']:
             return
@@ -955,39 +953,31 @@ class ProjectController(app_manager.RyuApp):
             self.time_of_last_fetch = self.current_time
             self.logger.debug("FETCH_TIME_CHECK_OK, about to fetch_KPI")
 
-        #self.__fetch_ALL_metrics_and_insert_in_topology_graph()
+        # Fetch metrics data
+        nfm_metrics_data = None
+        rpm_metrics_data = None
+        hum_metrics_data = None
+        """
+        Tip:
+        say x = None
+        if x:
+            print "If x is set to  None or x is an empty string, in either case this statement won't get printed"
+        else:
+            print "If x is a non-empty string or has any value other than None, this statement would get printed"
+        """
 
-
-
-
-    def __REST_get_NFM_metrics(self):
-
-        nfm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization','packet_dropped']}
-        nfm_metrics_data = self.DMclient.getme(nfm_what_metrics_to_fetch)
-        self.logger.debug("FETCH_METRICS_NFM: getme response = %r ",nfm_metrics_data)
-        self.cpmlogger.debug("cpmlogger : response = %r",nfm_metrics_data)
-        return nfm_metrics_data
-
-    def __REST_get_RPM_metrics(self):
-        rpm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization', 'packet_dropped']}
-        rpm_metrics_data = self.DMclient.getme(rpm_what_metrics_to_fetch)
-        self.logger.debug("FETCH_METRICS_NFM: getme response = %r ", rpm_metrics_data)
-        self.cpmlogger.debug("cpmlogger : response = %r", rpm_metrics_data)
-        return rpm_metrics_data
-
-    def __REST_get_HUM_metrics(self):
-        hum_what_metrics_to_fetch = {'ccontroller_core/src/controller_core_of13.py:976ontroller_core/src/controller_core_of13.py:976module': 'nfm', 'keylist': ['link_utilization', 'packet_dropped']}
-        hum_metrics_data = self.DMclient.getme(hum_what_metrics_to_fetch)
-        self.logger.debug("FETCH_METRICS_NFM: getme response = %r ", hum_metrics_data)
-        self.cpmlogger.debug("cpmlogger : response = %r", hum_metrics_data)
-        return hum_metrics_data
-
-
+        if self.modules_enabled['NFM']:
+            nfm_metrics_data = self.__REST_get_NFM_metrics()
+        if self.modules_enabled['RPM']:
+            rpm_metrics_data = self.__REST_get_RPM_metrics()
+        if self.modules_enabled['HUM']:
+            hum_metrics_data = self.__REST_get_HUM_metrics()
 
 
         nfm_link_util_metric_data = nfm_metrics_data[0][1]
         nfm_packet_dropped_metric_data = nfm_metrics_data[1][1]
-        del nfm_metrics_data
+
+
 
         self.logger.debug("FETCH_METRICS_NFM:  graph = %r", nfm_link_util_metric_data)
         # tthe output in log was :
@@ -995,23 +985,129 @@ class ProjectController(app_manager.RyuApp):
 
         for src_dash_dst_node in nfm_link_util_metric_data:
             src_dash_dst_node = src_dash_dst_node.encode('ascii', 'ignore')
-            self.logger.debug("%r corresponds to %r",src_dash_dst_node,nfm_link_util_metric_data[src_dash_dst_node])
+            self.logger.debug("%r corresponds to %r", src_dash_dst_node, nfm_link_util_metric_data[src_dash_dst_node])
             src_dpid, dst_dpid = src_dash_dst_node.split('-')  # returns a list
             src_dpid = src_dpid.strip()  # default to removing white spaces
             dst_dpid = dst_dpid.strip()  # defaults to removing white spaces
-            #if len(graph[gkey]) > 1:
+            # if len(graph[gkey]) > 1:
             #    self.logger.warn("grap[gkey] > 1 and is = %r",graph[gkey])
 
-            link_util_value = self.clamp(nfm_link_util_metric_data[src_dash_dst_node], 0, 100)  # the link_utilization value must be between 0 to 100
+            link_util_value = self.clamp(nfm_link_util_metric_data[src_dash_dst_node], 0,
+                                         100)  # the link_utilization value must be between 0 to 100
 
             # value = clamp(-300.0023,0,100) #the link_utilization value must be between 0 to 100
             # value2 = clamp(300.0023,0,100) #the link_utilization value must be between 0 to 100
 
-            self.logger.debug("FETCH_METRICS_NFM: src_dpid = %r , '-', dst_dpid = %r, '====', value =%r",src_dpid, dst_dpid , link_util_value)
-            #self.__update_graph(src_dpid,dst_dpid,'nfm_link_util',link_util_value)
-        # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
+            self.logger.debug("FETCH_METRICS_NFM: src_dpid = %r , '-', dst_dpid = %r, '====', value =%r", src_dpid,
+                              dst_dpid, link_util_value)
+            # self.__update_graph(src_dpid,dst_dpid,'nfm_link_util',link_util_value)
+            # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
+
+    def __compute_link_weight(self,src_node,dst_node,nfm,rpm,hum):
+        """
+        returns the link weight value computed according to the Metrics description document from the metrics data retrieved from different modules
+        :param src_node: src dpid of the link , must be in unicode
+        :param dst_node: dst dpid of the link, must be in unicode
+        :param nfm: nfm metrics data , it will be already set to False if NFM REST get read a blank payload or GET connection failed.
+        :param rpm: --do--
+        :param hum:  --do--
+        :return:
+        """
+        nfm_total_weight = 0
+        rpm_total_weight = 0
+        hum_total_weight = 0
+
+        if self.modules_enabled['NFM']:
+            nfm_link_util_weight = 0.5
+            nfm_packet_dropped_weight = 0.5
+            nfm_link_util = nfm[0][1]
+            nfm_packet_dropped = nfm[1][1]
+
+            nfm_total_weight = nfm_link_util_weight * float(nfm_link_util[unicode(src_node)+'-' + unicode(dst_node)]) + \
+                               nfm_packet_dropped_weight* float(nfm_packet_dropped [unicode(src_node) +'-' + unicode(dst_node)])
+            nfm_total_weight = 0.33 * nfm_total_weight #All modules contribute equally to the output weight
+
+        if self.modules_enabled['RPM']:
+            rpm_total_weight =0
+
+        if self.modules_enabled['HUM']:
+            hum_total_weight =0
+            pass
+
+        link_weight = nfm_total_weight + rpm_total_weight + hum_total_weight
 
 
+    def __REST_get_NFM_metrics(self):
+        nfm_metrics_data = True
+        nfm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization','packet_dropped']}
+        try:
+            nfm_metrics_data = self.DMclient.getme(nfm_what_metrics_to_fetch)
+        except Exception,e:
+            self.cpmlogger.error("FETCH_NFM_METRICS : Failed ...., Exception = %r",e)
+            self.cpmlogger.error("FETCH_NFM_METRICS : Failed ...., Exception trace",exc_info=True)
+            nfm_metrics_data = False
+            return
+        else:
+            #See my controller_core/tests/rest_nfm_get_with_packet_drops.py test script for more details
+            if nfm_metrics_data[0][1] and nfm_metrics_data[1][1]:
+                self.cpmlogger.error("FETCH_NFM_METRICS : Empty NFM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served")
+                nfm_metrics_data = False
+
+        self.cpmlogger.debug("FETCH_HUM_METRICS: OK - nfm_metrics_data  = %r ",nfm_metrics_data)
+
+        return nfm_metrics_data
+
+    def __REST_get_HUM_metrics(self):
+        """
+        In response to HTTP GET request, the sample response hum_metrics_data is :
+        h = [[u'core', {u'0': 11.11, u'1': 13.11,}]  , [u'memory', 89]]
+        core dict is h[0][1]
+        memory util is h[1][1]
+        """
+        hum_metrics_data = True
+        #hum_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization','packet_dropped']}
+        hum_what_metrics_to_fetch = {'module': 'hum','keylist': ['core', 'memory']}
+
+        try:
+            hum_metrics_data = self.DMclient.getme(hum_what_metrics_to_fetch)
+        except Exception,e:
+            self.cpmlogger.error("FETCH_HUM_METRICS : HTTP Failure ...., Exception = %r",e)
+            self.cpmlogger.error("FETCH_HUM_METRICS : HTTP Failure ...., Exception trace",exc_info=True)
+            hum_metrics_data = False
+            return
+        else:
+            #See my controller_core/tests/rest_hum_get.py test script for more details
+            if hum_metrics_data[0][1] and hum_metrics_data[1][1]:
+                self.cpmlogger.error("FETCH_HUM_METRICS : Empty HUM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served")
+                hum_metrics_data = False
+            else:
+                self.cpmlogger.debug("FETCH_HUM_METRICS: OK - hum_metrics_data  = %r ", hum_metrics_data)
+        return hum_metrics_data
+
+
+    def __REST_get_RPM_metrics(self):
+        rpm_metrics_data = True
+        rpm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization', 'packet_dropped']}
+        try:
+            rpm_metrics_data = self.DMclient.getme(rpm_what_metrics_to_fetch)
+        except Exception, e:
+            self.cpmlogger.error("FETCH_RPM_METRICS : Failed ...., Exception = %r", e)
+            self.cpmlogger.error("FETCH_RPM_METRICS : Failed ...., Exception trace", exc_info=True)
+            rpm_metrics_data = False
+            return
+        else:
+            # See my controller_core/tests/rest_hum_get.py test script for more details
+            if rpm_metrics_data[0][1] or rpm_metrics_data[1][1]:
+                self.cpmlogger.error(
+                    "FETCH_RPM_METRICS : Empty RPM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served")
+                rpm_metrics_data = False
+
+        self.cpmlogger.debug("FETCH_RPM_METRICS: OK - hum_metrics_data  = %r ", rpm_metrics_data)
+
+        return rpm_metrics_data
+
+
+"""
     def __fetch_RPM_metrics_and_insert_in_topology_graph(self, module_name):
         self.current_time = int(round(time.time() * 1000))
         # every 4 seconds
@@ -1058,7 +1154,7 @@ class ProjectController(app_manager.RyuApp):
                                   dst_dpid, link_util_value)
                 self.__update_graph(src_dpid, dst_dpid, 'nfm_link_util', link_util_value)
                 # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
-
+"""
 
 
 

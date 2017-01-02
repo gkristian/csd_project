@@ -1,26 +1,54 @@
-INFO:2017-01-01 23:15:40,959:Starting HUM rest client
-DEBUG:2017-01-01 23:15:41,195:Starting new HTTP connection (1): 127.0.0.1
-ERROR:2017-01-01 23:15:41,197: ___________Excepted: REST lookup FAILED = ConnectionError(MaxRetryError("HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /Tasks.txt?keylist=core&keylist=memory&module=hum (Caused by NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x7fd2de0c2610>: Failed to establish a new connection: [Errno 111] Connection refused',))",),)
-ERROR:2017-01-01 23:15:41,197:____________Excepted: Unable to update this key in the graph, here is the traceback
-Traceback (most recent call last):
-  File "rest_hum_get.py", line 41, in <module>
-    response = DMclient.getme(rest_query_dict_nfm)
-  File "/sdn_monitoring_branches/controller_core/lib/client.py", line 24, in getme
-    resp=requests.get(self.url, params=payload)
-  File "/usr/local/lib/python2.7/dist-packages/requests/api.py", line 70, in get
-    return request('get', url, params=params, **kwargs)
-  File "/usr/local/lib/python2.7/dist-packages/requests/api.py", line 56, in request
-    return session.request(method=method, url=url, **kwargs)
-  File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 488, in request
-    resp = self.send(prep, **send_kwargs)
-  File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 609, in send
-    r = adapter.send(request, **kwargs)
-  File "/usr/local/lib/python2.7/dist-packages/requests/adapters.py", line 487, in send
-    raise ConnectionError(e, request=request)
-ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /Tasks.txt?keylist=core&keylist=memory&module=hum (Caused by NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x7fd2de0c2610>: Failed to establish a new connection: [Errno 111] Connection refused',))
-ERROR:2017-01-01 23:15:41,211:____________Excepted: REST response threw exception = NameError("name 'response' is not defined",)
-ERROR:2017-01-01 23:15:41,211:____________Excepted: Unable to update this key in the graph, here is the traceback
-Traceback (most recent call last):
-  File "rest_hum_get.py", line 47, in <module>
-    if not response:
-NameError: name 'response' is not defined
+INFO:2017-01-02 03:32:43,716:Starting HUM rest client
+DEBUG:2017-01-02 03:32:43,795:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:32:43,799:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:32:45,787:Starting HUM rest client
+DEBUG:2017-01-02 03:32:45,866:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:32:45,872:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:00,564:Starting HUM rest client
+DEBUG:2017-01-02 03:34:00,650:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:00,656:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:07,537:Starting HUM rest client
+DEBUG:2017-01-02 03:34:07,617:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:07,624:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:09,110:Starting HUM rest client
+DEBUG:2017-01-02 03:34:09,196:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:09,199:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:11,971:Starting HUM rest client
+DEBUG:2017-01-02 03:34:12,093:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:12,103:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:13,472:Starting HUM rest client
+DEBUG:2017-01-02 03:34:13,553:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:13,558:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:14,793:Starting HUM rest client
+DEBUG:2017-01-02 03:34:14,874:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:14,885:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:15,610:Starting HUM rest client
+DEBUG:2017-01-02 03:34:15,696:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:15,700:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:16,355:Starting HUM rest client
+DEBUG:2017-01-02 03:34:16,446:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:16,452:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:17,045:Starting HUM rest client
+DEBUG:2017-01-02 03:34:17,171:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:17,176:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:17,591:Starting HUM rest client
+DEBUG:2017-01-02 03:34:17,673:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:17,678:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:34:18,104:Starting HUM rest client
+DEBUG:2017-01-02 03:34:18,209:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:34:18,215:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:35:22,683:Starting HUM rest client
+DEBUG:2017-01-02 03:35:22,770:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:35:22,775:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:35:24,276:Starting HUM rest client
+DEBUG:2017-01-02 03:35:24,355:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:35:24,359:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:35:48,276:Starting HUM rest client
+DEBUG:2017-01-02 03:35:48,353:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:35:48,360:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:35:56,973:Starting HUM rest client
+DEBUG:2017-01-02 03:35:57,082:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:35:57,084:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None
+INFO:2017-01-02 03:36:14,976:Starting HUM rest client
+DEBUG:2017-01-02 03:36:15,039:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 03:36:15,041:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None

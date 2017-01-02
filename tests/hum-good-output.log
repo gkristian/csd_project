@@ -1,0 +1,7 @@
+**Client_Side Server has been initiated**
+
+
+request is
+{'keylist': ['core', 'memory'], 'module': 'hum'}
+And response is 
+[[u'core', {u'0': 11.11}], [u'memory', 89]]

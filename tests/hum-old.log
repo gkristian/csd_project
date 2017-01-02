@@ -1,0 +1,29 @@
+INFO:2017-01-01 23:15:40,959:Starting HUM rest client
+DEBUG:2017-01-01 23:15:41,195:Starting new HTTP connection (1): 127.0.0.1
+ERROR:2017-01-01 23:15:41,197: ___________Excepted: REST lookup FAILED = ConnectionError(MaxRetryError("HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /Tasks.txt?keylist=core&keylist=memory&module=hum (Caused by NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x7fd2de0c2610>: Failed to establish a new connection: [Errno 111] Connection refused',))",),)
+ERROR:2017-01-01 23:15:41,197:____________Excepted: Unable to update this key in the graph, here is the traceback
+Traceback (most recent call last):
+  File "rest_hum_get.py", line 41, in <module>
+    response = DMclient.getme(rest_query_dict_nfm)
+  File "/sdn_monitoring_branches/controller_core/lib/client.py", line 24, in getme
+    resp=requests.get(self.url, params=payload)
+  File "/usr/local/lib/python2.7/dist-packages/requests/api.py", line 70, in get
+    return request('get', url, params=params, **kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/requests/api.py", line 56, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 488, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/requests/sessions.py", line 609, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/local/lib/python2.7/dist-packages/requests/adapters.py", line 487, in send
+    raise ConnectionError(e, request=request)
+ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=8000): Max retries exceeded with url: /Tasks.txt?keylist=core&keylist=memory&module=hum (Caused by NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x7fd2de0c2610>: Failed to establish a new connection: [Errno 111] Connection refused',))
+ERROR:2017-01-01 23:15:41,211:____________Excepted: REST response threw exception = NameError("name 'response' is not defined",)
+ERROR:2017-01-01 23:15:41,211:____________Excepted: Unable to update this key in the graph, here is the traceback
+Traceback (most recent call last):
+  File "rest_hum_get.py", line 47, in <module>
+    if not response:
+NameError: name 'response' is not defined
+INFO:2017-01-02 02:18:26,544:Starting HUM rest client
+DEBUG:2017-01-02 02:18:26,669:Starting new HTTP connection (1): 127.0.0.1
+DEBUG:2017-01-02 02:18:26,671:http://127.0.0.1:8000 "GET /Tasks.txt?keylist=core&keylist=memory&module=hum HTTP/1.1" 200 None

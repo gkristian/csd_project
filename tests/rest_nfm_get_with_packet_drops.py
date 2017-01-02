@@ -64,6 +64,35 @@ print "_________________________________________________________________________
 print "_____________________________________________________________________________________"
 print "And response is "
 print response
+
+"""
+Empty response string looks like below:
+And response is
+[[u'link_utilization', {}], [u'packet_dropped', {}]]
+
+This  means:
+response[0][1] gives an empty dictionary {}
+
+Means:
+#empty link_utilization dict
+if response[0][1]:
+	print "REST FETCH resulted in empty metrics data. Dm server is running but Database does not have teh required data"
+else:
+	print "got metrics_data, cool"
+
+#empty packet_dropped dict
+if response[1][1]:
+	print "REST FETCH resulted in empty metrics data. Dm server is running but Database does not have teh required data"
+else:
+	print "got metrics_data, cool"
+
+
+
+"""
+
+
+import pdb; pdb.set_trace()
+
 #below i get with packet_dropped key
 #[[u'link_utilization', {u'2-1': 98.7, u'1-2': 98.7}], [u'packet_dropped', {u'2-1': 1, u'1-2': 1}]]
 

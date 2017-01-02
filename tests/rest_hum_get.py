@@ -55,5 +55,13 @@ except Exception,e:
 
 print "request is"
 print rest_query_dict_nfm
-#print "And response is "
-#print response
+print "And response is "
+print response
+"""
+request is
+{'keylist': ['core', 'memory'], 'module': 'hum'}
+And response is
+[[u'core', {u'0': 11.11,u'1': 13.11,}]  , [u'memory', 89]]
+core utilization for each core in the dictionary
+
+"""

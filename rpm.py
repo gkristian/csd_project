@@ -133,11 +133,11 @@ class RPM(app_manager.RyuApp):
 			
 			#print self.latency_array
 			#self.DICT_TO_DB['mean_latency'] = numpy.mean(self.latency_array)
-			self.DICT_TO_DB["latencies"][dpid]['median_latency'] = numpy.median(self.switches_data[dpid]["values_array"])
+			self.DICT_TO_DB["latencies"][dpid]['median_latency'] = self.normalize(numpy.median(self.switches_data[dpid]["values_array"]))
 			#self.DICT_TO_DB['max_latency'] = numpy.amax(self.latency_array)
 			#self.DICT_TO_DB['min_latency'] = numpy.amin(self.latency_array)
-			self.DICT_TO_DB["latencies"][dpid]['25th_latency'] = numpy.percentile(self.switches_data[dpid]["values_array"],25)
-			self.DICT_TO_DB["latencies"][dpid]['75th_latency'] = numpy.percentile(self.switches_data[dpid]["values_array"],75)
+			self.DICT_TO_DB["latencies"][dpid]['25th_latency'] = self.normalize(numpy.percentile(self.switches_data[dpid]["values_array"],25))
+			self.DICT_TO_DB["latencies"][dpid]['75th_latency'] = self.normalize(numpy.percentile(self.switches_data[dpid]["values_array"],75))
 		#print self.DICT_TO_DB.viewitems()
 
 	def normalize(self, value):

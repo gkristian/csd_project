@@ -1031,8 +1031,14 @@ class ProjectController(app_manager.RyuApp):
             rpm_total_weight =0
 
         if self.modules_enabled['HUM']:
-            hum_total_weight =0
-            pass
+            hum_core_weight = 0.9 #CPU utilization is more critical in our testbed where memory is not limited by the size of a TCAM
+            hum_memory_weight = 0.1
+
+            hum_cores = hum[0][1]
+            hum_memory = hum[1][1]
+            hum_total_weight = hum_core_weight * sum(float(hum_cores.itervalues)) + \
+                               hum_memory_weight * float(hum_memory)
+            hum_total_weight = 0.33
 
         link_weight = nfm_total_weight + rpm_total_weight + hum_total_weight
 

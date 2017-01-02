@@ -16,13 +16,13 @@ $start = $time;
 require('connection.php');
 echo "<html>";
 echo "<meta http-equiv='refresh' content='10'>";
-echo "<b>Debug Message :</b><br>";
+//echo "<b>Debug Message :</b><br>";
 
 //Get all hum data and save them into array=============================
 $data = array();
 $q1 = "SELECT * FROM hum";
 if ($all = $con->query($q1)) {
-    printf("HUM table fetched<br>");
+    //printf("HUM table fetched<br>");
     while($row1 = $all->fetch_assoc()) {
         array_push($data,$row1);
     }
@@ -30,13 +30,37 @@ if ($all = $con->query($q1)) {
     printf("No data from HUM table<br>");
 }
 //Convert cpu usage data from json format to php array
-for ($j=0;$j<19;$j++) {
-    $data[$j]['core']=json_decode($data[$j]['core'],True);
+foreach($data as &$val){
+    $val['core']=json_decode($val['core'],True);
 }
 //Take the latest 19 data
 $sliced = array_slice($data, -19);
 //Get number of cpu
 $cpucount=count($data[0]['core']);
+
+//HEADER
+echo "<center>";
+echo "<font face='calibri' size='6'><b>HUM Graphs</font><br>";
+echo "data for the past 3 minutes</b><br><br>";
+
+//SECTION FOR CPU GRAPHS===============================================
+//Loop for # of cores
+//echo '<pre>'; print_r($sliced);echo '</pre>';
+echo "<font face='calibri' size='4'><b>CPU Usage (%)</font><br>";
+
+for($c=0;$c<$cpucount;$c++){
+    $arraycpu=array();
+    //Loop through time
+    for ($t=0;$t<19;$t++) {
+        array_push($arraycpu,$sliced[$t]['core'][$c]);
+    }
+    $imploded2=implode(":",$arraycpu);
+    //print_r($imploded2);
+    //echo "<figure>";
+    echo "<img src=humplotcpu.php?data=".urlencode($imploded2)."&core=".$c.">";
+    //echo "<figcaption>Core " . $c . "</figcaption></figure>"; 
+}
+echo "<br>";
 
 //SECTION FOR MEMORY GRAPHS=============================================
 $arraymem=array();
@@ -44,13 +68,8 @@ for ($i=0;$i<19;$i++) {
     array_push($arraymem,$sliced[$i]['memory']);
 }
 $imploded=implode(":",$arraymem);
-echo "<center>";
-echo "<font face='calibri' size='6'><b>HUM Graphs</font><br>";
-echo "data for the past 3 minutes</b><br>";
 echo "<img src=humplotmem.php?data=".urlencode($imploded).">";
-echo "<br><br>";
-
-//SECTION FOR CPU GRAPHS===============================================
+echo "<br>";
 
 
 //SECTION FOR RAW HUM table=============================================

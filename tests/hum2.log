@@ -1,0 +1,40 @@
+INFO:2017-01-01 23:13:17,432:Starting HUM rest client
+DEBUG:2017-01-01 23:13:17,606:Starting new HTTP connection (1): 127.0.0.1
+ERROR:2017-01-01 23:13:17,607: ___________Excepted: REST lookup FAILED
+ERROR:2017-01-01 23:13:17,607:____________Excepted: REST response threw exception = NameError("name 'response' is not defined",)
+INFO:2017-01-01 23:13:49,294:Starting HUM rest client
+DEBUG:2017-01-01 23:13:49,443:Starting new HTTP connection (1): 127.0.0.1
+ERROR:2017-01-01 23:13:49,444: ___________Excepted: REST lookup FAILED
+ERROR:2017-01-01 23:13:49,444:____________Excepted: REST response threw exception = NameError("name 'response' is not defined",)
+ERROR:2017-01-01 23:13:49,444:____________Excepted: Unable to update this key in the graph, here is the traceback
+Traceback (most recent call last):
+  File "rest_hum_get.py", line 46, in <module>
+    if not response:
+NameError: name 'response' is not defined
+INFO:2017-01-01 23:14:03,036:Starting HUM rest client
+DEBUG:2017-01-01 23:14:03,175:Starting new HTTP connection (1): 127.0.0.1
+ERROR:2017-01-01 23:14:03,179: ___________Excepted: REST lookup FAILED
+ERROR:2017-01-01 23:14:03,179:____________Excepted: REST response threw exception = NameError("name 'response' is not defined",)
+ERROR:2017-01-01 23:14:03,179:____________Excepted: Unable to update this key in the graph, here is the traceback
+Traceback (most recent call last):
+  File "rest_hum_get.py", line 46, in <module>
+    if not response:
+NameError: name 'response' is not defined
+INFO:2017-01-01 23:14:11,750:Starting HUM rest client
+DEBUG:2017-01-01 23:14:11,908:Starting new HTTP connection (1): 127.0.0.1
+ERROR:2017-01-01 23:14:11,913: ___________Excepted: REST lookup FAILED
+ERROR:2017-01-01 23:14:11,913:____________Excepted: REST response threw exception = NameError("name 'response' is not defined",)
+ERROR:2017-01-01 23:14:11,913:____________Excepted: Unable to update this key in the graph, here is the traceback
+Traceback (most recent call last):
+  File "rest_hum_get.py", line 46, in <module>
+    if not response:
+NameError: name 'response' is not defined
+INFO:2017-01-01 23:14:33,647:Starting HUM rest client
+DEBUG:2017-01-01 23:14:33,825:Starting new HTTP connection (1): 127.0.0.1
+ERROR:2017-01-01 23:14:33,828: ___________Excepted: REST lookup FAILED
+ERROR:2017-01-01 23:14:33,828:____________Excepted: REST response threw exception = NameError("name 'response' is not defined",)
+ERROR:2017-01-01 23:14:33,828:____________Excepted: Unable to update this key in the graph, here is the traceback
+Traceback (most recent call last):
+  File "rest_hum_get.py", line 46, in <module>
+    if not response:
+NameError: name 'response' is not defined

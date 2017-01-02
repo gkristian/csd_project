@@ -1,0 +1,9 @@
+INFO:2017-01-01 23:09:26,452:Starting HUM rest client
+DEBUG:2017-01-01 23:09:26,671:Starting new HTTP connection (1): 127.0.0.1
+ERROR:2017-01-01 23:09:26,673: ___________Excepted: REST lookup FAILED
+ERROR:2017-01-01 23:09:26,673:____________Excepted: REST response threw exception
+ERROR:2017-01-01 23:09:26,673:____________Excepted: Unable to update this key in the graph, here is the traceback
+Traceback (most recent call last):
+  File "rest_hum_get.py", line 46, in <module>
+    if not response:
+NameError: name 'response' is not defined

@@ -124,18 +124,27 @@ class NFMdummy(app_manager.RyuApp):
             src_to_dst_node = src_node '+' dst_node
             """
 
+            #if src_to_dst_node.__contains__(':'):
+            try:
+                if ':' in src_to_dst_node:
+                    continue
+            except Exception,e:
+                self.logger.error("Exception encountered when parsing a graph node =%r for : ", e)
+                #exc_info causes a Trace exception details to be printed to log but it does not halt program execution
+                self.logger.error("Exception encountered when parsing a graph node =%r for : ",src_to_dst_node,exc_info = True)
+                #raise #raise causes program termination
+
             self.nfmpush['link_utilization'][src_to_dst_node] = 93
             self.nfmpush['link_utilization'][dst_to_src_node] = 93
             self.nfmpush['packet_dropped'][src_to_dst_node] = 1
             self.nfmpush['packet_dropped'][dst_to_src_node] = 1
 
-            # over load a certain link to test if weighted routing can avoid it.
-            if src_to_dst_node == 21 and dst_to_src_node == 11:
-                self.nfmpush['link_utilization'][src_to_dst_node] = 93
-                self.nfmpush['link_utilization'][dst_to_src_node] = 93
-                self.nfmpush['packet_dropped'][src_to_dst_node] = 1
-                self.nfmpush['packet_dropped'][dst_to_src_node] = 1
-
+            # over load a certain link to test weighted routing
+            # if src_node == 21 and dst_node == 11:
+            #     self.nfmpush['link_utilization'][src_to_dst_node] = 93
+            #     self.nfmpush['link_utilization'][dst_to_src_node] = 93
+            #     self.nfmpush['packet_dropped'][src_to_dst_node] = 1
+            #     self.nfmpush['packet_dropped'][dst_to_src_node] = 1
 
         self.rest_nfm_post()
 

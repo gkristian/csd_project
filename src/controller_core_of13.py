@@ -83,6 +83,7 @@ class ProjectController(app_manager.RyuApp):
     # Fetch metrics from remote Cache related data structures
     time_of_last_fetch = 0
 
+
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     #my custom logger only works if i use the ryu's logger: self.logger.info in the code and then use my custom logger, even then I noticed
     #my logger seemed to be affected by ryu's logger config since both use the logging module. Did not spend any time discovering it further
@@ -102,6 +103,8 @@ class ProjectController(app_manager.RyuApp):
         self.net = self.shared_context.learnt_topology #this creates a reference
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
+        #Module set to True will have their metric data fetched using REST(GET) by the CPM
+        self.enabled_modules = {'RPM': False,'HUM': True,'NFM': True}
 
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff',
                           'bootstrap_in_progress': True,
@@ -110,7 +113,12 @@ class ProjectController(app_manager.RyuApp):
                           'cpmlogdir': '/var/www/html/spacey/cpmweights.log',
                           'metrics_fetch_rest_url': 'http://127.0.0.1:8000/Tasks.txt',
                           'fetch_timer_in_seconds': 4}
+        #below will be used by all those methods that fetch metrics from a remote module
+        self.rest_url = self.defines_D['metrics_fetch_rest_url']
+        self.DMclient = client_side(self.rest_url)
 
+        #CPM module should have its own logger whose output format we can control independently of the other modules. It can be good for debugging a particular
+        #module and helps segregates logs of one module fron the other during troubleshooting. CPM can still log to the ryu logger under normal operation if needed.
         self.cpmlogger = logging.getLogger("cpm" + __name__)
         self.cpmlogger.setLevel(logging.DEBUG)
         handler = logging.FileHandler(self.defines_D['cpmlogdir'])
@@ -120,6 +128,8 @@ class ProjectController(app_manager.RyuApp):
         handler.setFormatter(formatter)
         self.cpmlogger.addHandler(handler)
         self.cpmlogger.info("Starting up cpmlogger. edges are %r", self.net.edges())
+
+        #Network Bootstrapping Commands
 
         #self.mac_to_port = {}
         self.l2_dpid_table = {}
@@ -213,7 +223,7 @@ class ProjectController(app_manager.RyuApp):
         # install the table-miss flow entry.
         match = parser.OFPMatch()
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
-                                          ofproto.OFPCML_NO_BUFFER)]
+                                           ofproto.OFPCML_NO_BUFFER)]
         self.add_flow(datapath, 0, match, actions)
 
     #Openflow v1.3 add_flow
@@ -423,8 +433,6 @@ class ProjectController(app_manager.RyuApp):
             self.logger.debug("---PATH_NOT_ALREADY_INSTALLED---- i.e. %r", spath_as_tuple)
             return False
 
-
-
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
         self.print_l2_table()
@@ -590,7 +598,7 @@ class ProjectController(app_manager.RyuApp):
                     self.logger.debug("Cannot find path from src mac %r to dst_mac %r, returning ie. doing nothing more",src_mac,dst_mac)
                     return
                 #fetch metrics from a remote source and add to graph and compute weight for each link
-                self.__fetch_NFM_metrics_and_insert_in_topology_graph('nfm')
+                self.__fetch_ALL_metrics_and_insert_weight_in_topology_graph()
                 #dst mac  is in our topology graph
                 spath=nx.shortest_path(self.net,src_mac,dst_mac)
 
@@ -926,53 +934,82 @@ class ProjectController(app_manager.RyuApp):
             #self.logger.exception("Unable to update this key in the graph on fetch %r",e)
             self.logger.error('Unable to update this key in the graph, here is the traceback',exc_info=True)
 
+    def __fetch_ALL_metrics_and_insert_weight_in_topology_graph(self):
+        """
+        Iterate over the topology graph and from each of the supported modules: NFM, RPM, HUM, do following:
+        -fetch the module metrics for each link
+        -compute weight of the link based on all the fetched metrics (see the Teacher's approved metrics document)
+        -add this computed weight to the link in the topology
+        :return:
+        """
+        return  #<-----------------remove this
 
-    def __fetch_NFM_metrics_and_insert_in_topology_graph(self, module_name):
-        self.current_time = int(round(time.time()*1000))
-        #every 4 seconds
+        self.current_time = int(round(time.time() * 1000))
+        # every 4 seconds
         time_max_limit = self.defines_D['fetch_timer_in_seconds'] * 1000
-        self.logger.debug("FETCH fetch_metric_and_insert_ingraph, time_max_limit = %r",time_max_limit)
-        if not (self.current_time - self.time_of_last_fetch > time_max_limit) or self.defines_D['bootstrap_in_progress']:
+        self.logger.debug("FETCH fetch_metric_and_insert_ingraph, time_max_limit = %r", time_max_limit)
+        if not (self.current_time - self.time_of_last_fetch > time_max_limit) or self.defines_D[
+            'bootstrap_in_progress']:
             return
         else:
             self.time_of_last_fetch = self.current_time
             self.logger.debug("FETCH_TIME_CHECK_OK, about to fetch_KPI")
 
+        #self.__fetch_ALL_metrics_and_insert_in_topology_graph()
 
-        if module_name == 'nfm':
-            url = self.defines_D['metrics_fetch_rest_url']
-            DMclient = client_side(url)
-            nfm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization']}
-            response = DMclient.getme(nfm_what_metrics_to_fetch)
-            self.logger.debug("FETCH_METRICS_NFM: getme response = %r ",response)
-            self.cpmlogger.debug("cpmlogger : response = %r",response)
-            response1 = response[0]
-            #graph = response [0][1]
-            graph = response1[1]
-            del response1
-            del response
 
-            self.logger.debug("FETCH_METRICS_NFM:  graph = %r", graph)
-            # tthe output in log was :
-            # graph =  {u'2-1': 0.0, u'1-2': 0.0}
 
-            for gkey in graph:
-                gkey = gkey.encode('ascii', 'ignore')
-                self.logger.debug("%r corresponds to %r",gkey,graph[gkey])
-                src_dpid, dst_dpid = gkey.split('-')  # returns a lista
-                src_dpid = src_dpid.strip()  # default to removing white spaces
-                dst_dpid = dst_dpid.strip()  # defaults to removing white spaces
-                #if len(graph[gkey]) > 1:
-                #    self.logger.warn("grap[gkey] > 1 and is = %r",graph[gkey])
 
-                link_util_value = self.clamp(graph[gkey], 0, 100)  # the link_utilization value must be between 0 to 100
+    def __REST_get_NFM_metrics(self):
 
-                # value = clamp(-300.0023,0,100) #the link_utilization value must be between 0 to 100
-                # value2 = clamp(300.0023,0,100) #the link_utilization value must be between 0 to 100
+        nfm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization','packet_dropped']}
+        nfm_metrics_data = self.DMclient.getme(nfm_what_metrics_to_fetch)
+        self.logger.debug("FETCH_METRICS_NFM: getme response = %r ",nfm_metrics_data)
+        self.cpmlogger.debug("cpmlogger : response = %r",nfm_metrics_data)
+        return nfm_metrics_data
 
-                self.logger.debug("FETCH_METRICS_NFM: src_dpid = %r , '-', dst_dpid = %r, '====', value =%r",src_dpid, dst_dpid , link_util_value)
-                self.__update_graph(src_dpid,dst_dpid,'nfm_link_util',link_util_value)
-            # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
+    def __REST_get_RPM_metrics(self):
+        rpm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization', 'packet_dropped']}
+        rpm_metrics_data = self.DMclient.getme(rpm_what_metrics_to_fetch)
+        self.logger.debug("FETCH_METRICS_NFM: getme response = %r ", rpm_metrics_data)
+        self.cpmlogger.debug("cpmlogger : response = %r", rpm_metrics_data)
+        return rpm_metrics_data
+
+    def __REST_get_HUM_metrics(self):
+        hum_what_metrics_to_fetch = {'ccontroller_core/src/controller_core_of13.py:976ontroller_core/src/controller_core_of13.py:976module': 'nfm', 'keylist': ['link_utilization', 'packet_dropped']}
+        hum_metrics_data = self.DMclient.getme(hum_what_metrics_to_fetch)
+        self.logger.debug("FETCH_METRICS_NFM: getme response = %r ", hum_metrics_data)
+        self.cpmlogger.debug("cpmlogger : response = %r", hum_metrics_data)
+        return hum_metrics_data
+
+
+
+
+        nfm_link_util_metric_data = nfm_metrics_data[0][1]
+        nfm_packet_dropped_metric_data = nfm_metrics_data[1][1]
+        del nfm_metrics_data
+
+        self.logger.debug("FETCH_METRICS_NFM:  graph = %r", nfm_link_util_metric_data)
+        # tthe output in log was :
+        # graph =  {u'2-1': 0.0, u'1-2': 0.0}
+
+        for src_dash_dst_node in nfm_link_util_metric_data:
+            src_dash_dst_node = src_dash_dst_node.encode('ascii', 'ignore')
+            self.logger.debug("%r corresponds to %r",src_dash_dst_node,nfm_link_util_metric_data[src_dash_dst_node])
+            src_dpid, dst_dpid = src_dash_dst_node.split('-')  # returns a list
+            src_dpid = src_dpid.strip()  # default to removing white spaces
+            dst_dpid = dst_dpid.strip()  # defaults to removing white spaces
+            #if len(graph[gkey]) > 1:
+            #    self.logger.warn("grap[gkey] > 1 and is = %r",graph[gkey])
+
+            link_util_value = self.clamp(nfm_link_util_metric_data[src_dash_dst_node], 0, 100)  # the link_utilization value must be between 0 to 100
+
+            # value = clamp(-300.0023,0,100) #the link_utilization value must be between 0 to 100
+            # value2 = clamp(300.0023,0,100) #the link_utilization value must be between 0 to 100
+
+            self.logger.debug("FETCH_METRICS_NFM: src_dpid = %r , '-', dst_dpid = %r, '====', value =%r",src_dpid, dst_dpid , link_util_value)
+            #self.__update_graph(src_dpid,dst_dpid,'nfm_link_util',link_util_value)
+        # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
 
 
     def __fetch_RPM_metrics_and_insert_in_topology_graph(self, module_name):

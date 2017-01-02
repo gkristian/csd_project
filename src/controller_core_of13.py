@@ -968,21 +968,48 @@ class ProjectController(app_manager.RyuApp):
 
         if self.modules_enabled['NFM']:
             nfm_metrics_data = self.__REST_get_NFM_metrics()
+            #nfm_link_util_metric_data = nfm_metrics_data[0][1]
+            #nfm_packet_dropped_metric_data = nfm_metrics_data[1][1]
+            #self.logger.debug("FETCH_METRICS_NFM:  graph = %r", nfm_link_util_metric_data)
+
         if self.modules_enabled['RPM']:
             rpm_metrics_data = self.__REST_get_RPM_metrics()
         if self.modules_enabled['HUM']:
             hum_metrics_data = self.__REST_get_HUM_metrics()
 
 
-        nfm_link_util_metric_data = nfm_metrics_data[0][1]
-        nfm_packet_dropped_metric_data = nfm_metrics_data[1][1]
-
-
-
-        self.logger.debug("FETCH_METRICS_NFM:  graph = %r", nfm_link_util_metric_data)
         # tthe output in log was :
         # graph =  {u'2-1': 0.0, u'1-2': 0.0}
 
+        # Iterate through the graph object
+        # for node, data in self.net.nodes_iter(data=True):
+        for src_node, dst_node, data in self.net.edges_iter(data=True):
+            # post each data element to graph
+            src_to_dst_node = str(src_node) + '-' + str(dst_node)
+            dst_to_src_node = str(dst_node) + '-' + str(src_node)
+            """
+            Pitfall:
+            One run wasted because of not knowing below:
+            src_node and dst_node are of type() and not str()
+            so below threw error and could have only worked if they were str()
+            src_to_dst_node = src_node '+' dst_node
+            """
+
+            # if src_to_dst_node.__contains__(':'):
+            try:
+                if ':' in src_to_dst_node:
+                    continue
+            except Exception, e:
+                self.logger.error("Exception encountered when parsing a graph node =%r for : ", e)
+                # exc_info causes a Trace exception details to be printed to log but it does not halt program execution
+                self.logger.error("Exception encountered when parsing a graph node =%r for : ", src_to_dst_node,
+                                  exc_info=True)
+                # raise #raise causes program termination
+            link_weight = self.__compute_link_weight(src_node , dst_node , nfm_metrics_data ,rpm_metrics_data , hum_metrics_data )
+            self.__update_graph(src_node,dst_node,'weight',link_weight)
+
+
+        """
         for src_dash_dst_node in nfm_link_util_metric_data:
             src_dash_dst_node = src_dash_dst_node.encode('ascii', 'ignore')
             self.logger.debug("%r corresponds to %r", src_dash_dst_node, nfm_link_util_metric_data[src_dash_dst_node])
@@ -1002,6 +1029,7 @@ class ProjectController(app_manager.RyuApp):
                               dst_dpid, link_util_value)
             # self.__update_graph(src_dpid,dst_dpid,'nfm_link_util',link_util_value)
             # self.net.edge[src_dpid][dst_dpid]['link_utilization'] = graph[gkey]
+        """
 
     def __compute_link_weight(self,src_node,dst_node,nfm,rpm,hum):
         """
@@ -1041,6 +1069,7 @@ class ProjectController(app_manager.RyuApp):
             hum_total_weight = 0.33
 
         link_weight = nfm_total_weight + rpm_total_weight + hum_total_weight
+        return link_weight
 
 
     def __REST_get_NFM_metrics(self):

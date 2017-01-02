@@ -945,14 +945,14 @@ class ProjectController(app_manager.RyuApp):
         self.current_time = int(round(time.time() * 1000))
         # every 4 seconds
         time_max_limit = self.defines_D['fetch_timer_in_seconds'] * 1000
-        self.logger.debug("FETCH_ALL fetch_metric_and_insert, fetch every time_max_limit seconds = %r", time_max_limit)
-        if not (self.current_time - self.time_of_last_fetch > time_max_limit) or self.defines_D[
+        self.logger.debug("FETCH_ALL_METRICS : fetch_metric_and_insert, time_max_limit = fetch every %r seconds", time_max_limit)
+        if not (self.current_time - self.time_of_last_fetch > time_max_limit)  and self.defines_D[
             'bootstrap_in_progress']:
             return
         else:
             self.time_of_last_fetch = self.current_time
-            self.logger.debug("FETCH_TIME_CHECK_OK, about to fetch_KPI")
 
+        self.cpmlogger("FETCH_ALL_METRICS : About to fetch remote metrics")
         # Fetch metrics data
         nfm_metrics_data = None
         rpm_metrics_data = None
@@ -990,7 +990,7 @@ class ProjectController(app_manager.RyuApp):
             """
             Pitfall:
             One run wasted because of not knowing below:
-            src_node and dst_node are of type() and not str()
+            src_node and dst_node are int and not str()
             so below threw error and could have only worked if they were str()
             src_to_dst_node = src_node '+' dst_node
             """
@@ -1005,7 +1005,7 @@ class ProjectController(app_manager.RyuApp):
                 self.logger.error("Exception encountered when parsing a graph node =%r for : ", src_to_dst_node,
                                   exc_info=True)
                 # raise #raise causes program termination
-            link_weight = self.__compute_link_weight(src_node , dst_node , nfm_metrics_data ,rpm_metrics_data , hum_metrics_data )
+            link_weight = self.__compute_link_weight(unicode(src_node) , unicode(dst_node) , nfm_metrics_data ,rpm_metrics_data , hum_metrics_data )
             self.__update_graph(src_node,dst_node,'weight',link_weight)
 
 
@@ -1046,8 +1046,9 @@ class ProjectController(app_manager.RyuApp):
         hum_total_weight = 0
 
         if self.modules_enabled['NFM']:
-            nfm_link_util_weight = 0.5
-            nfm_packet_dropped_weight = 0.5
+            nfm_link_util_weight = 0.5 #from CSD metrics description document
+            nfm_packet_dropped_weight = 0.5 #from CSD metrics description document
+
             nfm_link_util = nfm[0][1]
             nfm_packet_dropped = nfm[1][1]
 
@@ -1059,6 +1060,7 @@ class ProjectController(app_manager.RyuApp):
             rpm_total_weight =0
 
         if self.modules_enabled['HUM']:
+            #below two weights are from CSD metrics description document
             hum_core_weight = 0.9 #CPU utilization is more critical in our testbed where memory is not limited by the size of a TCAM
             hum_memory_weight = 0.1
 
@@ -1066,7 +1068,7 @@ class ProjectController(app_manager.RyuApp):
             hum_memory = hum[1][1]
             hum_total_weight = hum_core_weight * sum(float(hum_cores.itervalues)) + \
                                hum_memory_weight * float(hum_memory)
-            hum_total_weight = 0.33
+            hum_total_weight = 0.333 * hum_total_weight
 
         link_weight = nfm_total_weight + rpm_total_weight + hum_total_weight
         return link_weight
@@ -1121,8 +1123,12 @@ class ProjectController(app_manager.RyuApp):
 
 
     def __REST_get_RPM_metrics(self):
+        #TODO: see test/rest_rpm_get.py
         rpm_metrics_data = True
-        rpm_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization', 'packet_dropped']}
+        rpm_what_metrics_to_fetch = {'module': 'rpm', 'keylist': ['delays','normalized_delays','max_latency', 'min_latency',
+                                                                  'mean_latency' , 'median_latency', '25th_latency', '75th_latency']}
+
+
         try:
             rpm_metrics_data = self.DMclient.getme(rpm_what_metrics_to_fetch)
         except Exception, e:

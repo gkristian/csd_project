@@ -23,6 +23,22 @@ dmclone:
 	mv sdn_monitoring $$branch;\
 	cd $$branch;git checkout -b $$branch origin/"$$branch";\
 
+#MERGE
+# TODO: use fast forward merge: --no-ff 
+dmmerge: 
+	git merge origin/DM
+nfmmerge:
+	git merge origin/NFM
+cpmmerge:
+	git merge origin/controller_core
+hummerge:
+	git merge origin/hummerge
+rpmmerge:
+	git merge origin/rpm
+
+
+	
+
 ################################################ CLONE HELPERS end ###############################################
 
 
@@ -127,6 +143,4 @@ startall:
 	screen -S spacey -d -m make spacey
 #testrest:
 #	 python test/rest_test_nfm.py
-
-
 

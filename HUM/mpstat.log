@@ -1,0 +1,5 @@
+Linux 4.4.0-57-generic (csd-prj-image) 	01/01/17 	_x86_64_	(1 CPU)
+
+23:03:09     CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+23:03:09     all   17.52    0.00    1.93    0.06    0.00    0.04    0.00    0.00    0.00   80.45
+23:03:09       0   17.52    0.00    1.93    0.06    0.00    0.04    0.00    0.00    0.00   80.45

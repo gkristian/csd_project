@@ -64,8 +64,7 @@ mstart:
 	#below may not log properly, while above is test to work,
 	#ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow --verbose --default-log-level 3  --log-file /var/www/html/spacey/cpm_nfm.log ./CPM/src/cpm_of13.py netflowmodule-not-latest-but-works.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
 	#ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow --verbose --default-log-level 10  --log-file /var/www/html/spacey/cpm_nfm.log ./CPM/src/cpm_of13.py ./CPM/src/nfmdummy.py ./RPM/rpm.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
-	ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow --verbose --default-log-level 10  --log-file /var/www/html/spacey/cpm_nfm.log ./CPM/src/cpm_of13.py ./CPM/src/nfmdummy.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
-		
+	
 
 #below runs latest NFM if u use relative path it compains unable to import simple_switch
 #	ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow  netflowmodule.py  testController3.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
@@ -144,3 +143,9 @@ startall:
 #testrest:
 #	 python test/rest_test_nfm.py
 
+mnfmfix:
+	ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow --default-log-level 3  --log-file /var/www/html/spacey/csd.log NFM/netflowmodule-not-latest-but-works-updated.py CPM/src/cpm_of13.py
+
+mnfmdummy:
+	ryu-manager  --ofp-tcp-listen-port 6633 --observe-links --install-lldp-flow --verbose --default-log-level 10  --log-file /var/www/html/spacey/cpm_nfm.log ./CPM/src/cpm_of13.py ./CPM/src/nfmdummy.py > /var/www/html/spacey/ryu_apps.log 2>&1 &
+	

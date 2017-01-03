@@ -99,6 +99,12 @@ class ProjectController(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(ProjectController, self).__init__(*args, **kwargs)
+        """
+        set below parameter to true if you want CPM not to install any openflow rules into the openflow switches.
+        This feature was requested by test team.
+        """
+        self.disable_cpm_openflow_ruleinstaller = False
+
         self.shared_context = kwargs['network']  # fetch graph object of physical network
 
         self.net = self.shared_context.learnt_topology #this creates a reference
@@ -108,14 +114,16 @@ class ProjectController(app_manager.RyuApp):
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
         self.modules_enabled = {'RPM': False,'HUM': False,'NFM': True}
-
+        self.install_openflow_rules = True
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff',
                           'bootstrap_in_progress': True,
                           'flow_table_strategy_semi_proactive': True,
                           'logdir': '/var/www/html/spacey',
                           'cpmlogdir': '/var/www/html/spacey/cpmweights.log',
                           'metrics_fetch_rest_url': 'http://127.0.0.1:8000/Tasks.txt',
-                          'fetch_timer_in_seconds': 4}
+                          'fetch_timer_in_seconds': 4
+                          }
+
         #below will be used by all those methods that fetch metrics from a remote module
         self.rest_url = self.defines_D['metrics_fetch_rest_url']
         self.DMclient = client_side(self.rest_url)
@@ -594,6 +602,12 @@ class ProjectController(app_manager.RyuApp):
             self.logger.debug("__________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________")
 
             if dst_mac in self.net:
+
+                if self.disable_cpm_openflow_ruleinstaller:
+                    """
+                    In case you don't want CPM to install any rules to the switches. This feature was requested to be implemented in CPM by the test team.
+                    """
+                    return
                 self.logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
                 self.logger.debug("Do we have a path to this destination mac? src= %r , dst = %r ",dst_mac,src_mac)
                 if not nx.has_path(self.net,src_mac,dst_mac): #if returned False we abort

@@ -50,13 +50,16 @@ dmstart:
 dmlog:
 	tail -f /var/www/html/spacey/dm.log 
 dmstop:
+	kill -9 `ps a |grep DM |grep -v grep | cut -d ' ' -f 1`
 	kill -9 `ps a |grep DM |grep -v grep | cut -d ' ' -f 2`
+	#kill -9 `ps a |grep DM |grep -v grep |awk '{print $1}'`
 # the dash below before the command is very important. It causes make to still continue run all the commands that start with the - . Without dash if the first command fails to run i.e. return a bad exit code, the make will not run the rest of the commands in that block. Another way is to use make -k that works for gnu make and causes make to keep running despite a command failure, however. make documentation recommends the dash based approach to be better.
 stopall:
 	-rm -f /var/www/html/spacey/* 
 	-killall -9 python
 	-killall -9 ryu-manager
 	-killall -9 tail
+	-killall -9 mn
 	#to kill this for now we can safely kill all prcoeeses ... sh read wait_for_ever_so_that_screen_is_maintained
 	-killall -9 sh 
 	-mn -c

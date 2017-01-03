@@ -65,12 +65,14 @@ class SharedContext (object):
     def __init__(self):
         self.learnt_topology = nx.DiGraph()
         self.bootstrap_complete = False
+        self.time_of_last_fetch = 0
 
 #***********************************************************
 
 class ProjectController(app_manager.RyuApp):
     'CPM module for CSD Team4 project'
     _CONTEXTS = {'network': SharedContext}
+    #time_of_last_fetch = 0
     #_CONTEXTS = {'network': nx.DiGraph() }
     #app_manager._CONTEXTS = {'network': SharedContext ,'bootstrap_complete': bootstrap_complete }
     #net = nx.DiGraph()
@@ -81,7 +83,6 @@ class ProjectController(app_manager.RyuApp):
     ######bootstrap_complete = s.bootstrap_complete
 
     # Fetch metrics from remote Cache related data structures
-    time_of_last_fetch = 0
 
 
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -101,10 +102,12 @@ class ProjectController(app_manager.RyuApp):
         self.shared_context = kwargs['network']  # fetch graph object of physical network
 
         self.net = self.shared_context.learnt_topology #this creates a reference
+        self.logger.info("SHARED_CONTEXT : SharedContext Instantiated and time_of_last_fetech = %r",
+                         self.shared_context.time_of_last_fetch)
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.modules_enabled = {'RPM': False,'HUM': True,'NFM': True}
+        self.modules_enabled = {'RPM': False,'HUM': False,'NFM': True}
 
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff',
                           'bootstrap_in_progress': True,
@@ -599,6 +602,10 @@ class ProjectController(app_manager.RyuApp):
                     return
                 #fetch metrics from a remote source and add to graph and compute weight for each link
                 self.__fetch_ALL_metrics_and_insert_weight_in_topology_graph()
+                self.logger.info("________________ WEIGHTED_TOPOLOGY begin ________")
+                self.cpmlogger.debug("WEIGHTED_TOPOLOGY: = %r",self.net.edges()) # even self.net() might do as well
+                self.show_graph_stats()
+                self.logger.info("________________ WEIGHTED_TOPOLOGY end________")
                 #dst mac  is in our topology graph
                 spath=nx.shortest_path(self.net,src_mac,dst_mac)
 
@@ -946,13 +953,13 @@ class ProjectController(app_manager.RyuApp):
         # every 4 seconds
         time_max_limit = self.defines_D['fetch_timer_in_seconds'] * 1000
         self.logger.debug("FETCH_ALL_METRICS : fetch_metric_and_insert, time_max_limit = fetch every %r seconds", time_max_limit)
-        if not (self.current_time - self.time_of_last_fetch > time_max_limit)  and self.defines_D[
+        if not (self.current_time - self.shared_context.time_of_last_fetch > time_max_limit)  and self.defines_D[
             'bootstrap_in_progress']:
             return
         else:
-            self.time_of_last_fetch = self.current_time
+            self.shared_context.time_of_last_fetch = self.current_time
 
-        self.cpmlogger("FETCH_ALL_METRICS : About to fetch remote metrics")
+        self.cpmlogger.debug("FETCH_ALL_METRICS : About to fetch remote metrics, time_of_last_fetch = %r", self.shared_context.time_of_last_fetch)
         # Fetch metrics data
         nfm_metrics_data = None
         rpm_metrics_data = None
@@ -1005,7 +1012,13 @@ class ProjectController(app_manager.RyuApp):
                 self.logger.error("Exception encountered when parsing a graph node =%r for : ", src_to_dst_node,
                                   exc_info=True)
                 # raise #raise causes program termination
+
+            """
+            If a certain module is disabled then exclude it from weight computation. This shall be handled by the __compute_link_weight
+            """
+
             link_weight = self.__compute_link_weight(unicode(src_node) , unicode(dst_node) , nfm_metrics_data ,rpm_metrics_data , hum_metrics_data )
+
             self.__update_graph(src_node,dst_node,'weight',link_weight)
 
 
@@ -1044,8 +1057,8 @@ class ProjectController(app_manager.RyuApp):
         nfm_total_weight = 0
         rpm_total_weight = 0
         hum_total_weight = 0
-
-        if self.modules_enabled['NFM']:
+        #nfm would be False if HTTP GET of nfm_metric_data returned blank or failed due to connection error
+        if self.modules_enabled['NFM'] and nfm:
             nfm_link_util_weight = 0.5 #from CSD metrics description document
             nfm_packet_dropped_weight = 0.5 #from CSD metrics description document
 
@@ -1055,19 +1068,20 @@ class ProjectController(app_manager.RyuApp):
             nfm_total_weight = nfm_link_util_weight * float(nfm_link_util[unicode(src_node)+'-' + unicode(dst_node)]) + \
                                nfm_packet_dropped_weight* float(nfm_packet_dropped [unicode(src_node) +'-' + unicode(dst_node)])
             nfm_total_weight = 0.33 * nfm_total_weight #All modules contribute equally to the output weight
-
-        if self.modules_enabled['RPM']:
+        # RPM would be False if HTTP GET of rpm_metric_data returned blank or failed due to connection error
+        if self.modules_enabled['RPM'] and rpm:
             rpm_total_weight =0
 
-        if self.modules_enabled['HUM']:
+        if self.modules_enabled['HUM'] and hum:
             #below two weights are from CSD metrics description document
             hum_core_weight = 0.9 #CPU utilization is more critical in our testbed where memory is not limited by the size of a TCAM
             hum_memory_weight = 0.1
 
             hum_cores = hum[0][1]
             hum_memory = hum[1][1]
-            hum_total_weight = hum_core_weight * sum(float(hum_cores.itervalues)) + \
-                               hum_memory_weight * float(hum_memory)
+            #float doesnt work over itervalues
+            #hum_total_weight = hum_core_weight * sum(float(hum_cores.itervalues)) + hum_memory_weight * float(hum_memory)
+            hum_total_weight = hum_core_weight * sum(hum_cores.itervalues) + hum_memory_weight * float(hum_memory)
             hum_total_weight = 0.333 * hum_total_weight
 
         link_weight = nfm_total_weight + rpm_total_weight + hum_total_weight
@@ -1080,17 +1094,20 @@ class ProjectController(app_manager.RyuApp):
         try:
             nfm_metrics_data = self.DMclient.getme(nfm_what_metrics_to_fetch)
         except Exception,e:
-            self.cpmlogger.error("FETCH_NFM_METRICS : Failed ...., Exception = %r",e)
-            self.cpmlogger.error("FETCH_NFM_METRICS : Failed ...., Exception trace",exc_info=True)
+            self.cpmlogger.error("FETCH_NFM_METRICS : HTTP Failure ...., Exception = %r",e)
+            self.cpmlogger.error("FETCH_NFM_METRICS : HTTP Failure ...., Exception trace",exc_info=True)
             nfm_metrics_data = False
             return
         else:
             #See my controller_core/tests/rest_nfm_get_with_packet_drops.py test script for more details
-            if nfm_metrics_data[0][1] and nfm_metrics_data[1][1]:
-                self.cpmlogger.error("FETCH_NFM_METRICS : Empty NFM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served")
+            self.cpmlogger.debug("FETCH_NFM_METRICS: -----> EMPTY - nfm_metrics_data  = %r ", nfm_metrics_data)
+            #empty dicitionary like string evaluates to False
+            if not(nfm_metrics_data[0][1] and nfm_metrics_data[1][1]):
+                self.cpmlogger.error("FETCH_NFM_METRICS : Empty NFM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served.")
+                self.cpmlogger.error("FETCH_NFM_METRICS : nfm_metrics_data = %r",nfm_metrics_data)
                 nfm_metrics_data = False
 
-        self.cpmlogger.debug("FETCH_HUM_METRICS: OK - nfm_metrics_data  = %r ",nfm_metrics_data)
+        self.cpmlogger.debug("FETCH_NFM_METRICS: HTTP GET RESULT - nfm_metrics_data  = %r ",nfm_metrics_data)
 
         return nfm_metrics_data
 

@@ -91,7 +91,7 @@ else:
 """
 
 
-import pdb; pdb.set_trace()
+###import pdb; pdb.set_trace()
 
 #below i get with packet_dropped key
 #[[u'link_utilization', {u'2-1': 98.7, u'1-2': 98.7}], [u'packet_dropped', {u'2-1': 1, u'1-2': 1}]]

@@ -1,0 +1,33 @@
+Run sflow in one terminal:
+
+shell script file "run_sflow.sh" which will run "testSFlow2.py" code.
+
+That sflow code will listen on port 6343 for sflow information
+
+
+
+
+Start mininet on another terminal:
+
+basic,  sudo mn --controller=remote,ip=127.0.0.1
+
+open s1 on xterm and input command:
+
+ovs-vsctl -- --id=@sflow create sflow agent=eth0 target=\"127.0.0.1:6343\" header=128
+sampling=10 polling=20 -- set bridge s1 sflow=@sflow
+
+
+this will enable sflow agent on s1 which will send sflow information to target (ryu collector, testSFlow2.py")
+
+
+
+
+
+Current state is that we can retrieve different information about sflow,
+have some conditions in the code that will print depending on type of object that sflow contains.
+
+
+TODO
+
+Understand that information, compare with current NFM. Is the sflow retrieved 
+significant or is it useless data.

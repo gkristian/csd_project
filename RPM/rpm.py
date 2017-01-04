@@ -106,7 +106,7 @@ class RPM(app_manager.RyuApp):
 		# the current latency from a a certain switch of number X will be placed 
 		# at index X-1 in the list
 		#self.latency_array = range(self.totalSwitchesNr)
-		self.latency_array = None
+		#self.latency_array = None
 
 		# Min and max values for latency normalization
 		self.MAX = 5000
@@ -395,7 +395,7 @@ class RPM(app_manager.RyuApp):
 				self.switches_data[dpid]["measured_time"] = timed
 				# Store the latency value for statistics
 				self.switches_data[dpid]["values_list"].append(timed)
-				self.latency_array[dpid-1] = timed
+				#self.latency_array[dpid-1] = timed
 
 				# Store the measured time in DB message dict
 
@@ -422,14 +422,20 @@ class RPM(app_manager.RyuApp):
 	"""
 	@set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
 	def _state_change_handler(self, ev):
+		print "RPM EVENT STATE CHANGE"
+		print "Event state: ", ev.state
+		print "Main dis ", MAIN_DISPATCHER
+		print "Dead dis ", DEAD_DISPATCHER
 		
 		datapath = ev.datapath
 		if ev.state == MAIN_DISPATCHER:
-			if datapath.id not in self.datapaths:
+			if datapath.id not in self.switches_DPIDs:
+				print 'registered datapath: %016x', datapath.id
 				self.logger.info('registered datapath: %016x', datapath.id)
 				self.switches_DPIDs[datapath.id] = datapath
 		elif ev.state == DEAD_DISPATCHER:
-			if datapath.id in self.datapaths:
+			if datapath.id in self.switches_DPIDs:
+				print 'unregister.datapath: %016x', datapath.id
 				self.logger.info('unregister.datapath: %016x', datapath.id)
 				del self.switches_DPIDs[datapath.id]
 
@@ -441,7 +447,7 @@ class RPM(app_manager.RyuApp):
 				self.HAVE_NET = True
 				self.net = self.shared_context.learnt_topology
 				self.totalSwitchesNr = self.determineNumberOfSwitches()
-				self.latency_array = range(self.totalSwitchesNr)
+				#self.latency_array = range(self.totalSwitchesNr)
 				break
 			else:
 				self._print("RPM NET NOT READY!")

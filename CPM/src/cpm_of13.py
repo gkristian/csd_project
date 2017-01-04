@@ -61,6 +61,16 @@ from datetime import datetime
 from client import client_side
 
 
+class Configuration(object):
+    """
+    The purpose of this class is to put all CPM module specific confogiration parameters in one place.
+    Currently there are in a dictionary define_D in the CPM consutructor method.
+    TODO:
+    """
+    def __init__(self):
+        #self.module_metric_data_read_mode = {'loop_over_module_metrics_instead_of_topology': False}
+        self.someconfig = True #this is not being used at the moment
+
 class SharedContext (object):
     def __init__(self):
         self.learnt_topology = nx.DiGraph()
@@ -108,7 +118,10 @@ class ProjectController(app_manager.RyuApp):
         self.shared_context = kwargs['network']  # fetch graph object of physical network
 
         self.net = self.shared_context.learnt_topology #this creates a reference
-        self.logger.info("SHARED_CONTEXT : SharedContext Instantiated and time_of_last_fetech = %r",
+        #Object holding project configuration parameters
+        self.config = Configuration
+
+        self.logger.debug("SHARED_CONTEXT : SharedContext Instantiated and time_of_last_fetech = %r",
                          self.shared_context.time_of_last_fetch)
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
@@ -607,6 +620,7 @@ class ProjectController(app_manager.RyuApp):
                     """
                     In case you don't want CPM to install any rules to the switches. This feature was requested to be implemented in CPM by the test team.
                     """
+                    self.cpmlogger.info("cpm_openflow_ruleinstaller is disabled in config, Not installing any openflow rules in the switches")
                     return
                 self.logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
                 self.logger.debug("Do we have a path to this destination mac? src= %r , dst = %r ",dst_mac,src_mac)
@@ -1021,9 +1035,9 @@ class ProjectController(app_manager.RyuApp):
                 if ':' in src_to_dst_node:
                     continue
             except Exception, e:
-                self.logger.error("Exception encountered when parsing a graph node =%r for : ", e)
+                self.logger.error("Program is running normally but exception encountered when parsing a graph node =%r for : ", e)
                 # exc_info causes a Trace exception details to be printed to log but it does not halt program execution
-                self.logger.error("Exception encountered when parsing a graph node =%r for : ", src_to_dst_node,
+                self.logger.error("Program runs normally but Exception encountered when parsing a graph node =%r for : ", src_to_dst_node,
                                   exc_info=True)
                 # raise #raise causes program termination
 
@@ -1068,7 +1082,7 @@ class ProjectController(app_manager.RyuApp):
         :param hum:  --do--
         :return:
         """
-        nfm_total_weight = 0
+        nfm_total_link_weight = 0
         rpm_total_weight = 0
         hum_total_weight = 0
         #nfm would be False if HTTP GET of nfm_metric_data returned blank or failed due to connection error
@@ -1079,9 +1093,20 @@ class ProjectController(app_manager.RyuApp):
             nfm_link_util = nfm[0][1]
             nfm_packet_dropped = nfm[1][1]
 
-            nfm_total_weight = nfm_link_util_weight * float(nfm_link_util[unicode(src_node)+'-' + unicode(dst_node)]) + \
-                               nfm_packet_dropped_weight* float(nfm_packet_dropped [unicode(src_node) +'-' + unicode(dst_node)])
-            nfm_total_weight = 0.33 * nfm_total_weight #All modules contribute equally to the output weight
+            nfm_dict_key = unicode(src_node) + '-' + unicode(dst_node)
+
+            if nfm_dict_key in nfm_link_util:
+                nfm_link_util_value = float(nfm_link_util[nfm_dict_key])
+            else:
+                nfm_link_util_value = 0
+            if nfm_dict_key in nfm_packet_dropped:
+                nfm_packet_dropped_link_value = float(nfm_packet_dropped[nfm_dict_key])
+            else:
+                nfm_packet_dropped_link_value = 0
+
+            nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value + nfm_packet_dropped_weight* nfm_packet_dropped_link_value
+            nfm_total_link_weight = 0.33 * nfm_total_link_weight #All modules contribute equally to the output weight, see Metric desc. document and weights specified by the teacher
+
         # RPM would be False if HTTP GET of rpm_metric_data returned blank or failed due to connection error
         if self.modules_enabled['RPM'] and rpm:
             rpm_total_weight =0
@@ -1091,11 +1116,11 @@ class ProjectController(app_manager.RyuApp):
             nfm_link_util = nfm[0][1]
             nfm_packet_dropped = nfm[1][1]
 
-            nfm_total_weight = nfm_link_util_weight * float(
+            nfm_total_link_weight = nfm_link_util_weight * float(
                 nfm_link_util[unicode(src_node) + '-' + unicode(dst_node)]) + \
                                nfm_packet_dropped_weight * float(
                                    nfm_packet_dropped[unicode(src_node) + '-' + unicode(dst_node)])
-            nfm_total_weight = 0.33 * nfm_total_weight  # All modules contribute equally to the output weight
+            nfm_total_link_weight = 0.33 * nfm_total_link_weight  # All modules contribute equally to the output weight
 
         if self.modules_enabled['HUM'] and hum:
             #below two weights are from CSD metrics description document
@@ -1109,7 +1134,7 @@ class ProjectController(app_manager.RyuApp):
             hum_total_weight = hum_core_weight * sum(hum_cores.itervalues) + hum_memory_weight * float(hum_memory)
             hum_total_weight = 0.333 * hum_total_weight
 
-        link_weight = nfm_total_weight + rpm_total_weight + hum_total_weight
+        link_weight = nfm_total_link_weight + rpm_total_weight + hum_total_weight
         return link_weight
 
 
@@ -1169,7 +1194,7 @@ class ProjectController(app_manager.RyuApp):
         rpm_metrics_data = True
         #rpm_what_metrics_to_fetch = {'module': 'rpm', 'keylist': ['delays','normalized_delays','max_latency', 'min_latency',
         #                                                          'mean_latency' , 'median_latency', '25th_latency', '75th_latency']}
-        rpm_what_metrics_to_fetch = {'module': 'rpm', 'latencies'}
+        rpm_what_metrics_to_fetch = {'module': 'rpm', 'keylist': ['latencies']}
 
 
         try:

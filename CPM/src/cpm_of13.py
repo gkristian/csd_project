@@ -1085,6 +1085,17 @@ class ProjectController(app_manager.RyuApp):
         # RPM would be False if HTTP GET of rpm_metric_data returned blank or failed due to connection error
         if self.modules_enabled['RPM'] and rpm:
             rpm_total_weight =0
+            nfm_link_util_weight = 0.5  # from CSD metrics description document
+            nfm_packet_dropped_weight = 0.5  # from CSD metrics description document
+
+            nfm_link_util = nfm[0][1]
+            nfm_packet_dropped = nfm[1][1]
+
+            nfm_total_weight = nfm_link_util_weight * float(
+                nfm_link_util[unicode(src_node) + '-' + unicode(dst_node)]) + \
+                               nfm_packet_dropped_weight * float(
+                                   nfm_packet_dropped[unicode(src_node) + '-' + unicode(dst_node)])
+            nfm_total_weight = 0.33 * nfm_total_weight  # All modules contribute equally to the output weight
 
         if self.modules_enabled['HUM'] and hum:
             #below two weights are from CSD metrics description document
@@ -1156,8 +1167,9 @@ class ProjectController(app_manager.RyuApp):
     def __REST_get_RPM_metrics(self):
         #TODO: see test/rest_rpm_get.py
         rpm_metrics_data = True
-        rpm_what_metrics_to_fetch = {'module': 'rpm', 'keylist': ['delays','normalized_delays','max_latency', 'min_latency',
-                                                                  'mean_latency' , 'median_latency', '25th_latency', '75th_latency']}
+        #rpm_what_metrics_to_fetch = {'module': 'rpm', 'keylist': ['delays','normalized_delays','max_latency', 'min_latency',
+        #                                                          'mean_latency' , 'median_latency', '25th_latency', '75th_latency']}
+        rpm_what_metrics_to_fetch = {'module': 'rpm', 'latencies'}
 
 
         try:

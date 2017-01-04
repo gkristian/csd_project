@@ -68,7 +68,7 @@ class RPM(app_manager.RyuApp):
 		#calculate total switches by the graph topology object
 		#self.totalSwitchesNr = self.determineNumberOfSwitches()
 		self.totalSwitchesNr = None		
-		self.logger.debug("TOTAL SWITCHES: %d", self.totalSwitchesNr)
+		self.logger.debug("TOTAL SWITCHES: %r", self.totalSwitchesNr)
 
 		# Set up communication with DM
 		url = 'http://127.0.0.1:8000/Tasks.txt'
@@ -155,10 +155,12 @@ class RPM(app_manager.RyuApp):
 	any faster sending rate exceeds the serving rate of the event handler and builds up the quequing times.
 	"""
 	def _monitor(self): 
+		self._print("MONITORING THREAD STARTED")
 		lock = threading.Lock()
 		xid = 0
 		# set of switches
 		dpids = self.switches_DPIDs.viewkeys()
+
 		# set starting time counter for sending updates to DM
 		last_update_time = int(round(time.time() * 1000))
 		#last_update_time = datetime.now().second
@@ -170,6 +172,7 @@ class RPM(app_manager.RyuApp):
 			#self._print("SENDING FLOW MODS...")
 
 			for dpid in dpids:
+				print "[RPM] CHECKING LATENCY FOR switch %d" % dpid
 				with lock:
 					# if it has gone min UPDATE_TIME seconds since last update
 					# send an update to DM 
@@ -177,6 +180,7 @@ class RPM(app_manager.RyuApp):
 					#current_updatetime = datetime.now()
 
 					if (current_updatetime - last_update_time) >= self.UPDATE_TIME*1000 and self.HAVE_NET == True:
+						print "[RPM] SENDING DATA TO DM"
 						# calculate and insert statistics into the DB dict
 						
 
@@ -193,7 +197,8 @@ class RPM(app_manager.RyuApp):
 						# send current values to DM
 
 						self.client.postme(self.DICT_TO_DB) #TODO UTKOMMENTERAD
-						#print self.DICT_TO_DB.viewitems()
+						print "[RPM] DATA TO DM:"
+						print self.DICT_TO_DB.viewitems()
 
 						last_update_time = int(round(time.time() * 1000))
 						#last_update_time = datetime.now().second
@@ -205,6 +210,7 @@ class RPM(app_manager.RyuApp):
 						#	break
 
 				with lock:
+					print "[RPM] SENDING FLOW MODS"
 					# Get the datapath object
 					dp = self.switches_DPIDs[dpid]
 
@@ -232,6 +238,9 @@ class RPM(app_manager.RyuApp):
 					#self._print("FLOW MODS SENT")
 
 					# set start time for measurment
+					print dpid
+					print self.switches_data[dpid]
+					#print self.switches_data.viewitems()
 					self.switches_data[dpid]["start_time"] = int(time.time() * 1000000)
 					#self.switches_data[dpid]["start_time"] = datetime.now().microsecond
 					
@@ -239,6 +248,7 @@ class RPM(app_manager.RyuApp):
 					xid += 1
 					self.switches_data[dpid]["xid"] = xid
 					# send the barrier request
+					print "[RPM] SENDING BARRIER REQUEST"
 					self.send_barrier_request(dp, xid)
 					#self._print("BARRIER REQ WITH ID %d SENT" %xid)
 					#self._print("Data before barrier req: " + str(self.switches_data.viewitems()))
@@ -303,6 +313,8 @@ class RPM(app_manager.RyuApp):
 	Given a datapath object and an xid number send a barrier request
 	"""
 	def send_barrier_request(self, datapath, xid):
+		self._print("SENDING BARRIER REQUEST")
+
 		ofp_parser = datapath.ofproto_parser
 		req = ofp_parser.OFPBarrierRequest(datapath)
 		req.set_xid(xid)
@@ -367,7 +379,7 @@ class RPM(app_manager.RyuApp):
 	"""
 	@set_ev_cls(ofp_event.EventOFPBarrierReply, MAIN_DISPATCHER)
 	def _handle_barrier(self, ev):
-		#self._print('OFPBarrierReply received')
+		self._print("[RPM] OFPBarrierReply received")
 		
 		msg = ev.msg
 		xid = msg.xid
@@ -394,7 +406,13 @@ class RPM(app_manager.RyuApp):
 				# Store the measured latency time
 				self.switches_data[dpid]["measured_time"] = timed
 				# Store the latency value for statistics
+				
+
+
 				self.switches_data[dpid]["values_list"].append(timed)
+				
+
+
 				#self.latency_array[dpid-1] = timed
 
 				# Store the measured time in DB message dict
@@ -423,10 +441,7 @@ class RPM(app_manager.RyuApp):
 	@set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
 	def _state_change_handler(self, ev):
 		print "RPM EVENT STATE CHANGE"
-		print "Event state: ", ev.state
-		print "Main dis ", MAIN_DISPATCHER
-		print "Dead dis ", DEAD_DISPATCHER
-		
+
 		datapath = ev.datapath
 		if ev.state == MAIN_DISPATCHER:
 			if datapath.id not in self.switches_DPIDs:
@@ -452,8 +467,9 @@ class RPM(app_manager.RyuApp):
 			else:
 				self._print("RPM NET NOT READY!")
 			time.sleep(1)
-
+		print "[RPM] NUMBER OF SWITCHES ON NET %d" % self.totalSwitchesNr
 		if len(DPIDS) == self.totalSwitchesNr and self.started_monitoring == False:
+			print "[RPM] NUMBER OF FOUND SWITCHES %d" % len(DPIDS)
 			#print DPIDS
 			for key in DPIDS:
 				#print key
@@ -463,6 +479,7 @@ class RPM(app_manager.RyuApp):
 			#self._print(str(self.switches_data.viewitems()))
 
 			# Start monitoring thread sending flow mods and barrier requests
+			print "[RPM] STARTING MONITOR THREAD"
 			self.monitoring_thread = hub.spawn(self._monitor)
 			self._print("Monitoring thread started")
 			self.started_monitoring = True

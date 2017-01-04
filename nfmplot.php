@@ -38,16 +38,21 @@ $graph->subtitle->Set("Sw". $title[0] ."-Sw". $title[1]);
 $graph->subtitle->SetFont(FF_DV_SANSSERIF, FS_BOLD, 12);
 
 //SCALING AND AXIS LABELLING
+
 //100% scale
-/*
+
 $graph->SetScale('intint',0,100);
 $ypos = array(0,10,20,30,40,50,60,70,80,90,100);
 $ylabels = array("0%","10%","20%","30%","40%","50%","60%","70%","80%","90%","100%");
-*/
+
+
 //50% SCALE
+/*
 $graph->SetScale('intint',0,50);
 $ypos = array(0,10,20,30,40,50);
 $ylabels = array("0%","10%","20%","30%","40%","50%");
+*/
+
 $graph->yaxis->SetMajTickPositions($ypos,$ylabels);
 //$graph->yscale->ticks->Set(0.2,0.01);
 //$graph->yaxis->SetTickLabels(array('0%','40%','40%','60%','80%','100%'));

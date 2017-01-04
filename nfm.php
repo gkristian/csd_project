@@ -102,9 +102,9 @@ for($link=0;$link<$linkcount;$link++){
 	}
 	$tobesend = array_slice($data, -19); //Take the latest 20 data
 	//Multiply the value to percental scale
-	foreach ($tobesend as &$value) {
- 	   $value = $value * 100;
-	}
+	//foreach ($tobesend as &$value) {
+ 	//   $value = $value * 100;
+	//}
 	$title=explode("-",$arrlinkname[$link]);
 	if($title[1]>$title[0]){ //Remove duplicate
 		$imploded=implode(":",$tobesend);

@@ -61,6 +61,13 @@ from datetime import datetime
 from client import client_side
 
 
+class CPMState(object):
+    """
+    An object to hold the status of each state, update and used by the logger module to avoid printing the same state repeatedly
+    """
+    def __init__(self):
+        self.xyz_completed = False
+
 class Configuration(object):
     """
     The purpose of this class is to put all CPM module specific confogiration parameters in one place.
@@ -955,19 +962,28 @@ class ProjectController(app_manager.RyuApp):
 
     def __update_graph(self,src_dpid,dst_dpid, key,value):
         """key can be <module_name><module_key> e.g. 'nfm_link_utilization' """
-        self.logger.info("FETCH UPDATE_GRAPH_NFM , weight = %r", value)
+        self.cpmlogger.info("FETCH UPDATE_GRAPH_NFM , weight = %r", value)
         try:
+            self.cpmlogger.debug("FETCH src_dpid type  =%r and dst_dpid type = %r and key = %r and type of key = %r ", type(src_dpid), type(dst_dpid),key,type(key))
+
+            self.cpmlogger.debug("FETCH Assigned value self.net.edge[%r][%r][%r] = %r", src_dpid, dst_dpid,key,self.net.edge[src_dpid][dst_dpid]['weight'])
             self.net.edge[src_dpid][dst_dpid][key] = value
             #self.net[src_dpid][dst_dpid][key] = value
-            self.logger.debug("FETCH Assigned value self.net.edge[%r][%r]['weight'] = %r", src_dpid,dst_dpid,self.net.edge[src_dpid][dst_dpid]['weight]'])
+
         except (KeyError):
-            self.logger.error("FETCH KeyError when updating graph")
+            self.cpmlogger.error("FETCH src_dpid type  =%r and dst_dpid type = %r and key = %r and type of key = %r ",
+                                 type(src_dpid), type(dst_dpid), key, type(key))
+
+            self.cpmlogger.error("FETCH Assigned value self.net.edge[%r][%r][%r] = %r", src_dpid, dst_dpid, key,
+                                 self.net.edge[src_dpid][dst_dpid]['weight'])
+            self.cpmlogger.error("FETCH KeyError when updating graph",exc_info=True)
             #raise
         except (NameError):
-            self.logger.error("FETCH NameError when updating graph")
+            self.cpmlogger.error("FETCH NameError when updating graph",exc_info=True)
         except Exception,e:
             #self.logger.exception("Unable to update this key in the graph on fetch %r",e)
-            self.logger.error('Unable to update this key in the graph, here is the traceback',exc_info=True)
+            self.cpmlogger.error('Unable to update this key in the graph, here is the traceback',exc_info=True)
+
 
     def __fetch_ALL_metrics_and_insert_weight_in_topology_graph(self):
         """
@@ -1046,7 +1062,7 @@ class ProjectController(app_manager.RyuApp):
             """
 
             link_weight = self.__compute_link_weight(unicode(src_node) , unicode(dst_node) , nfm_metrics_data ,rpm_metrics_data , hum_metrics_data )
-
+            self.cpmlogger.debug("FETCH_ALL: about to call update_graph with src_node = %r, dst_node = %r",src_node,dst_node)
             self.__update_graph(src_node,dst_node,'weight',link_weight)
 
 

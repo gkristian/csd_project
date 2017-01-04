@@ -17,11 +17,17 @@ print "another way accessing edge dict data"
 print G.edge[edge_src_node_name][edge_dst_node_name]
 
 
+
+
 G.add_edge(edge_src_node_name, edge_dst_node_name, k1='changedv1')
 #above could also been
 G.edge[edge_src_node_name][edge_dst_node_name]['k1'] = 'again_changedv1_arraystyle'
 
 print "edge after k1 change \n", G.get_edge_data(edge_src_node_name, edge_dst_node_name)
+
+G.edge[edge_src_node_name][edge_dst_node_name]['weight']=15.510000000000002
+print "value is = \n"
+print G.edge[edge_src_node_name][edge_dst_node_name]['weight']
 
 
 #print "_________________________EDGE data manipulation______________________"

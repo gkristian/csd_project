@@ -76,7 +76,7 @@ class Configuration(object):
     """
     def __init__(self):
         #self.module_metric_data_read_mode = {'loop_over_module_metrics_instead_of_topology': False}
-        self.someconfig = True #this is not being used at the moment
+        self.disable_weighted_routing= True #this is not being used at the moment
 
 class SharedContext (object):
     def __init__(self):
@@ -622,7 +622,7 @@ class CPM(app_manager.RyuApp):
                     """
                     In case you don't want CPM to install any rules to the switches. This feature was requested to be implemented in CPM by the test team.
                     """
-                    self.cpmlogger.info("cpm_openflow_ruleinstaller is disabled in config, Not installing any openflow rules in the switches")
+                    self.cpmlogger.warning("cpm_openflow_ruleinstaller is disabled in config, Not installing any openflow rules in the switches")
                     return
                 self.logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
                 self.logger.debug("Do we have a path to this destination mac? src= %r , dst = %r ",dst_mac,src_mac)
@@ -632,12 +632,20 @@ class CPM(app_manager.RyuApp):
                     return
                 #fetch metrics from a remote source and add to graph and compute weight for each link
                 self.__fetch_ALL_metrics_and_insert_weight_in_topology_graph()
-                self.logger.info("________________ WEIGHTED_TOPOLOGY begin ________")
-                self.cpmlogger.debug("WEIGHTED_TOPOLOGY: = %r",self.net.edges()) # even self.net() might do as well
-                self.show_graph_stats()
+                self.cpmlogger.info("________________ FINAL WEIGHTED_TOPOLOGY begin ________")
+                for src,dst,edge_data in self.net.edges_iter():
+                    self.cpmlogger.debug("WEIGHTED_TOPOLOGY FINAL: (%r,%r, %r)",src,dst,edge_data) # even self.net() might do as well
                 self.logger.info("________________ WEIGHTED_TOPOLOGY end________")
+                self.show_graph_stats()
+
                 #dst mac  is in our topology graph
-                spath=nx.shortest_path(self.net,src_mac,dst_mac)
+                if self.config.disable_weighted_routing:
+                    self.cpmlogger.debug("WEIGHTED_ROUTING disabled")
+                    spath=nx.shortest_path(self.net,src_mac,dst_mac)
+
+                else:
+                    self.cpmlogger.debug("WEIGHTED_ROUTING enabled")
+                    spath = nx.shortest_path(self.net, src_mac, dst_mac, weighted=True)
 
 
                 self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
@@ -1168,14 +1176,14 @@ class CPM(app_manager.RyuApp):
         except Exception:
             node_25_value = 0
             self.cpmlogger.debug("CALC_RPM_WEIGHT MISS: 25 value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
-            self.cpmlogger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
+            self.cpmlogger.debug("CALC_RPM_WEIGHT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
 
         try:
             node_75_value = latency_topo_dict[switch_dpid_in_unicode][key_latency_75]
         except Exception:
             node_75_value = 0
             self.cpmlogger.debug("CALC_RPM_WEIGHT MISS: 75 value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
-            self.cpmlogger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
+            self.cpmlogger.debug("CALC_RPM_WEIGHT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
 
 
         try:
@@ -1183,7 +1191,7 @@ class CPM(app_manager.RyuApp):
         except Exception:
             node_median_value = 0
             self.cpmlogger.debug("CALC_RPM_WEIGHT MISS: median value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
-            self.cpmlogger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
+            self.cpmlogger.debug("CALC_RPM_WEIGHT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
 
         self.logger.debug(" CALC_RPM_WEIGHT : computed 25,75,median values are: %r , %r , %r ",node_25_value,node_75_value,node_median_value)
         if node_median_value < 500 and node_median_value >5000:

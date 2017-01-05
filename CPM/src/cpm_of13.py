@@ -970,27 +970,27 @@ class CPM(app_manager.RyuApp):
 
     def __update_graph(self,src_dpid,dst_dpid, key,value):
         """key can be <module_name><module_key> e.g. 'nfm_link_utilization' """
-        self.cpmlogger.info("FETCH UPDATE_GRAPH_NFM , weight = %r", value)
+        self.cpmlogger.info("UPDATE_GRAPH , weight = %r", value)
         try:
-            self.cpmlogger.debug("FETCH src_dpid type  =%r and dst_dpid type = %r and key = %r and type of key = %r ", type(src_dpid), type(dst_dpid),key,type(key))
+            self.cpmlogger.debug("UPDATE_GRAPH src_dpid type  =%r and dst_dpid type = %r and key = %r and type of key = %r ", type(src_dpid), type(dst_dpid),key,type(key))
 
-            self.cpmlogger.debug("FETCH Assigned value self.net.edge[%r][%r][%r] = %r", src_dpid, dst_dpid,key,self.net.edge[src_dpid][dst_dpid]['weight'])
+            self.cpmlogger.debug("UPDATE_GRAPH Assigned value self.net.edge[%r][%r][%r] = %r", src_dpid, dst_dpid,key,self.net.edge[src_dpid][dst_dpid]['weight'])
             self.net.edge[src_dpid][dst_dpid][key] = value
             #self.net[src_dpid][dst_dpid][key] = value
 
         except (KeyError):
-            self.cpmlogger.error("FETCH src_dpid type  =%r and dst_dpid type = %r and key = %r and type of key = %r ",
+            self.cpmlogger.error("UPDATE_GRAPH src_dpid type  =%r and dst_dpid type = %r and key = %r and type of key = %r ",
                                  type(src_dpid), type(dst_dpid), key, type(key))
 
-            self.cpmlogger.error("FETCH Assigned value self.net.edge[%r][%r][%r] = %r", src_dpid, dst_dpid, key,
+            self.cpmlogger.error("UPDATE_GRAPH Assigned value self.net.edge[%r][%r][%r] = %r", src_dpid, dst_dpid, key,
                                  self.net.edge[src_dpid][dst_dpid]['weight'])
-            self.cpmlogger.error("FETCH KeyError when updating graph",exc_info=True)
+            self.cpmlogger.error("UPDATE_GRAPH Handled exception KeyError when updating graph",exc_info=True)
             #raise
         except (NameError):
-            self.cpmlogger.error("FETCH NameError when updating graph",exc_info=True)
+            self.cpmlogger.error("UPDATE_GRAPH Handled exception NameError when updating graph",exc_info=True)
         except Exception,e:
             #self.logger.exception("Unable to update this key in the graph on fetch %r",e)
-            self.cpmlogger.error('Unable to update this key in the graph, here is the traceback',exc_info=True)
+            self.cpmlogger.error('Unable to update this key in the graph, exception caught and dealt, here is the traceback',exc_info=True)
 
 
     def __fetch_ALL_metrics_and_insert_weight_in_topology_graph(self):
@@ -1130,6 +1130,8 @@ class CPM(app_manager.RyuApp):
 
             nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value + nfm_packet_dropped_weight* nfm_packet_dropped_link_value
             nfm_total_link_weight = 0.33 * nfm_total_link_weight #All modules contribute equally to the output weight, see Metric desc. document and weights specified by the teacher
+        self.cpmlogger.debug("CALC_NFM_WEIGHT, src_node = %r , dst_node = %r, nfm_total_link_weight =  %r", src_node,
+                             dst_node, nfm_total_link_weight)
 
         # RPM would be False if HTTP GET of rpm_metric_data returned blank or failed due to connection error
         if self.modules_enabled['RPM'] and rpm:

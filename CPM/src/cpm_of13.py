@@ -336,8 +336,13 @@ class CPM(app_manager.RyuApp):
         #Delete below block
 
         if self.bootstrap_complete and self.defines_D['temp_bstrap_print_once']:
-            self.cpmlogger.info("CPM : *******    BOOTSTRAP COMPLETE   ********")
+            self.cpm_bstrap_logger.info("CPM : *******    BOOTSTRAP COMPLETE   ********")
+            self.print_l2_table()
             self.defines_D['temp_bstrap_print_once'] = False
+        else:
+            self.cpm_bstrap_logger.info("CPM : x x x x    BOOTSTRAP NOT COMPLETE   x x x x x")
+            self.print_l2_table()
+
 
 
         #else:
@@ -498,7 +503,6 @@ class CPM(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
-        self.print_l2_table()
         self.__check_bootstrap_completion()
         if self.defines_D['enable_save_topology_to_file']:
             self.save_topolog_to_file() #this should go away in the production version and above lines be uncommented in a proper manner
@@ -596,7 +600,7 @@ class CPM(app_manager.RyuApp):
                                   {'src_port': msg.match['in_port'], 'dst_port': msg.match['in_port'],
                                    'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True, 'bw': 10, 'weight':1 })  # src is the src mac
 
-                self.print_l2_table()
+                #self.print_l2_table()
 
                 # self._handle_arp(datapath, port, pkt_ethernet, pkt_arp)
                 # if eth.ethertype == ether_types.ETH_TYPE_ARP:
@@ -665,11 +669,7 @@ class CPM(app_manager.RyuApp):
                     return
                 #fetch metrics from a remote source and add to graph and compute weight for each link
                 self.__fetch_ALL_metrics_and_insert_weight_in_topology_graph()
-                self.cpmlogger.info("________________ FINAL WEIGHTED_TOPOLOGY begin ________")
-                for src,dst,edge_data in self.net.edges_iter(data=True):
-                    self.cpmlogger.debug("WEIGHTED_TOPOLOGY FINAL: (%r,%r, %r)",src,dst,edge_data) # even self.net() might do as well
-                self.logger.info("________________ WEIGHTED_TOPOLOGY end________")
-                self.show_graph_stats()
+                self.__log_all_graph()
 
                 #dst mac  is in our topology graph
                 if self.config.disable_weighted_routing:
@@ -964,7 +964,8 @@ class CPM(app_manager.RyuApp):
         ################################################## Updating the "net" graph with LLDP learnt topology
         self.net.add_edges_from(links_onedirection_L)
         self.net.add_edges_from(links_opp_direction_L) #since its a directional graph it must contain edges in opposite direction as well.
-        self.show_graph_stats()
+        #self.show_graph_stats()
+        self.__log_all_graph("At start: Initializing topology")
 
         #for link in links_list:
 	    #print link.dst
@@ -984,6 +985,21 @@ class CPM(app_manager.RyuApp):
     #def get_links(self, ev):
 	#print "################Something##############"
 	#print ev.link.src, ev.link.dst
+
+    def __log_all_graph(self,msg):
+        """
+        Print all topology alongwith its data attributes
+
+        :param self:
+        :return:
+        """
+        self.cpmlogger.info("________________ ALL_TOPOLOGY_PRINT begin  : %r________",msg)
+        for src, dst, edge_data in self.net.edges_iter(data=True):
+            self.cpmlogger.debug("WEIGHTED_TOPOLOGY FINAL: (%r,%r, %r)", src, dst,
+                                 edge_data)  # even self.net() might do as well
+        self.logger.info("________________ ALL_TOPOLOGY_PRINT_TOPOLOGY end________")
+        self.show_graph_stats()
+
     def print_l2_table(self):
         self.cpm_bstrap_logger.debug("CPM BSTRAP_TABLES : l2_table = %r", self.l2_dpid_table)
         self.cpm_bstrap_logger.debug("CPM BSTRAP_TABLES : l2_mac2ip = %r", self.l2_mac2ip_table)
@@ -1012,8 +1028,6 @@ class CPM(app_manager.RyuApp):
         self.cpmlogger.info("UPDATE_GRAPH , src_dpid = %r, dst_dpid = %r, weight = %r",src_dpid,dst_dpid, value)
         src_dpid = int(src_dpid)
         dst_dpid = int(dst_dpid)
-
-
         try:
             self.cpmlogger.debug("UPDATE_GRAPH src_dpid type  =%r and dst_dpid type = %r and key = %r and type of key = %r ", type(src_dpid), type(dst_dpid),key,type(key))
 
@@ -1360,6 +1374,8 @@ class CPM(app_manager.RyuApp):
         self.cpmlogger.debug("FETCH_RPM_METRICS: HTTP GET RESULT - rpm_metrics_data  = %r ", rpm_metrics_data)
 
         return rpm_metrics_data
+
+
 
 """
     def __fetch_RPM_metrics_and_insert_in_topology_graph(self, module_name):

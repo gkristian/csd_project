@@ -132,7 +132,8 @@ class CPM(app_manager.RyuApp):
 
         self.net = self.shared_context.learnt_topology #this creates a reference
         #Object holding project configuration parameters
-        self.config = Configuration
+        self.config = Configuration()
+        self.logger.info("CPM config : %r",self.config.__str__())
 
         self.logger.debug("SHARED_CONTEXT : SharedContext Instantiated and time_of_last_fetech = %r",
                          self.shared_context.time_of_last_fetch)
@@ -686,9 +687,15 @@ class CPM(app_manager.RyuApp):
 
                 self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
                 if self.__isPathNotAlreadyInstalled(spath):
-                    if self.config.
-                    self.logger.debug("Installing path : %r", spath)
-                    self.__install_path_flow(spath)
+                    if self.config.switch_rule_installation_strategy == 'semiproactive':
+                        self.cpm_route_logger.debug("Installing path : %r", spath)
+                        self.__install_path_flow(spath)
+                    if self.config.switch_rule_installation_strategy == 'proactive':
+                        self.cpm_route_logger("proactive strategy not implemented. TODO if time avaialble")
+
+                    if self.config.switch_rule_installation_strategy == 'reactive':
+                        self.cpm_route_logger("reactive strategy not implemented. TODO if time avaialble though current semi-reactive is almost like reactive except the packet hits the slow path only the first time")
+
 
                 #lookup dst mac in our graph, has_path()
                 #if yes find path
@@ -720,7 +727,11 @@ class CPM(app_manager.RyuApp):
 
             else: #this is not an lldp packet, this is not arp broadcast, the dst mac is not known but is not broadcast either
                 #check if its a valid openflow packet
-                self.logger.debug("LEARN_NEW_MAC dst_mac=%r src_mac=%r ", dst_mac,src_mac)
+                self.cpm_route_logger.debug(" Unable to find path from  src_mac=%r to dst_mac=%r  ", dst_mac, src_mac)
+                self.cpm_bstrap_logger.debug("Shall we Learn new MAC dst_mac=%r src_mac=%r ", dst_mac,src_mac)
+
+            self.show_graph_stats()
+
                 ####################################################self.print_l2_table()
 
 
@@ -783,7 +794,7 @@ class CPM(app_manager.RyuApp):
             #   pass
             #    self.logger.debug("dst mac in our graph")
 
-            self.show_graph_stats()
+
 
     """
     Save the current network graph to a PNG file

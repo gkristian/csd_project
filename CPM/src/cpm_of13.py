@@ -139,7 +139,8 @@ class CPM(app_manager.RyuApp):
                           'flow_table_strategy_semi_proactive': True, 'logdir': '/var/www/html/spacey',
                           'cpmlogdir': '/var/www/html/spacey/cpmweights.log',
                           'metrics_fetch_rest_url': 'http://127.0.0.1:8000/Tasks.txt', 'fetch_timer_in_seconds': 4,
-                          'enable_save_topology_to_file': False}  # below will be used by all those methods that fetch metrics from a remote module
+                          'enable_save_topology_to_file': False,
+                          'temp_bstrap_print_once': True }  # below will be used by all those methods that fetch metrics from a remote module
         self.rest_url = self.defines_D['metrics_fetch_rest_url']
         self.DMclient = client_side(self.rest_url)
 
@@ -283,9 +284,9 @@ class CPM(app_manager.RyuApp):
     #         flags=ofproto.OFPFF_SEND_FLOW_REM, actions=actions)
     #     datapath.send_msg(mod)
 
-    def shortest_path(self,src_node,dst_node):
-        sp_L = nx.shortest_path(self.net,src_node, dst_node, weighted = True) # L indicates it is a list of nodes e.g. [1,2,3,4]
-        return sp_L
+    # def shortest_path(self,src_node,dst_node):
+    #     sp_L = nx.shortest_path(self.net,src_node, dst_node, weighted = True) # L indicates it is a list of nodes e.g. [1,2,3,4]
+    #     return sp_L
     def __check_bootstrap_completion(self):
         'has the criteria for bootstrap completion met, if yes then set the completion flag'
         if self.defines_D['bootstrap_in_progress']:
@@ -301,10 +302,14 @@ class CPM(app_manager.RyuApp):
         self.bootstrap_complete = not self.defines_D['bootstrap_in_progress'] #xxxxxxxxxxxxxxxxx
         self.shared_context.bootstrap_complete = not self.defines_D['bootstrap_in_progress']
         #Delete below block
-        if self.bootstrap_complete:
-            self.cpmlogger.info("CPM: BOOTSTRAP TO NFM COMPLETE")
-        else:
-            self.cpmlogger.info("CPM: BOOTSTRAP NFM xxxxxxx NOT COMPLETE")
+
+        if self.bootstrap_complete and self.defines_D['temp_bstrap_print_once']:
+            self.cpmlogger.info("CPM : *******    BOOTSTRAP COMPLETE   ********")
+            self.defines_D['temp_bstrap_print_once'] = False
+
+
+        #else:
+        #    self.cpmlogger.info("CPM: BOOTSTRAP NFM xxxxxxx NOT COMPLETE")
 
     #@staticmethod #I dont know how RYU shall deal with staticmethods though its use is justified here so I ll stick to what has worked in past
     def __remove_macs_from_shortest_path(self,spath):

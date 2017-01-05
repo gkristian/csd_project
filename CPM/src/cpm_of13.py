@@ -76,7 +76,7 @@ class Configuration(object):
     """
     def __init__(self):
         #self.module_metric_data_read_mode = {'loop_over_module_metrics_instead_of_topology': False}
-        self.disable_weighted_routing= False #this is not being used at the moment
+        self.disable_weighted_routing= True #this is not being used at the moment
         """
         # 'praoctive', 'reactive' , 'semi_proactive'
         # only semiproactive strategy is currently implemented. It causes rules to be installed when CPM receives the packet to be routed for the first time, computes a
@@ -594,7 +594,7 @@ class CPM(app_manager.RyuApp):
 
                 self.net.add_edge(dpid, src_mac,
                                   {'src_port': msg.match['in_port'], 'dst_port': msg.match['in_port'],
-                                   'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True, 'bw': 10, 'weight':0 })  # src is the src mac
+                                   'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True, 'bw': 10, 'weight':1 })  # src is the src mac
 
                 self.print_l2_table()
 
@@ -644,25 +644,21 @@ class CPM(app_manager.RyuApp):
             #self.logger.info("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : compute shortest path and install flows if bstrap completed")
             # This is if block ensures that code after it only gets executed once the network has bootstraped i.e. bootstrap time limit has reached
             if self.defines_D['bootstrap_in_progress']:
-                self.logger.info("RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows")
+                self.cpm_bstrap_logger.info("RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows")
                 #if int(time.time()) - self.epoc_starttime > self.network_bootstrap_time:
                 #    self.defines_D['bootstrap_in_progress'] = False
                 return #below code wont get executed during network bootstrap
-
-            self.logger.debug(
-                "______________________________________________________")
-            self.logger.debug("__________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________")
+            self.cpm_route_logger.debug("__________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________")
 
             if dst_mac in self.net:
-
                 if self.disable_cpm_openflow_ruleinstaller:
                     """
                     In case you don't want CPM to install any rules to the switches. This feature was requested to be implemented in CPM by the test team.
                     """
                     self.cpm_route_logger.warning("cpm_openflow_ruleinstaller is disabled in config, Not installing any openflow rules in the switches")
                     return
-                self.cpm_route_logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
-                self.cpm_route_logger.debug("Do we have a path to this destination mac? src= %r , dst = %r ",dst_mac,src_mac)
+                self.cpm_route_logger.debug("SPATH: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
+                self.cpm_route_logger.debug("SPATH Do we have a path to this destination mac? src= %r , dst = %r ",dst_mac,src_mac)
                 if not nx.has_path(self.net,src_mac,dst_mac): #if returned False we abort
                     #Above line once caused error CSD_CC_1 reported in ERRORS.txt
                     self.cpm_route_logger.debug("Cannot find path from src mac %r to dst_mac %r, returning ie. doing nothing more",src_mac,dst_mac)
@@ -682,7 +678,7 @@ class CPM(app_manager.RyuApp):
 
                 else:
                     self.cpmlogger.debug("WEIGHTED_ROUTING enabled")
-                    spath = nx.shortest_path(self.net, src_mac, dst_mac, weighted=True)
+                    #spath = nx.shortest_path(self.net, src_mac, dst_mac, weighted=True) #TOFIX
 
 
                 self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
@@ -1013,12 +1009,18 @@ class CPM(app_manager.RyuApp):
 
     def __update_graph(self,src_dpid,dst_dpid, key,value):
         """key can be <module_name><module_key> e.g. 'nfm_link_utilization' """
-        self.cpmlogger.info("UPDATE_GRAPH , weight = %r", value)
+        self.cpmlogger.info("UPDATE_GRAPH , src_dpid = %r, dst_dpid = %r, weight = %r",src_dpid,dst_dpid, value)
+        src_dpid = int(src_dpid)
+        dst_dpid = int(dst_dpid)
+
+
         try:
             self.cpmlogger.debug("UPDATE_GRAPH src_dpid type  =%r and dst_dpid type = %r and key = %r and type of key = %r ", type(src_dpid), type(dst_dpid),key,type(key))
 
-            self.cpmlogger.debug("UPDATE_GRAPH Assigned value self.net.edge[%r][%r][%r] = %r", src_dpid, dst_dpid,key,self.net.edge[src_dpid][dst_dpid]['weight'])
+
             self.net.edge[src_dpid][dst_dpid][key] = value
+            self.cpmlogger.debug("UPDATE_GRAPH Assigned value self.net.edge[%r][%r][%r] = %r", src_dpid, dst_dpid, key,
+                                 self.net.edge[src_dpid][dst_dpid]['weight'])
             #self.net[src_dpid][dst_dpid][key] = value
 
         except (KeyError):
@@ -1151,6 +1153,7 @@ class CPM(app_manager.RyuApp):
         """
         nfm_total_link_weight = 0
         rpm_total_weight = 0
+        rpm_total_link_weight = 0
         hum_total_weight = 0
         #nfm would be False if HTTP GET of nfm_metric_data returned blank or failed due to connection error
         if self.modules_enabled['NFM'] and nfm:

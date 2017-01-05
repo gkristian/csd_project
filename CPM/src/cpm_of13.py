@@ -133,7 +133,7 @@ class ProjectController(app_manager.RyuApp):
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.modules_enabled = {'RPM': False,'HUM': False,'NFM': True}
+        self.modules_enabled = {'RPM': True,'HUM': False,'NFM': False}
         self.install_openflow_rules = True
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff',
                           'bootstrap_in_progress': True,
@@ -1126,17 +1126,14 @@ class ProjectController(app_manager.RyuApp):
         # RPM would be False if HTTP GET of rpm_metric_data returned blank or failed due to connection error
         if self.modules_enabled['RPM'] and rpm:
             rpm_total_weight =0
-            nfm_link_util_weight = 0.5  # from CSD metrics description document
-            nfm_packet_dropped_weight = 0.5  # from CSD metrics description document
+            rpm_src_node_weight = 0
+            rpm_dst_node_weight = 0
+            rpm_src_node_weight = self.__compute_rpm__weight_value_for_node(src_node,rpm)
+            rpm_dst_node_weight = self.__compute_rpm__weight_value_for_node(dst_node,rpm)
+            rpm_link_weight = rpm_src_node_weight + rpm_dst_node_weight
 
-            nfm_link_util = nfm[0][1]
-            nfm_packet_dropped = nfm[1][1]
-
-            nfm_total_link_weight = nfm_link_util_weight * float(
-                nfm_link_util[unicode(src_node) + '-' + unicode(dst_node)]) + \
-                               nfm_packet_dropped_weight * float(
-                                   nfm_packet_dropped[unicode(src_node) + '-' + unicode(dst_node)])
-            nfm_total_link_weight = 0.33 * nfm_total_link_weight  # All modules contribute equally to the output weight
+            rpm_total_link_weight = 0.33 * rpm_link_weight  # All modules contribute equally to the output weight
+            self.logger.debug("CALC_RPM_WEIGHT, src_node = %r , dst_node = %r, total_rpm_weight =  %r", src_node,dst_node,rpm_total_link_weight)
 
         if self.modules_enabled['HUM'] and hum:
             #below two weights are from CSD metrics description document
@@ -1153,6 +1150,50 @@ class ProjectController(app_manager.RyuApp):
         link_weight = nfm_total_link_weight + rpm_total_weight + hum_total_weight
         return link_weight
 
+    def __compute_rpm__weight_value_for_node(self,node_dpid, rpm_metrics_data):
+        """
+        :param node_dpid: dpid of the node
+        :param rpm_metrics_data:  rpm metric data read from the Cache out of which the specified dpid 's RPM weight is to be extracted
+        :return: return the RPM weight contributed by this node into the topology graph
+        """
+        latency_topo_dict = rpm_metrics_data[0][1]
+        # Below are values specified by the teacher as a requirement (see metrics spec. document)
+        WEIGHTAGE_LATENCY_25 = 0.25
+        WEIGHTAGE_LATENCY_75 = 0.25
+        WEIGHTAGE_LATENCY_MEDIAN = 0.5
+
+        key_latency_25 = unicode('25th_latency')
+        key_latency_75 = unicode('75th_latency')
+        key_latency_median = unicode('median_latency')
+
+        switch_dpid_in_unicode = unicode(node_dpid)
+
+        try:
+            node_25_value = latency_topo_dict[switch_dpid_in_unicode][key_latency_25]
+        except Exception:
+            node_25_value = 0
+            self.logger.debug("CALC_RPM_WEIGHT MISS: 25 value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
+            self.logger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
+
+        try:
+            node_75_value = latency_topo_dict[switch_dpid_in_unicode][key_latency_75]
+        except Exception:
+            node_75_value = 0
+            self.logger.debug("CALC_RPM_WEIGHT MISS: 75 value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
+            self.logger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
+
+
+        try:
+            node_median_value = latency_topo_dict[switch_dpid_in_unicode][key_latency_median]
+        except Exception:
+            node_median_value = 0
+            self.logger.debug("CALC_RPM_WEIGHT MISS: median value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
+            self.logger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
+
+        self.logger.debug(" CALC_RPM_WEIGHT : computed 25,75,median values are: %r , %r , %r ",node_25_value,node_75_value,node_median_value)
+
+        total_rpm_node_value = node_25_value * WEIGHTAGE_LATENCY_25 + node_75_value * WEIGHTAGE_LATENCY_75 + node_median_value * WEIGHTAGE_LATENCY_MEDIAN
+        return total_rpm_node_value
 
     def __REST_get_NFM_metrics(self):
         nfm_metrics_data = True

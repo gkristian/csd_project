@@ -76,7 +76,13 @@ class Configuration(object):
     """
     def __init__(self):
         #self.module_metric_data_read_mode = {'loop_over_module_metrics_instead_of_topology': False}
-        self.disable_weighted_routing= True #this is not being used at the moment
+        self.disable_weighted_routing= False #this is not being used at the moment
+        """
+        # 'praoctive', 'reactive' , 'semi_proactive'
+        # only semiproactive strategy is currently implemented. It causes rules to be installed when CPM receives the packet to be routed for the first time, computes a
+        a weighted shortest path to its desinationa and praoctively installs rules on the all the switches on the path.
+        """
+        self.switch_rule_installation_strategy = 'semiproactive'
 
 class SharedContext (object):
     def __init__(self):
@@ -140,7 +146,9 @@ class CPM(app_manager.RyuApp):
                           'cpmlogdir': '/var/www/html/spacey/cpmweights.log',
                           'metrics_fetch_rest_url': 'http://127.0.0.1:8000/Tasks.txt', 'fetch_timer_in_seconds': 4,
                           'enable_save_topology_to_file': False,
-                          'temp_bstrap_print_once': True }  # below will be used by all those methods that fetch metrics from a remote module
+                          'temp_bstrap_print_once': True,
+                          'cpm_routelogdir': '/var/www/html/spacey/cpm_route.log',
+                          'cpm_bstraplogdir' : '/var/www/html/spacey/cpm_boottrap.log'}  # below will be used by all those methods that fetch metrics from a remote module
         self.rest_url = self.defines_D['metrics_fetch_rest_url']
         self.DMclient = client_side(self.rest_url)
 
@@ -154,7 +162,30 @@ class CPM(app_manager.RyuApp):
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         self.cpmlogger.addHandler(handler)
-        self.cpmlogger.info("Starting up cpmlogger. edges are %r", self.net.edges())
+        self.cpmlogger.info("Initializing cpmlogger.")
+
+        #cpmroutinglogger
+        self.cpm_route_logger = logging.getLogger("cpm_route" + __name__)
+        self.cpm_route_logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(self.defines_D['cpm_routelogdir'])
+        handler.setLevel(logging.DEBUG)
+        # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        self.cpm_route_logger.addHandler(handler)
+        self.cpm_route_logger.info("Initializing CPM routelogger")
+
+        #cpm_bootstrap logger : logs all bootstrap related activity
+        self.cpm_bstrap_logger = logging.getLogger("cpm_bootstrap" + __name__)
+        self.cpm_bstrap_logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(self.defines_D['cpm_bstraplogdir'])
+        handler.setLevel(logging.DEBUG)
+        # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        self.cpm_bstrap_logger.addHandler(handler)
+
+        self.cpm_bstrap_logger.info("Initializing CPM bootstrap logger")
 
         #Network Bootstrapping Commands
 
@@ -293,11 +324,11 @@ class CPM(app_manager.RyuApp):
             if (self.network_bootstrap_type == 0):
                 if int(time.time()) - self.epoc_starttime > self.network_bootstrap_time:
                     self.defines_D['bootstrap_in_progress'] = False
-                    self.logger.debug("Bootstrap type %d just Completed", self.network_bootstrap_type)
+                    self.cpm_bstrap_logger.debug("Bootstrap type %d just Completed", self.network_bootstrap_type)
             if (self.network_bootstrap_type == 1):
                 if len(self.l2_mac2ip_table) == self.network_bootstrap_discovery_count:
                     self.defines_D['bootstrap_in_progress'] = False
-                    self.logger.debug("Bootstrap type %d just Completed", self.network_bootstrap_type)
+                    self.cpm_bstrap_logger.debug("Bootstrap type %d just Completed", self.network_bootstrap_type)
         #Update the below variable that is shared through _CONTEXT_ we keep this variable seperate for now
         self.bootstrap_complete = not self.defines_D['bootstrap_in_progress'] #xxxxxxxxxxxxxxxxx
         self.shared_context.bootstrap_complete = not self.defines_D['bootstrap_in_progress']
@@ -503,7 +534,7 @@ class CPM(app_manager.RyuApp):
         # self.logger.debug("haddr_to_bin(dst) = %r",haddr_to_bin(dst_mac)) #this on pingall gave: '\xff\xff\xff\xff\xff\xff'
 
         if dst_mac == self.defines_D['bcast_mac']: #if dst == 'ff:ff:ff:ff:ff:ff' means its a host that is flooding the network, we gotta learn it
-            self.logger.debug("broadcast received from src mac = %s , switch dpid = %r at in_port = %r", src_mac, dpid, msg.match['in_port'])
+            self.cpm_bstrap_logger.debug("broadcast received from src mac = %s , switch dpid = %r at in_port = %r", src_mac, dpid, msg.match['in_port'])
 
             #Below are two ways to make sure that an ARP header is there in the broadcast packet received
             #if eth.ethertype != ether_types.ETH_TYPE_ARP:
@@ -520,7 +551,7 @@ class CPM(app_manager.RyuApp):
                 return
 
             if src_mac not in self.net: #learn it
-                self.logger.debug("LEARNING : learning a new src_mac = %r for the first time ", src_mac)
+                self.cpm_bstrap_logger.debug("LEARNING : learning a new src_mac = %r for the first time ", src_mac)
                 #self.logger.debug("our current l2_table is %r", self.l2_dpid_table)
                 #open for IP src and IP dst of ARP broadcast: we  associate src mac learn from source and use destination IP to route to correct switch
 
@@ -552,7 +583,7 @@ class CPM(app_manager.RyuApp):
                 self.l2_mac2ip_table[src_mac]=pkt_arp.src_ip
 
 
-                self.logger.debug("LEARNING : ARP extractions show about packet details as : arp.src_ip = %r , arp.dst_ip = %r , arp.opcode (1 for Request)  = %r  ", pkt_arp.src_ip, pkt_arp.dst_ip, pkt_arp.opcode)
+                self.cpm_bstrap_logger.debug("LEARNING : ARP extractions show about packet details as : arp.src_ip = %r , arp.dst_ip = %r , arp.opcode (1 for Request)  = %r  ", pkt_arp.src_ip, pkt_arp.dst_ip, pkt_arp.opcode)
                 #since its a directonal graph so we need to add two pairs for every single links i.e in each direction
 
                 self.net.add_edge(src_mac, dpid,
@@ -578,19 +609,19 @@ class CPM(app_manager.RyuApp):
 
             else:
                 if pkt_arp.opcode != arp.ARP_REQUEST:
-                    self.logger.debug("IGNORING packet as its not an arp request")
+                    self.cpm_bstrap_logger.debug("IGNORING packet as its not an arp request")
                     return
-                self.logger.debug(
+                self.cpm_bstrap_logger.debug(
                     "RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out")
                 #have we learnt the IP in arp.dst_ip header ie. do we know its mac yet
                 if not pkt_arp.dst_ip in self.l2_ip2mac_table:
-                    self.logger.debug("RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return")
+                    self.cpm_bstrap_logger.debug("RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return")
                     return
 
                 # get  mac of the dst ip in arp header
                 mac_of_arp_dst_ip= self.l2_ip2mac_table[pkt_arp.dst_ip]
                 ip_of_arp_dst_mac = self.l2_mac2ip_table[mac_of_arp_dst_ip]
-                self.logger.debug("KEY1 : Found dst_mac %r for arp header dst ip %r , puttin in arp reply",mac_of_arp_dst_ip , pkt_arp.dst_ip)
+                self.cpm_bstrap_logger.debug("KEY1 : Found dst_mac %r for arp header dst ip %r , puttin in arp reply",mac_of_arp_dst_ip , pkt_arp.dst_ip)
                 new_pkt = packet.Packet()
                 new_pkt.add_protocol(ethernet.ethernet(ethertype=pkt_eth.ethertype,
                                                    dst=pkt_eth.src,
@@ -600,11 +631,11 @@ class CPM(app_manager.RyuApp):
                                          src_ip=ip_of_arp_dst_mac,
                                          dst_mac=src_mac,
                                          dst_ip=pkt_arp.src_ip))
-                self.logger.debug("Crafting an ARP reply") #pkt_arp.src_mac
+                self.cpm_bstrap_logger.debug("Crafting an ARP reply") #pkt_arp.src_mac
 
                 #self._send_packet(datapath, self.l2_dpid_table[dpid][src_mac]['in_port'], new_pkt) #dpid= datapath.id the switch the packet in came from we want to reply on that switch
                 self._send_packet(datapath, in_port,new_pkt)  # dpid= datapath.id the switch the packet in came from we want to reply on that switch
-                self.logger.debug("Sending arp reply reply done")
+                self.cpm_bstrap_logger.debug("Sending arp reply done")
 
 
         else: #if dst_mac is not broadcat rather some specific address
@@ -627,18 +658,18 @@ class CPM(app_manager.RyuApp):
                     """
                     In case you don't want CPM to install any rules to the switches. This feature was requested to be implemented in CPM by the test team.
                     """
-                    self.cpmlogger.warning("cpm_openflow_ruleinstaller is disabled in config, Not installing any openflow rules in the switches")
+                    self.cpm_route_logger.warning("cpm_openflow_ruleinstaller is disabled in config, Not installing any openflow rules in the switches")
                     return
-                self.logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
-                self.logger.debug("Do we have a path to this destination mac? src= %r , dst = %r ",dst_mac,src_mac)
+                self.cpm_route_logger.debug("RX_NO_BCAST_ONLY_TARGETED_DST_MAC: ALREADY_LEARNT: Received ARP to specific dst mac %r that exist in our graph", dst_mac)
+                self.cpm_route_logger.debug("Do we have a path to this destination mac? src= %r , dst = %r ",dst_mac,src_mac)
                 if not nx.has_path(self.net,src_mac,dst_mac): #if returned False we abort
                     #Above line once caused error CSD_CC_1 reported in ERRORS.txt
-                    self.logger.debug("Cannot find path from src mac %r to dst_mac %r, returning ie. doing nothing more",src_mac,dst_mac)
+                    self.cpm_route_logger.debug("Cannot find path from src mac %r to dst_mac %r, returning ie. doing nothing more",src_mac,dst_mac)
                     return
                 #fetch metrics from a remote source and add to graph and compute weight for each link
                 self.__fetch_ALL_metrics_and_insert_weight_in_topology_graph()
                 self.cpmlogger.info("________________ FINAL WEIGHTED_TOPOLOGY begin ________")
-                for src,dst,edge_data in self.net.edges_iter():
+                for src,dst,edge_data in self.net.edges_iter(data=True):
                     self.cpmlogger.debug("WEIGHTED_TOPOLOGY FINAL: (%r,%r, %r)",src,dst,edge_data) # even self.net() might do as well
                 self.logger.info("________________ WEIGHTED_TOPOLOGY end________")
                 self.show_graph_stats()
@@ -655,6 +686,7 @@ class CPM(app_manager.RyuApp):
 
                 self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
                 if self.__isPathNotAlreadyInstalled(spath):
+                    if self.config.
                     self.logger.debug("Installing path : %r", spath)
                     self.__install_path_flow(spath)
 
@@ -804,14 +836,14 @@ class CPM(app_manager.RyuApp):
     def show_graph_stats(self):
         if self.defines_D['bootstrap_in_progress']:
 
-            self.logger.debug( "list of edges: self.net.edges %s ",self.net.edges())
-            self.logger.debug("list of nodes: \n %r", self.net.nodes())
-            self.logger.debug("l2_lookup_table : %r", self.l2_dpid_table)
+            self.cpm_bstrap_logger.debug( "list of edges: self.net.edges %s ",self.net.edges())
+            self.cpm_bstrap_logger.debug("list of nodes: \n %r", self.net.nodes())
+            self.cpm_bstrap_logger.debug("l2_lookup_table : %r", self.l2_dpid_table)
             #self.logger.debug("show edge data LOT of output: %r",self.net())
 
             self.print_l2_table()
-        else:
-            self.logger.debug("_________________________bootstrap__completed_______________________")
+        #else:
+        #    self.logger.debug("_________________________bootstrap__completed_______________________")
     #Below method just populates the net graph to which above packet-in method just adds src/dst
     @set_ev_cls(event.EventSwitchEnter)
     def get_topology_data(self, ev):
@@ -946,17 +978,17 @@ class CPM(app_manager.RyuApp):
 	#print "################Something##############"
 	#print ev.link.src, ev.link.dst
     def print_l2_table(self):
-        self.logger.debug("l2_table = %r", self.l2_dpid_table)
-        self.logger.debug("l2_mac2ip = %r", self.l2_mac2ip_table)
-        self.logger.debug("l2_ip2mac = %r", self.l2_ip2mac_table)
+        self.cpm_bstrap_logger.debug("CPM BSTRAP_TABLES : l2_table = %r", self.l2_dpid_table)
+        self.cpm_bstrap_logger.debug("CPM BSTRAP_TABLES : l2_mac2ip = %r", self.l2_mac2ip_table)
+        self.cpm_bstrap_logger.debug("CPM BSTRAP_TABLES : l2_ip2mac = %r", self.l2_ip2mac_table)
 
     def _send_packet(self, datapath, port, pkt):
         #self.logger.debug("Sending crafted packet to datapath = %r, port = %r", datapath,port)
-        self.logger.debug("Sending an arp reply in _send_packet")
+        self.cpm_bstrap_logger.debug("Sending an arp reply in _send_packet")
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         pkt.serialize()
-        self.logger.info("crafted arp reply packet-out %s" % (pkt,))
+        self.cpm_bstrap_logger.info("crafted arp reply packet-out %s" % (pkt,))
         actions = [parser.OFPActionOutput(port=port)]
         out = parser.OFPPacketOut(datapath=datapath,
                                   buffer_id=ofproto.OFP_NO_BUFFER,

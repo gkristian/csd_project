@@ -88,7 +88,7 @@ dmstart:
 #source: http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-3.html
 # python test.py >test.out 2>&1; pyrg <test.out
 	#export SHELL=/bin/bash
-	python ./DM/dm_main.py > /var/www/html/spacey/dm.log 2>&1 &
+	python ./DM/DM/dm_main.py > /var/www/html/spacey/dm.log 2>&1 &
 #python ./DM/dm_main.py &> /var/www/html/spacey/dm.log
 dmlog:
 	tail -f /var/www/html/spacey/dm.log 

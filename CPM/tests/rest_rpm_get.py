@@ -1,3 +1,9 @@
+import os, sys
+path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib'))
+if not path in sys.path:
+    sys.path.insert(1, path)
+del path
+
 from client import client_side
 import time
 
@@ -27,12 +33,14 @@ rpm_keylist = ['delays', 'timestamp','max_delay', 'min_delay', 'mean_delay']
 #rest_query_dict_rpm = {'module':'rpm','timestamp': 0, 'keylist':rpm_keylist }
 rest_query_dict_rpm = {'module':'rpm','keylist':rpm_keylist }
 
+rpm_what_metrics_to_fetch = {'module': 'rpm', 'keylist': ['latencies']}
+
 rpm_keylist = []
 nfm_keylist = []
 hum_keylist = []
 #response = self.DMclient.getme(dict1)
-response = DMclient.getme(rest_query_dict_rpm)
+response = DMclient.getme(rpm_what_metrics_to_fetch)
 print "request is"
-print rest_query_dict_rpm
+print rpm_what_metrics_to_fetch
 print "And response is "
 print response

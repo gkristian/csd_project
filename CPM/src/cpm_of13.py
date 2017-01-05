@@ -1206,7 +1206,13 @@ class ProjectController(app_manager.RyuApp):
 
 
     def __REST_get_RPM_metrics(self):
-        #TODO: see test/rest_rpm_get.py
+        """
+        rpm_metrics_data read as a response from Cache is as an example below for the midterm topology:
+        [[u'latencies', {u'11': {u'25th_latency': 381.9, u'75th_latency': 899.6166666666668, u'median_latency': 609.6222222222221}, u'24': {u'25th_latency': 158.52222222222224, u'75th_latency': 285.31666666666666, u'median_latency': 213.93333333333337}, u'13': {u'25th_latency': 409.5444444444444, u'75th_latency': 997.8666666666667, u'median_latency': 628.7666666666667}, u'12': {u'25th_latency': 401.3277777777778, u'75th_latency': 953.6777777777777, u'median_latency': 632.6444444444444}, u'21': {u'25th_latency': 412.77222222222224, u'75th_latency': 976.8499999999999, u'median_latency': 634.1333333333333}, u'22': {u'25th_latency': 412.80555555555554, u'75th_latency': 1037.1833333333334, u'median_latency': 653.9555555555555}, u'23': {u'25th_latency': 417.6277777777778, u'75th_latency': 950.2222222222223, u'median_latency': 643.1111111111111}, u'1': {u'25th_latency': 316.97777777777776, u'75th_latency': 845.8166666666667, u'median_latency': 556.5666666666667}}]]
+        see test/rest_rpm_get.py
+
+        :return:
+        """
         rpm_metrics_data = True
         #rpm_what_metrics_to_fetch = {'module': 'rpm', 'keylist': ['delays','normalized_delays','max_latency', 'min_latency',
         #                                                          'mean_latency' , 'median_latency', '25th_latency', '75th_latency']}

@@ -16,7 +16,9 @@ dist
 .hg
 .bzr
 .svn
+.idea
 *.pyc
 *.png
 *.pyo
 *.tmp*
+

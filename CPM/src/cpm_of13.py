@@ -1208,35 +1208,51 @@ class ProjectController(app_manager.RyuApp):
     def __REST_get_RPM_metrics(self):
         """
         rpm_metrics_data read as a response from Cache is as an example below for the midterm topology:
-        [[u'latencies', {u'11': {u'25th_latency': 381.9, u'75th_latency': 899.6166666666668, u'median_latency': 609.6222222222221}, u'24': {u'25th_latency': 158.52222222222224, u'75th_latency': 285.31666666666666, u'median_latency': 213.93333333333337}, u'13': {u'25th_latency': 409.5444444444444, u'75th_latency': 997.8666666666667, u'median_latency': 628.7666666666667}, u'12': {u'25th_latency': 401.3277777777778, u'75th_latency': 953.6777777777777, u'median_latency': 632.6444444444444}, u'21': {u'25th_latency': 412.77222222222224, u'75th_latency': 976.8499999999999, u'median_latency': 634.1333333333333}, u'22': {u'25th_latency': 412.80555555555554, u'75th_latency': 1037.1833333333334, u'median_latency': 653.9555555555555}, u'23': {u'25th_latency': 417.6277777777778, u'75th_latency': 950.2222222222223, u'median_latency': 643.1111111111111}, u'1': {u'25th_latency': 316.97777777777776, u'75th_latency': 845.8166666666667, u'median_latency': 556.5666666666667}}]]
+        [[u'latencies',
+          {u'11': {u'25th_latency': 381.9, u'75th_latency': 899.6166666666668, u'median_latency': 609.6222222222221},
+           u'24': {u'25th_latency': 158.52222222222224, u'75th_latency': 285.31666666666666,
+                   u'median_latency': 213.93333333333337},
+           u'13': {u'25th_latency': 409.5444444444444, u'75th_latency': 997.8666666666667,
+                   u'median_latency': 628.7666666666667},
+           u'12': {u'25th_latency': 401.3277777777778, u'75th_latency': 953.6777777777777,
+                   u'median_latency': 632.6444444444444},
+           u'21': {u'25th_latency': 412.77222222222224, u'75th_latency': 976.8499999999999,
+                   u'median_latency': 634.1333333333333},
+           u'22': {u'25th_latency': 412.80555555555554, u'75th_latency': 1037.1833333333334,
+                   u'median_latency': 653.9555555555555},
+           u'23': {u'25th_latency': 417.6277777777778, u'75th_latency': 950.2222222222223,
+                   u'median_latency': 643.1111111111111},
+           u'1': {u'25th_latency': 316.97777777777776, u'75th_latency': 845.8166666666667,
+                  u'median_latency': 556.5666666666667}}]]
+
+        rpm_metrics_data[0]
         see test/rest_rpm_get.py
 
         :return:
         """
         rpm_metrics_data = True
-        #rpm_what_metrics_to_fetch = {'module': 'rpm', 'keylist': ['delays','normalized_delays','max_latency', 'min_latency',
-        #                                                          'mean_latency' , 'median_latency', '25th_latency', '75th_latency']}
         rpm_what_metrics_to_fetch = {'module': 'rpm', 'keylist': ['latencies']}
-
 
         try:
             rpm_metrics_data = self.DMclient.getme(rpm_what_metrics_to_fetch)
         except Exception, e:
-            self.cpmlogger.error("FETCH_RPM_METRICS : Failed ...., Exception = %r", e)
-            self.cpmlogger.error("FETCH_RPM_METRICS : Failed ...., Exception trace", exc_info=True)
+            self.cpmlogger.error("FETCH_RPM_METRICS : HTTP Failure ...., Exception = %r", e)
+            self.cpmlogger.error("FETCH_RPMM_METRICS : HTTP Failure ...., Exception trace", exc_info=True)
             rpm_metrics_data = False
             return
         else:
-            # See my controller_core/tests/rest_hum_get.py test script for more details
-            if rpm_metrics_data[0][1] or rpm_metrics_data[1][1]:
+            # See my controller_core/tests/rest_nfm_get_with_packet_drops.py test script for more details
+            self.cpmlogger.debug("FETCH_RPM_METRICS: -----> EMPTY - rpm_metrics_data  = %r ", rpm_metrics_data)
+            # empty dicitionary like string evaluates to False
+            if not (rpm_metrics_data[0][1] and rpm_metrics_data[1][1]):
                 self.cpmlogger.error(
-                    "FETCH_RPM_METRICS : Empty RPM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served")
+                    "FETCH_RPM_METRICS : Empty RPM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served.")
+                self.cpmlogger.error("FETCH_RPM_METRICS : nfm_metrics_data = %r", rpm_metrics_data)
                 rpm_metrics_data = False
 
-        self.cpmlogger.debug("FETCH_RPM_METRICS: OK - hum_metrics_data  = %r ", rpm_metrics_data)
+        self.cpmlogger.debug("FETCH_RPM_METRICS: HTTP GET RESULT - rpm_metrics_data  = %r ", rpm_metrics_data)
 
         return rpm_metrics_data
-
 
 """
     def __fetch_RPM_metrics_and_insert_in_topology_graph(self, module_name):

@@ -562,7 +562,7 @@ class CPM(app_manager.RyuApp):
 
                 self.net.add_edge(dpid, src_mac,
                                   {'src_port': msg.match['in_port'], 'dst_port': msg.match['in_port'],
-                                   'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True, 'bw': 10, 'weight':1 })  # src is the src mac
+                                   'src_dpid': dpid, 'dst_dpid': src_mac, 'end_host': True, 'bw': 10, 'weight':0 })  # src is the src mac
 
                 self.print_l2_table()
 

@@ -86,7 +86,7 @@ class SharedContext (object):
 
 #***********************************************************
 
-class ProjectController(app_manager.RyuApp):
+class CPM(app_manager.RyuApp):
     'CPM module for CSD Team4 project'
     _CONTEXTS = {'network': SharedContext}
     #time_of_last_fetch = 0
@@ -115,7 +115,7 @@ class ProjectController(app_manager.RyuApp):
 
 
     def __init__(self, *args, **kwargs):
-        super(ProjectController, self).__init__(*args, **kwargs)
+        super(CPM, self).__init__(*args, **kwargs)
         """
         set below parameter to true if you want CPM not to install any openflow rules into the openflow switches.
         This feature was requested by test team.
@@ -133,18 +133,13 @@ class ProjectController(app_manager.RyuApp):
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.modules_enabled = {'RPM': True,'HUM': False,'NFM': False}
+        self.modules_enabled = {'RPM': True, 'HUM': False,'NFM': False }
         self.install_openflow_rules = True
-        self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff',
-                          'bootstrap_in_progress': True,
-                          'flow_table_strategy_semi_proactive': True,
-                          'logdir': '/var/www/html/spacey',
+        self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,
+                          'flow_table_strategy_semi_proactive': True, 'logdir': '/var/www/html/spacey',
                           'cpmlogdir': '/var/www/html/spacey/cpmweights.log',
-                          'metrics_fetch_rest_url': 'http://127.0.0.1:8000/Tasks.txt',
-                          'fetch_timer_in_seconds': 4
-                          }
-
-        #below will be used by all those methods that fetch metrics from a remote module
+                          'metrics_fetch_rest_url': 'http://127.0.0.1:8000/Tasks.txt', 'fetch_timer_in_seconds': 4,
+                          'enable_save_topology_to_file': False}  # below will be used by all those methods that fetch metrics from a remote module
         self.rest_url = self.defines_D['metrics_fetch_rest_url']
         self.DMclient = client_side(self.rest_url)
 
@@ -468,8 +463,8 @@ class ProjectController(app_manager.RyuApp):
     def _packet_in_handler(self, ev):
         self.print_l2_table()
         self.__check_bootstrap_completion()
-        self.save_topolog_to_file() #this should go away in the production version and above lines be uncommented in a proper manner
-
+        if self.defines_D['enable_save_topology_to_file']:
+            self.save_topolog_to_file() #this should go away in the production version and above lines be uncommented in a proper manner
         msg = ev.msg
         datapath = msg.datapath
         #we save all datapaths in a dictionary so that the controller can install flowmod rules in any switch it wants
@@ -1133,7 +1128,7 @@ class ProjectController(app_manager.RyuApp):
             rpm_link_weight = rpm_src_node_weight + rpm_dst_node_weight
 
             rpm_total_link_weight = 0.33 * rpm_link_weight  # All modules contribute equally to the output weight
-            self.logger.debug("CALC_RPM_WEIGHT, src_node = %r , dst_node = %r, total_rpm_weight =  %r", src_node,dst_node,rpm_total_link_weight)
+            self.cpmlogger.debug("CALC_RPM_WEIGHT, src_node = %r , dst_node = %r, total_rpm_weight =  %r", src_node,dst_node,rpm_total_link_weight)
 
         if self.modules_enabled['HUM'] and hum:
             #below two weights are from CSD metrics description document
@@ -1147,7 +1142,7 @@ class ProjectController(app_manager.RyuApp):
             hum_total_weight = hum_core_weight * sum(hum_cores.itervalues) + hum_memory_weight * float(hum_memory)
             hum_total_weight = 0.333 * hum_total_weight
 
-        link_weight = nfm_total_link_weight + rpm_total_weight + hum_total_weight
+        link_weight = nfm_total_link_weight + rpm_total_link_weight + hum_total_weight
         return link_weight
 
     def __compute_rpm__weight_value_for_node(self,node_dpid, rpm_metrics_data):
@@ -1172,25 +1167,35 @@ class ProjectController(app_manager.RyuApp):
             node_25_value = latency_topo_dict[switch_dpid_in_unicode][key_latency_25]
         except Exception:
             node_25_value = 0
-            self.logger.debug("CALC_RPM_WEIGHT MISS: 25 value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
-            self.logger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
+            self.cpmlogger.debug("CALC_RPM_WEIGHT MISS: 25 value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
+            self.cpmlogger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
 
         try:
             node_75_value = latency_topo_dict[switch_dpid_in_unicode][key_latency_75]
         except Exception:
             node_75_value = 0
-            self.logger.debug("CALC_RPM_WEIGHT MISS: 75 value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
-            self.logger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
+            self.cpmlogger.debug("CALC_RPM_WEIGHT MISS: 75 value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
+            self.cpmlogger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
 
 
         try:
             node_median_value = latency_topo_dict[switch_dpid_in_unicode][key_latency_median]
         except Exception:
             node_median_value = 0
-            self.logger.debug("CALC_RPM_WEIGHT MISS: median value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
-            self.logger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
+            self.cpmlogger.debug("CALC_RPM_WEIGHT MISS: median value exception hit but its expected as RPM metric data received may not contain value for that node. topology subset")
+            self.cpmlogger.debug("CALC_RPM_WIEHGT MISS: RPM HTTP get does not contain info for node_dpid = %r",node_dpid)
 
         self.logger.debug(" CALC_RPM_WEIGHT : computed 25,75,median values are: %r , %r , %r ",node_25_value,node_75_value,node_median_value)
+        if node_median_value < 500 and node_median_value >5000:
+            self.cpmlogger.warning("CALC_RPM_WEIGHT : UN_NORMALIZED_MEDIAN_VALUE received from Cache. As per spec. doc it must be between 500 and 5000")
+        if node_25_value < 500 and node_25_value > 5000:
+            self.cpmlogger.warning(
+                "CALC_RPM_WEIGHT : UN_NORMALIZED_25_VALUE received from Cache. As per spec. doc it must be between 500 and 5000")
+        if node_75_value < 500 and node_75_value > 5000:
+            self.cpmlogger.warning(
+                "CALC_RPM_WEIGHT : UN_NORMALIZED_75_VALUE received from Cache. As per spec. doc it must be between 500 and 5000")
+
+
 
         total_rpm_node_value = node_25_value * WEIGHTAGE_LATENCY_25 + node_75_value * WEIGHTAGE_LATENCY_75 + node_median_value * WEIGHTAGE_LATENCY_MEDIAN
         return total_rpm_node_value
@@ -1278,14 +1283,14 @@ class ProjectController(app_manager.RyuApp):
             rpm_metrics_data = self.DMclient.getme(rpm_what_metrics_to_fetch)
         except Exception, e:
             self.cpmlogger.error("FETCH_RPM_METRICS : HTTP Failure ...., Exception = %r", e)
-            self.cpmlogger.error("FETCH_RPMM_METRICS : HTTP Failure ...., Exception trace", exc_info=True)
+            self.cpmlogger.error("FETCH_RPM_METRICS : HTTP Failure ...., Exception trace", exc_info=True)
             rpm_metrics_data = False
             return
         else:
             # See my controller_core/tests/rest_nfm_get_with_packet_drops.py test script for more details
             self.cpmlogger.debug("FETCH_RPM_METRICS: -----> EMPTY - rpm_metrics_data  = %r ", rpm_metrics_data)
-            # empty dicitionary like string evaluates to False
-            if not (rpm_metrics_data[0][1] and rpm_metrics_data[1][1]):
+            # empty dicitionary like string evaluates to False , [0][1] is the dictionary of switch latencies and if its empty then its a problem
+            if not (rpm_metrics_data[0][1]):
                 self.cpmlogger.error(
                     "FETCH_RPM_METRICS : Empty RPM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served.")
                 self.cpmlogger.error("FETCH_RPM_METRICS : nfm_metrics_data = %r", rpm_metrics_data)

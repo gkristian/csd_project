@@ -926,7 +926,7 @@ class CPM(app_manager.RyuApp):
 
         links_onedirection_L = [(link.src.dpid, link.dst.dpid,
                                  {'dst_port': link.src.port_no, 'src_port': link.dst.port_no, 'dst_name': link.src.name,
-                                  'src_name': link.dst.name,'bw': 10,'wegiht': 1 }) for link in links_list]
+                                  'src_name': link.dst.name,'bw': 10,'weight': 1 }) for link in links_list]
         links_opp_direction_L = [(link.dst.dpid, link.src.dpid,
                                   {'src_port': link.dst.port_no, 'dst_port': link.src.port_no,
                                    'dst_name': link.src.name, 'src_name': link.dst.name, 'bw':10 , 'weight': 1}) for link in links_list]

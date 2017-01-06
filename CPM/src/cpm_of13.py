@@ -142,7 +142,7 @@ class CPM(app_manager.RyuApp):
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.modules_enabled = {'RPM': False, 'HUM': True,'NFM': False }
+        self.modules_enabled = {'RPM': True, 'HUM': True,'NFM': False }
         self.install_openflow_rules = True
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,
                           'flow_table_strategy_semi_proactive': True, 'logdir': '/var/www/html/spacey',

@@ -339,9 +339,9 @@ class CPM(app_manager.RyuApp):
             self.cpm_bstrap_logger.info("CPM : *******    BOOTSTRAP COMPLETE   ********")
             self.print_l2_table()
             self.defines_D['temp_bstrap_print_once'] = False
-        else:
-            self.cpm_bstrap_logger.info("CPM : x x x x    BOOTSTRAP NOT COMPLETE   x x x x x")
-            self.print_l2_table()
+
+        #    self.cpm_bstrap_logger.info("CPM : x x x x    BOOTSTRAP NOT COMPLETE   x x x x x")
+        #    self.print_l2_table()
 
 
 
@@ -385,15 +385,15 @@ class CPM(app_manager.RyuApp):
         src_mac = spath_with_macs[i-1]  # during first iterations its the src_mac
         dst_mac = spath_with_macs[n-1]
         while (i <= n-2): # n-1 is the last node which is the dst mac
-            self.logger.debug("Installing rule : iteration = %r", i)
+            self.cpm_route_logger.debug("Installing rule : iteration = %r", i)
             sw_b = spath_with_macs[i];  # this switch already has flow installed during first iteration
             sw_c = spath_with_macs[i + 1]  # on sw_b , flow is to be installed
             sw_a = spath_with_macs[i - 1]  #
 
             in_port = self.net.edge[sw_a][sw_b]['dst_port']
-            self.logger.debug("FWD FLOW in_port computed = self.net.edge[%r][%r]['dst_port'] = %r", sw_a, sw_b, in_port)
+            self.cpm_route_logger.debug("FWD FLOW in_port computed = self.net.edge[%r][%r]['dst_port'] = %r", sw_a, sw_b, in_port)
             out_port = self.net.edge[sw_b][sw_c]['src_port']
-            self.logger.debug("FWD FLOW out_port computed = self.net.edge[%r][%r]['src_port'] = %r ", sw_b, sw_c, out_port)
+            self.cpm_route_logger.debug("FWD FLOW out_port computed = self.net.edge[%r][%r]['src_port'] = %r ", sw_b, sw_c, out_port)
             self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
             i = i + 1
 
@@ -403,15 +403,15 @@ class CPM(app_manager.RyuApp):
         src_mac = spath_with_macs[n - 1]
         i = n - 2
         while (i >= 1):  #  1 is the first switch
-            self.logger.debug("Installing rule : iteration = %r  ", i)
+            self.cpm_route_logger.debug("Installing rule : iteration = %r  ", i)
             sw_b = spath_with_macs[i];  # this switch already has flow installed during first iteration
             sw_c = spath_with_macs[i - 1]  # on sw_b , flow is to be installed
             sw_a = spath_with_macs[i + 1]  #
 
             in_port = self.net.edge[sw_a][sw_b]['dst_port']
-            self.logger.debug("REV FLOW in_port computed = self.net.edge[%r][%r]['dst_port/in_port'] = %r", sw_a, sw_b,in_port )
+            self.cpm_route_logger.debug("REV FLOW in_port computed = self.net.edge[%r][%r]['dst_port/in_port'] = %r", sw_a, sw_b,in_port )
             out_port = self.net.edge[sw_b][sw_c]['src_port']
-            self.logger.debug("REV LOW out_port computed = self.net.edge[%r][%r]['src_port/out_port'] = %r",  sw_b, sw_c, out_port)
+            self.cpm_route_logger.debug("REV LOW out_port computed = self.net.edge[%r][%r]['src_port/out_port'] = %r",  sw_b, sw_c, out_port)
             self.__send_flow_mod(sw_b, src_mac, in_port, dst_mac, out_port)
             i = i - 1
 
@@ -455,7 +455,7 @@ class CPM(app_manager.RyuApp):
     #not using in_port for now as a criteria for routing but may be later.
 
     def __send_flow_mod(self, dpid, src_mac, in_port, dst_mac, out_port):
-        self.logger.debug("FLOWMOD_1 : installing rule: %r -----> %r ==== %r === %r -----> %r ", src_mac, in_port, dpid, out_port , dst_mac)
+        self.cpm_route_logger.debug("FLOWMOD_1 : installing rule: %r -----> %r ==== %r === %r -----> %r ", src_mac, in_port, dpid, out_port , dst_mac)
         datapath = self.datapathDb[dpid]
         ofp = datapath.ofproto
         ofp_parser = datapath.ofproto_parser
@@ -669,7 +669,7 @@ class CPM(app_manager.RyuApp):
                     return
                 #fetch metrics from a remote source and add to graph and compute weight for each link
                 self.__fetch_ALL_metrics_and_insert_weight_in_topology_graph()
-                self.__log_all_graph()
+                self.__log_all_graph("After WEIGHT_ADDED_TO_TOPOLOGY")
 
                 #dst mac  is in our topology graph
                 if self.config.disable_weighted_routing:
@@ -857,7 +857,7 @@ class CPM(app_manager.RyuApp):
         #we reap from two source provided by LLDP based ryu topology api : switch_list and link_list
         #and put the info into a networkx based graph "net"
         #****************** switches *******************
-        self.logger.debug("EventSwitchEnter observed: %r", ev)
+        #self.logger.debug("EventSwitchEnter observed: %r", ev)
         switch_list = get_switch(self.topology_api_app, None)
         """
         #commenting out this block we dont want to add the switch dpid to the graph since this info is there already in the links_list

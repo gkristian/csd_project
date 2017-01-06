@@ -41,23 +41,14 @@ class RPM(app_manager.RyuApp):
 		self.MIN_SLEEP = None
 		self.UPDATE_TIME = None
 
+		# Sending round rate
 		rate = 1
+		# Sleep time between barrier requests
 		self.MIN_SLEEP = 0.002
+		# Time between sending DM updates
 		self.UPDATE_TIME = 3
 
-
-		# Fetch parameters
-		# graph object of physical network
-		#time.sleep(60)
-
-		#self.net = app_manager._CONTEXTS['network']
-		self.net = None
-		# Sending round rate
-		#rate = self.shared_context.rpm_rate
-		# Sleep time between barrier requests
-		#self.MIN_SLEEP = self.shared_context.rpm_min_sleep
-		# Time between sending DM updates
-		#self.UPDATE_TIME = self.shared_context.rpm_update_time	
+		self.net = None	
 
 		self._print("RATE: %d MIN_SLEEP: %d UPDATE_TIME: %d" % (rate, self.MIN_SLEEP, self.UPDATE_TIME))
 
@@ -100,13 +91,6 @@ class RPM(app_manager.RyuApp):
 
 		self.MODS_NR = 3
 		self.LOCK = threading.RLock()
-		#self.UPDATE_TIME = app_manager._CONTEXTS['rpm_update_time']
-
-		# list keeping this update sessions latencies
-		# the current latency from a a certain switch of number X will be placed 
-		# at index X-1 in the list
-		#self.latency_array = range(self.totalSwitchesNr)
-		#self.latency_array = None
 
 		# Min and max values for latency normalization
 		self.MAX = 5000
@@ -121,12 +105,10 @@ class RPM(app_manager.RyuApp):
 				#print self.switches_data[dpid]["values_list"]
 				if self.switches_data[dpid]["values_array"] == []: # if values array is not set
 					self.switches_data[dpid]["values_array"] = numpy.array(self.switches_data[dpid]["values_list"])
-					#print "FIRST VALUES ARRAY switch %d" % dpid
-					#print self.switches_data[dpid]["values_array"]
+
 				else: 
 					self.switches_data[dpid]["values_array"] = numpy.append(self.switches_data[dpid]["values_array"], numpy.array(self.switches_data[dpid]["values_list"]))
-					#print "VALUES ARRAY switch %d" % dpid
-					#print self.switches_data[dpid]["values_array"]
+
 				
 				self.switches_data[dpid]["values_list"] = []
 
@@ -134,8 +116,6 @@ class RPM(app_manager.RyuApp):
 			#print self.latency_array
 			#self.DICT_TO_DB['mean_latency'] = numpy.mean(self.latency_array)
 			self.DICT_TO_DB["latencies"][dpid]['median_latency'] = self.normalize(numpy.median(self.switches_data[dpid]["values_array"]))
-			#self.DICT_TO_DB['max_latency'] = numpy.amax(self.latency_array)
-			#self.DICT_TO_DB['min_latency'] = numpy.amin(self.latency_array)
 			self.DICT_TO_DB["latencies"][dpid]['25th_latency'] = self.normalize(numpy.percentile(self.switches_data[dpid]["values_array"],25))
 			self.DICT_TO_DB["latencies"][dpid]['75th_latency'] = self.normalize(numpy.percentile(self.switches_data[dpid]["values_array"],75))
 		#print self.DICT_TO_DB.viewitems()
@@ -155,12 +135,10 @@ class RPM(app_manager.RyuApp):
 	any faster sending rate exceeds the serving rate of the event handler and builds up the quequing times.
 	"""
 	def _monitor(self): 
-		self._print("MONITORING THREAD STARTED")
 		lock = threading.Lock()
 		xid = 0
 		# set of switches
 		dpids = self.switches_DPIDs.viewkeys()
-
 		# set starting time counter for sending updates to DM
 		last_update_time = int(round(time.time() * 1000))
 		#last_update_time = datetime.now().second
@@ -172,7 +150,6 @@ class RPM(app_manager.RyuApp):
 			#self._print("SENDING FLOW MODS...")
 
 			for dpid in dpids:
-				print "[RPM] CHECKING LATENCY FOR switch %d" % dpid
 				with lock:
 					# if it has gone min UPDATE_TIME seconds since last update
 					# send an update to DM 
@@ -180,7 +157,6 @@ class RPM(app_manager.RyuApp):
 					#current_updatetime = datetime.now()
 
 					if (current_updatetime - last_update_time) >= self.UPDATE_TIME*1000 and self.HAVE_NET == True:
-						print "[RPM] SENDING DATA TO DM"
 						# calculate and insert statistics into the DB dict
 						
 
@@ -189,16 +165,11 @@ class RPM(app_manager.RyuApp):
 						#self._print("SEND UPDATE TO DM")
 						# set timestamp
 						self.DICT_TO_DB['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-						
-						#print self.DICT_TO_DB.viewitems()
-						#print "LOOK AT THE JSON"
-						#print json.dumps(self.DICT_TO_DB)
 
 						# send current values to DM
 
-						self.client.postme(self.DICT_TO_DB) #TODO UTKOMMENTERAD
-						print "[RPM] DATA TO DM:"
-						print self.DICT_TO_DB.viewitems()
+						self.client.postme(self.DICT_TO_DB) 
+						#print self.DICT_TO_DB.viewitems()
 
 						last_update_time = int(round(time.time() * 1000))
 						#last_update_time = datetime.now().second
@@ -210,7 +181,6 @@ class RPM(app_manager.RyuApp):
 						#	break
 
 				with lock:
-					print "[RPM] SENDING FLOW MODS"
 					# Get the datapath object
 					dp = self.switches_DPIDs[dpid]
 
@@ -238,9 +208,6 @@ class RPM(app_manager.RyuApp):
 					#self._print("FLOW MODS SENT")
 
 					# set start time for measurment
-					print dpid
-					print self.switches_data[dpid]
-					#print self.switches_data.viewitems()
 					self.switches_data[dpid]["start_time"] = int(time.time() * 1000000)
 					#self.switches_data[dpid]["start_time"] = datetime.now().microsecond
 					
@@ -248,7 +215,6 @@ class RPM(app_manager.RyuApp):
 					xid += 1
 					self.switches_data[dpid]["xid"] = xid
 					# send the barrier request
-					print "[RPM] SENDING BARRIER REQUEST"
 					self.send_barrier_request(dp, xid)
 					#self._print("BARRIER REQ WITH ID %d SENT" %xid)
 					#self._print("Data before barrier req: " + str(self.switches_data.viewitems()))
@@ -313,8 +279,6 @@ class RPM(app_manager.RyuApp):
 	Given a datapath object and an xid number send a barrier request
 	"""
 	def send_barrier_request(self, datapath, xid):
-		self._print("SENDING BARRIER REQUEST")
-
 		ofp_parser = datapath.ofproto_parser
 		req = ofp_parser.OFPBarrierRequest(datapath)
 		req.set_xid(xid)
@@ -379,7 +343,7 @@ class RPM(app_manager.RyuApp):
 	"""
 	@set_ev_cls(ofp_event.EventOFPBarrierReply, MAIN_DISPATCHER)
 	def _handle_barrier(self, ev):
-		self._print("[RPM] OFPBarrierReply received")
+		#self._print('OFPBarrierReply received')
 		
 		msg = ev.msg
 		xid = msg.xid
@@ -392,47 +356,25 @@ class RPM(app_manager.RyuApp):
 		if req_xid == xid:
 			with self.LOCK:
 				current_time = int(time.time() * 1000000) 					# current time in microseconds
-				#current_time = datetime.now().microsecond
 				starting_time = self.switches_data[dpid]["start_time"] 	
 				timed = current_time - starting_time						# measured time between barrier request and response 
-				#normalized_timed = round(self.normalize(timed),2)
-				
-				#for datetime
-				#MAX = 999999
-				#if timed < 0: # Timer started over from 0
-				#	timed = (MAX - starting_time) + current_time
-
 			
 				# Store the measured latency time
 				self.switches_data[dpid]["measured_time"] = timed
 				# Store the latency value for statistics
-				
-
-
 				self.switches_data[dpid]["values_list"].append(timed)
-				
-
-
+				self.DICT_TO_DB["latencies"][dpid]["normalized_current_latency"] = self.normalize(timed)
 				#self.latency_array[dpid-1] = timed
 
-				# Store the measured time in DB message dict
-
-				#self.DICT_TO_DB['delays'][dpid] = timed
-				#print "Latency: %d microsec" % timed
-				#self.DICT_TO_DB['normalized_delays'][dpid] = normalized_timed
-				#print "Normalized latency: %d" % normalized_timed 
-		
 				# Time taken for installation of all current waiting rules and RTT 
 				#self._print("Timer from barrier req to resp: %d (microsecond) for datapath %d xid %d" % (timed, datapath.id, xid)) # why is this longer for a slower sending rate?!
 				#self._print("Start time %d current time %d" % (starting_time, current_time))
 		else:
 			if xid > req_xid:
 				self._print("ERROR: Sending rate exceeds handling rate")
-				self._print("ERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERROR")
 
 			else:
 				self._print("ERROR: ?!? Something weird is going on, recieving xids out of order")
-				self._print("ERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERRORERROR")
 
 
 	"""
@@ -467,19 +409,17 @@ class RPM(app_manager.RyuApp):
 			else:
 				self._print("RPM NET NOT READY!")
 			time.sleep(1)
-		print "[RPM] NUMBER OF SWITCHES ON NET %d" % self.totalSwitchesNr
+
 		if len(DPIDS) == self.totalSwitchesNr and self.started_monitoring == False:
-			print "[RPM] NUMBER OF FOUND SWITCHES %d" % len(DPIDS)
 			#print DPIDS
 			for key in DPIDS:
 				#print key
 				self.switches_data[key] = {"start_time": -1, "measured_time": -1, "xid": -1, "values_array": [], "values_list": []}
-				self.DICT_TO_DB['latencies'][key] = {"median_latency": -1, "25th_latency": -1, "75th_latency": -1}
+				self.DICT_TO_DB['latencies'][key] = {"median_latency": -1, "25th_latency": -1, "75th_latency": -1, "normalized_current_latency": -1}
 				#self.DICT_TO_DB['normalized_delays'][key] = -1
 			#self._print(str(self.switches_data.viewitems()))
 
 			# Start monitoring thread sending flow mods and barrier requests
-			print "[RPM] STARTING MONITOR THREAD"
 			self.monitoring_thread = hub.spawn(self._monitor)
 			self._print("Monitoring thread started")
 			self.started_monitoring = True

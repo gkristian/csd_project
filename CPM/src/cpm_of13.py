@@ -149,7 +149,7 @@ class CPM(app_manager.RyuApp):
                           'enable_save_topology_to_file': False,
                           'temp_bstrap_print_once': True,
                           'cpm_routelogdir': '/var/www/html/spacey/cpm_route.log',
-                          'cpm_bstraplogdir' : '/var/www/html/spacey/cpm_boottrap.log'}  # below will be used by all those methods that fetch metrics from a remote module
+                          'cpm_bstraplogdir' : '/var/www/html/spacey/cpm_bootstrap.log'}  # below will be used by all those methods that fetch metrics from a remote module
         self.rest_url = self.defines_D['metrics_fetch_rest_url']
         self.DMclient = client_side(self.rest_url)
 
@@ -1284,7 +1284,7 @@ class CPM(app_manager.RyuApp):
             self.cpmlogger.error("FETCH_NFM_METRICS : HTTP Failure ...., Exception = %r",e)
             self.cpmlogger.error("FETCH_NFM_METRICS : HTTP Failure ...., Exception trace",exc_info=True)
             nfm_metrics_data = False
-            return
+            return nfm_metrics_data
         else:
             #See my controller_core/tests/rest_nfm_get_with_packet_drops.py test script for more details
             self.cpmlogger.debug("FETCH_NFM_METRICS: -----> EMPTY - nfm_metrics_data  = %r ", nfm_metrics_data)
@@ -1360,7 +1360,7 @@ class CPM(app_manager.RyuApp):
             self.cpmlogger.error("FETCH_RPM_METRICS : HTTP Failure ...., Exception = %r", e)
             self.cpmlogger.error("FETCH_RPM_METRICS : HTTP Failure ...., Exception trace", exc_info=True)
             rpm_metrics_data = False
-            return
+            return rpm_metrics_data
         else:
             # See my controller_core/tests/rest_nfm_get_with_packet_drops.py test script for more details
             self.cpmlogger.debug("FETCH_RPM_METRICS: -----> EMPTY - rpm_metrics_data  = %r ", rpm_metrics_data)

@@ -57,6 +57,15 @@ print "request is"
 print rest_query_dict_nfm
 print "And response is "
 print response
+
+core_values = response[0][1]
+memory = response[1][1]
+
+print "memory",memory
+print "cpu dict",core_values
+import pdb
+pdb.set_trace()
+print "sum of cpu",sum(core_values.itervalues)
 """
 request is
 {'keylist': ['core', 'memory'], 'module': 'hum'}

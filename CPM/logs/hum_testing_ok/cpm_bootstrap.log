@@ -1,0 +1,840 @@
+2017-01-06 05:18:06,027 - INFO - Initializing CPM bootstrap logger
+2017-01-06 05:18:12,142 - DEBUG - list of edges: self.net.edges [] 
+2017-01-06 05:18:12,142 - DEBUG - list of nodes: 
+ []
+2017-01-06 05:18:12,142 - DEBUG - l2_lookup_table : {}
+2017-01-06 05:18:12,143 - DEBUG - CPM BSTRAP_TABLES : l2_table = {}
+2017-01-06 05:18:12,143 - DEBUG - CPM BSTRAP_TABLES : l2_mac2ip = {}
+2017-01-06 05:18:12,143 - DEBUG - CPM BSTRAP_TABLES : l2_ip2mac = {}
+2017-01-06 05:18:12,330 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:12,331 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:12,352 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:12,605 - DEBUG - list of edges: self.net.edges [(1, 12), (1, 13), (11, 12), (12, 24), (12, 1), (12, 11), (12, 22), (13, 24), (13, 1), (13, 23), (21, 22), (22, 12), (22, 21), (22, 23), (23, 24), (23, 13), (23, 22), (24, 12), (24, 13), (24, 23)] 
+2017-01-06 05:18:12,605 - DEBUG - list of nodes: 
+ [1, 11, 12, 13, 21, 22, 23, 24]
+2017-01-06 05:18:12,605 - DEBUG - l2_lookup_table : {}
+2017-01-06 05:18:12,605 - DEBUG - CPM BSTRAP_TABLES : l2_table = {}
+2017-01-06 05:18:12,605 - DEBUG - CPM BSTRAP_TABLES : l2_mac2ip = {}
+2017-01-06 05:18:12,605 - DEBUG - CPM BSTRAP_TABLES : l2_ip2mac = {}
+2017-01-06 05:18:12,743 - DEBUG - list of edges: self.net.edges [(1, 11), (1, 12), (1, 13), (11, 1), (11, 12), (11, 21), (11, 22), (12, 24), (12, 1), (12, 11), (12, 13), (12, 22), (13, 24), (13, 1), (13, 12), (13, 23), (21, 11), (21, 22), (22, 11), (22, 12), (22, 21), (22, 23), (23, 24), (23, 13), (23, 22), (24, 12), (24, 13), (24, 23)] 
+2017-01-06 05:18:12,743 - DEBUG - list of nodes: 
+ [1, 11, 12, 13, 21, 22, 23, 24]
+2017-01-06 05:18:12,743 - DEBUG - l2_lookup_table : {}
+2017-01-06 05:18:12,743 - DEBUG - CPM BSTRAP_TABLES : l2_table = {}
+2017-01-06 05:18:12,743 - DEBUG - CPM BSTRAP_TABLES : l2_mac2ip = {}
+2017-01-06 05:18:12,744 - DEBUG - CPM BSTRAP_TABLES : l2_ip2mac = {}
+2017-01-06 05:18:12,824 - DEBUG - list of edges: self.net.edges [(1, 11), (1, 12), (1, 13), (11, 1), (11, 12), (11, 21), (11, 22), (12, 24), (12, 1), (12, 11), (12, 13), (12, 22), (13, 24), (13, 1), (13, 12), (13, 23), (21, 11), (21, 22), (22, 11), (22, 12), (22, 21), (22, 23), (23, 24), (23, 13), (23, 22), (24, 12), (24, 13), (24, 23)] 
+2017-01-06 05:18:12,824 - DEBUG - list of nodes: 
+ [1, 11, 12, 13, 21, 22, 23, 24]
+2017-01-06 05:18:12,824 - DEBUG - l2_lookup_table : {}
+2017-01-06 05:18:12,824 - DEBUG - CPM BSTRAP_TABLES : l2_table = {}
+2017-01-06 05:18:12,824 - DEBUG - CPM BSTRAP_TABLES : l2_mac2ip = {}
+2017-01-06 05:18:12,825 - DEBUG - CPM BSTRAP_TABLES : l2_ip2mac = {}
+2017-01-06 05:18:12,882 - DEBUG - list of edges: self.net.edges [(1, 11), (1, 12), (1, 13), (11, 1), (11, 12), (11, 21), (11, 22), (12, 24), (12, 1), (12, 11), (12, 13), (12, 22), (13, 24), (13, 1), (13, 12), (13, 23), (21, 11), (21, 22), (22, 11), (22, 12), (22, 21), (22, 23), (23, 24), (23, 13), (23, 22), (24, 12), (24, 13), (24, 23)] 
+2017-01-06 05:18:12,882 - DEBUG - list of nodes: 
+ [1, 11, 12, 13, 21, 22, 23, 24]
+2017-01-06 05:18:12,882 - DEBUG - l2_lookup_table : {}
+2017-01-06 05:18:12,882 - DEBUG - CPM BSTRAP_TABLES : l2_table = {}
+2017-01-06 05:18:12,882 - DEBUG - CPM BSTRAP_TABLES : l2_mac2ip = {}
+2017-01-06 05:18:12,882 - DEBUG - CPM BSTRAP_TABLES : l2_ip2mac = {}
+2017-01-06 05:18:12,946 - DEBUG - list of edges: self.net.edges [(1, 11), (1, 12), (1, 13), (11, 1), (11, 12), (11, 21), (11, 22), (12, 24), (12, 1), (12, 11), (12, 13), (12, 22), (13, 24), (13, 1), (13, 12), (13, 23), (21, 11), (21, 22), (22, 11), (22, 12), (22, 21), (22, 23), (23, 24), (23, 13), (23, 22), (24, 12), (24, 13), (24, 23)] 
+2017-01-06 05:18:12,946 - DEBUG - list of nodes: 
+ [1, 11, 12, 13, 21, 22, 23, 24]
+2017-01-06 05:18:12,950 - DEBUG - l2_lookup_table : {}
+2017-01-06 05:18:12,951 - DEBUG - CPM BSTRAP_TABLES : l2_table = {}
+2017-01-06 05:18:12,954 - DEBUG - CPM BSTRAP_TABLES : l2_mac2ip = {}
+2017-01-06 05:18:12,954 - DEBUG - CPM BSTRAP_TABLES : l2_ip2mac = {}
+2017-01-06 05:18:13,025 - DEBUG - list of edges: self.net.edges [(1, 11), (1, 12), (1, 13), (11, 1), (11, 12), (11, 21), (11, 22), (12, 24), (12, 1), (12, 11), (12, 13), (12, 22), (13, 24), (13, 1), (13, 12), (13, 23), (21, 11), (21, 22), (22, 11), (22, 12), (22, 21), (22, 23), (23, 24), (23, 13), (23, 22), (24, 12), (24, 13), (24, 23)] 
+2017-01-06 05:18:13,025 - DEBUG - list of nodes: 
+ [1, 11, 12, 13, 21, 22, 23, 24]
+2017-01-06 05:18:13,025 - DEBUG - l2_lookup_table : {}
+2017-01-06 05:18:13,025 - DEBUG - CPM BSTRAP_TABLES : l2_table = {}
+2017-01-06 05:18:13,025 - DEBUG - CPM BSTRAP_TABLES : l2_mac2ip = {}
+2017-01-06 05:18:13,028 - DEBUG - CPM BSTRAP_TABLES : l2_ip2mac = {}
+2017-01-06 05:18:13,151 - DEBUG - list of edges: self.net.edges [(1, 11), (1, 12), (1, 13), (11, 1), (11, 12), (11, 21), (11, 22), (12, 24), (12, 1), (12, 11), (12, 13), (12, 22), (13, 24), (13, 1), (13, 12), (13, 23), (21, 11), (21, 22), (22, 11), (22, 12), (22, 21), (22, 23), (23, 24), (23, 13), (23, 22), (24, 12), (24, 13), (24, 23)] 
+2017-01-06 05:18:13,152 - DEBUG - list of nodes: 
+ [1, 11, 12, 13, 21, 22, 23, 24]
+2017-01-06 05:18:13,152 - DEBUG - l2_lookup_table : {}
+2017-01-06 05:18:13,152 - DEBUG - CPM BSTRAP_TABLES : l2_table = {}
+2017-01-06 05:18:13,154 - DEBUG - CPM BSTRAP_TABLES : l2_mac2ip = {}
+2017-01-06 05:18:13,154 - DEBUG - CPM BSTRAP_TABLES : l2_ip2mac = {}
+2017-01-06 05:18:13,158 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,172 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,173 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,173 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,173 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,174 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,174 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,174 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,175 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,193 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,193 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,194 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,194 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,202 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,203 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,208 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,209 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,209 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,210 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,215 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,215 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,216 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,217 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,227 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,232 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,233 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,234 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,235 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,239 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,240 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,241 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,242 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,251 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,253 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,253 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,255 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,256 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,256 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,265 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,265 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,270 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,271 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,278 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,278 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,281 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,281 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,282 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,283 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,299 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,303 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,304 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,304 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,306 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,310 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,311 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,311 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,311 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,312 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,312 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,313 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,313 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,314 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,314 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,314 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,314 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,315 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,323 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,324 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,324 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,325 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,325 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,326 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,327 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,327 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,328 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,328 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,329 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,329 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,330 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,331 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,332 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,333 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,333 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,334 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,334 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,335 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,342 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,346 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,348 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,349 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,725 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,726 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,726 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,726 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,731 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,731 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,733 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,734 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,734 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,735 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,735 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,740 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,740 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,741 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,741 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,742 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,742 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,742 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,743 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,747 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,748 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,749 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,751 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,752 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,752 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,754 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,754 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,757 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,757 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,757 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,758 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,763 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,764 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,764 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,765 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,766 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,766 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,767 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,771 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,772 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,776 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,776 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,777 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,778 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,780 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,780 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,783 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,785 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,786 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,786 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,787 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,787 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,791 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,792 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,793 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,793 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,794 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,794 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,794 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,795 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,804 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,805 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,808 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,809 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,810 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,810 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,811 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,811 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,812 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,813 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,813 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,813 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,814 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,814 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,826 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,827 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,828 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,828 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,829 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,829 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,830 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,831 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,839 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,840 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,841 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,846 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,847 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,851 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,857 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,859 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,860 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,865 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,870 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,871 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,877 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,880 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,881 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,889 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,890 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,890 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,891 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,893 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,894 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,894 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,894 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,895 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,901 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,902 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,902 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,907 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,908 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,908 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,912 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,914 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,915 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,921 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,924 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,925 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,925 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,925 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,926 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,927 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,937 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,937 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,937 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,941 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,945 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:13,946 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,127 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,132 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,134 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,134 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,135 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,140 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,140 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,140 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,141 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,141 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,141 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,142 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,142 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,142 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,142 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,143 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,143 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,146 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,152 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,153 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,153 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,154 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,155 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,156 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,156 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,160 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,161 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,163 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,164 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,165 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:18:14,165 - DEBUG - LEARNING : learning a new src_mac = '00:00:00:00:02:01' for the first time 
+2017-01-06 05:18:14,165 - DEBUG - LEARNING : ARP extractions show about packet details as : arp.src_ip = '10.2.0.1' , arp.dst_ip = '10.2.0.2' , arp.opcode (1 for Request)  = 1  
+2017-01-06 05:18:14,166 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,167 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,172 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,173 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,174 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,176 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,176 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,179 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,180 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,180 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,181 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,182 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,182 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,188 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,188 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,189 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,189 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,190 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,190 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,191 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,191 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,197 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,197 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,198 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,199 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,206 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,208 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,213 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,214 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,222 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,223 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,223 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,224 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,224 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,224 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,224 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,225 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,225 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,225 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,237 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,238 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,238 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,239 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,244 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,245 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,245 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,246 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,246 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,246 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,253 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,253 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,254 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,254 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,352 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,353 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,353 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,354 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,355 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,360 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,361 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,361 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,362 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,363 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,368 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,369 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,369 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,372 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,372 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,376 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,376 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,377 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,377 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,380 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,380 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,381 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,381 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,381 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,399 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,404 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,405 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,406 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,418 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,418 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,418 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,419 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,426 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,448 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,466 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,474 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,475 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,500 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,621 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,682 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,712 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,744 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,745 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,759 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,801 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:18:14,802 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:14,802 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:14,962 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:14,992 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,018 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,036 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,080 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,083 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,108 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,127 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,189 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,201 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,248 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,287 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,295 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,310 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,310 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,320 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,368 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,378 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,393 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,394 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,419 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,467 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,540 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,600 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,787 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,800 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:18:15,803 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:15,805 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:15,820 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,824 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:15,840 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,036 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,073 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,106 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,118 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,162 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,164 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,188 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,201 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,209 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,273 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,282 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,289 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,330 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,349 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,366 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,369 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,388 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,390 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,400 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,434 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,447 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,474 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,475 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,499 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,522 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,622 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,681 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,688 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,725 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,729 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,745 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,805 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:18:16,806 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:16,806 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:16,845 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,874 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,876 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,894 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,946 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:16,977 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,000 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,024 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,065 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,074 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,090 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,096 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,113 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,126 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,152 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,171 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,177 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,185 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,209 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,214 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,219 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,233 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,244 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,262 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,265 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,298 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,299 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,306 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,324 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,335 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,354 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,379 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,379 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,382 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,409 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,421 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,444 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,444 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,449 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,455 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,504 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,505 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,521 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,529 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,530 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,538 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,555 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,590 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,674 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,735 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:17,801 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:18:17,802 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:17,802 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:18,801 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:18:18,802 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:18,802 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:19,300 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:19,381 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:19,468 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:19,789 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:19,805 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:18:19,805 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:19,805 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:19,822 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:19,834 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:19,842 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,037 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,074 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,112 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,125 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,166 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,167 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,189 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,210 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,212 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,274 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,284 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,297 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,330 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,371 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,378 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,390 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,393 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,401 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,450 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,476 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,477 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,502 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,623 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,683 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,697 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,729 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,738 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,754 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,802 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:18:20,802 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:20,802 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:20,955 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:20,985 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,010 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,034 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,074 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,082 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,097 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,125 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,185 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,193 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,217 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,252 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,274 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,313 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,313 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,319 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,361 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,390 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,391 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,417 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,458 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,513 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,530 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,545 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,593 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:21,802 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:18:21,802 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:21,802 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:22,804 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:18:22,804 - DEBUG - LEARNING : learning a new src_mac = '00:00:00:00:02:02' for the first time 
+2017-01-06 05:18:22,805 - DEBUG - LEARNING : ARP extractions show about packet details as : arp.src_ip = '10.2.0.2' , arp.dst_ip = '10.2.0.1' , arp.opcode (1 for Request)  = 1  
+2017-01-06 05:18:23,801 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:18:23,801 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:23,801 - DEBUG - KEY1 : Found dst_mac '00:00:00:00:02:01' for arp header dst ip '10.2.0.1' , puttin in arp reply
+2017-01-06 05:18:23,801 - DEBUG - Crafting an ARP reply
+2017-01-06 05:18:23,801 - DEBUG - Sending an arp reply in _send_packet
+2017-01-06 05:18:23,802 - INFO - crafted arp reply packet-out ethernet(dst='00:00:00:00:02:02',ethertype=2054,src='00:00:00:00:02:01'), arp(dst_ip='10.2.0.2',dst_mac='00:00:00:00:02:02',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.2.0.1',src_mac='00:00:00:00:02:01')
+2017-01-06 05:18:23,802 - DEBUG - Sending arp reply done
+2017-01-06 05:18:23,805 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:27,309 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:27,387 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:27,470 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:27,790 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:27,828 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:27,828 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:27,842 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,038 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,084 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,102 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,124 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,173 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,173 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,197 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,212 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,274 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,290 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,333 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,377 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,392 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,394 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,403 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,450 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,485 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,485 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,502 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,625 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:28,684 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:32,810 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:18:32,811 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:32,811 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:33,810 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:18:33,810 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:33,810 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:34,809 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:18:34,809 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:34,809 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:35,812 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:18:35,813 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:35,813 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:36,809 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:18:36,809 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:36,809 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:37,812 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:18:37,812 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:37,812 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:38,812 - DEBUG - broadcast received from src mac = 00:00:00:00:01:01 , switch dpid = 21 at in_port = 3
+2017-01-06 05:18:38,812 - DEBUG - LEARNING : learning a new src_mac = '00:00:00:00:01:01' for the first time 
+2017-01-06 05:18:38,812 - DEBUG - LEARNING : ARP extractions show about packet details as : arp.src_ip = '10.1.0.1' , arp.dst_ip = '10.2.0.1' , arp.opcode (1 for Request)  = 1  
+2017-01-06 05:18:39,809 - DEBUG - broadcast received from src mac = 00:00:00:00:01:01 , switch dpid = 21 at in_port = 3
+2017-01-06 05:18:39,810 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:39,810 - DEBUG - KEY1 : Found dst_mac '00:00:00:00:02:01' for arp header dst ip '10.2.0.1' , puttin in arp reply
+2017-01-06 05:18:39,810 - DEBUG - Crafting an ARP reply
+2017-01-06 05:18:39,810 - DEBUG - Sending an arp reply in _send_packet
+2017-01-06 05:18:39,811 - INFO - crafted arp reply packet-out ethernet(dst='00:00:00:00:01:01',ethertype=2054,src='00:00:00:00:02:01'), arp(dst_ip='10.1.0.1',dst_mac='00:00:00:00:01:01',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.2.0.1',src_mac='00:00:00:00:02:01')
+2017-01-06 05:18:39,811 - DEBUG - Sending arp reply done
+2017-01-06 05:18:39,814 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:43,323 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:43,387 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:43,471 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:43,791 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:43,829 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:43,829 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:43,844 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,040 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,085 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,101 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,125 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,173 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,173 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,188 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,214 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,274 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,284 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,334 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,369 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,393 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,396 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,403 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,451 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,479 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,479 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,505 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,628 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:44,685 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:48,816 - DEBUG - broadcast received from src mac = 00:00:00:00:01:01 , switch dpid = 21 at in_port = 3
+2017-01-06 05:18:48,817 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:48,817 - DEBUG - KEY1 : Found dst_mac '00:00:00:00:02:02' for arp header dst ip '10.2.0.2' , puttin in arp reply
+2017-01-06 05:18:48,817 - DEBUG - Crafting an ARP reply
+2017-01-06 05:18:48,817 - DEBUG - Sending an arp reply in _send_packet
+2017-01-06 05:18:48,818 - INFO - crafted arp reply packet-out ethernet(dst='00:00:00:00:01:01',ethertype=2054,src='00:00:00:00:02:02'), arp(dst_ip='10.1.0.1',dst_mac='00:00:00:00:01:01',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.2.0.2',src_mac='00:00:00:00:02:02')
+2017-01-06 05:18:48,818 - DEBUG - Sending arp reply done
+2017-01-06 05:18:48,821 - INFO - RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows
+2017-01-06 05:18:58,821 - DEBUG - broadcast received from src mac = 00:00:00:00:01:01 , switch dpid = 21 at in_port = 3
+2017-01-06 05:18:58,821 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:58,821 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:18:59,817 - DEBUG - broadcast received from src mac = 00:00:00:00:01:01 , switch dpid = 21 at in_port = 3
+2017-01-06 05:18:59,818 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:18:59,818 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:19:00,817 - DEBUG - broadcast received from src mac = 00:00:00:00:01:01 , switch dpid = 21 at in_port = 3
+2017-01-06 05:19:00,817 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:19:00,817 - DEBUG - RX_BCAST..:Src Mac known but havent learnt the target IP yet i.e. arp.dst_ip's mac yet. Return
+2017-01-06 05:19:01,820 - DEBUG - broadcast received from src mac = 00:00:00:00:01:02 , switch dpid = 21 at in_port = 4
+2017-01-06 05:19:01,820 - DEBUG - LEARNING : learning a new src_mac = '00:00:00:00:01:02' for the first time 
+2017-01-06 05:19:01,821 - DEBUG - LEARNING : ARP extractions show about packet details as : arp.src_ip = '10.1.0.2' , arp.dst_ip = '10.2.0.1' , arp.opcode (1 for Request)  = 1  
+2017-01-06 05:19:01,846 - DEBUG - Bootstrap type 1 just Completed
+2017-01-06 05:19:01,846 - INFO - CPM : *******    BOOTSTRAP COMPLETE   ********
+2017-01-06 05:19:01,846 - DEBUG - CPM BSTRAP_TABLES : l2_table = {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}}, 23: {'00:00:00:00:02:02': {'ip': '10.2.0.2', 'in_port': 5}}}
+2017-01-06 05:19:01,846 - DEBUG - CPM BSTRAP_TABLES : l2_mac2ip = {'00:00:00:00:01:01': '10.1.0.1', '00:00:00:00:01:02': '10.1.0.2', '00:00:00:00:02:01': '10.2.0.1', '00:00:00:00:02:02': '10.2.0.2'}
+2017-01-06 05:19:01,846 - DEBUG - CPM BSTRAP_TABLES : l2_ip2mac = {'10.1.0.2': '00:00:00:00:01:02', '10.2.0.2': '00:00:00:00:02:02', '10.2.0.1': '00:00:00:00:02:01', '10.1.0.1': '00:00:00:00:01:01'}
+2017-01-06 05:19:02,817 - DEBUG - broadcast received from src mac = 00:00:00:00:01:02 , switch dpid = 21 at in_port = 4
+2017-01-06 05:19:02,817 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:19:02,818 - DEBUG - KEY1 : Found dst_mac '00:00:00:00:02:01' for arp header dst ip '10.2.0.1' , puttin in arp reply
+2017-01-06 05:19:02,818 - DEBUG - Crafting an ARP reply
+2017-01-06 05:19:02,818 - DEBUG - Sending an arp reply in _send_packet
+2017-01-06 05:19:02,819 - INFO - crafted arp reply packet-out ethernet(dst='00:00:00:00:01:02',ethertype=2054,src='00:00:00:00:02:01'), arp(dst_ip='10.1.0.2',dst_mac='00:00:00:00:01:02',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.2.0.1',src_mac='00:00:00:00:02:01')
+2017-01-06 05:19:02,819 - DEBUG - Sending arp reply done
+2017-01-06 05:19:14,977 - DEBUG - broadcast received from src mac = 00:00:00:00:02:01 , switch dpid = 23 at in_port = 4
+2017-01-06 05:19:14,977 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:19:14,977 - DEBUG - KEY1 : Found dst_mac '00:00:00:00:01:01' for arp header dst ip '10.1.0.1' , puttin in arp reply
+2017-01-06 05:19:14,978 - DEBUG - Crafting an ARP reply
+2017-01-06 05:19:14,978 - DEBUG - Sending an arp reply in _send_packet
+2017-01-06 05:19:14,978 - INFO - crafted arp reply packet-out ethernet(dst='00:00:00:00:02:01',ethertype=2054,src='00:00:00:00:01:01'), arp(dst_ip='10.2.0.1',dst_mac='00:00:00:00:02:01',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.1.0.1',src_mac='00:00:00:00:01:01')
+2017-01-06 05:19:14,979 - DEBUG - Sending arp reply done
+2017-01-06 05:19:15,350 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='62:5c:75:50:60:a3' 
+2017-01-06 05:19:15,393 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='6e:12:9e:c1:bb:61' 
+2017-01-06 05:19:15,471 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='2a:d0:fc:d5:b9:82' 
+2017-01-06 05:19:15,792 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='72:3b:46:b7:c6:93' 
+2017-01-06 05:19:15,828 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='32:58:51:c7:32:d9' 
+2017-01-06 05:19:15,829 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='6a:65:8e:c4:d9:d7' 
+2017-01-06 05:19:15,844 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='e2:58:35:38:c8:f0' 
+2017-01-06 05:19:16,043 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='d6:98:5d:a7:e4:a0' 
+2017-01-06 05:19:16,088 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ca:02:a4:fa:a2:44' 
+2017-01-06 05:19:16,102 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='fe:d5:85:6c:03:48' 
+2017-01-06 05:19:16,127 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='e2:38:51:78:d4:a9' 
+2017-01-06 05:19:16,177 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='aa:77:db:03:60:c7' 
+2017-01-06 05:19:16,178 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='36:d0:07:a6:2c:d1' 
+2017-01-06 05:19:16,192 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='8a:37:ae:5f:24:b2' 
+2017-01-06 05:19:16,216 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='72:42:78:78:4c:a0' 
+2017-01-06 05:19:16,275 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='26:da:26:11:3c:ff' 
+2017-01-06 05:19:16,285 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='e6:49:67:84:66:96' 
+2017-01-06 05:19:16,333 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='c6:74:43:9d:3e:d4' 
+2017-01-06 05:19:16,376 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='02:91:e8:93:1d:90' 
+2017-01-06 05:19:16,400 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='0a:c5:ab:b9:a6:11' 
+2017-01-06 05:19:16,401 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='42:11:76:bb:c2:8b' 
+2017-01-06 05:19:16,406 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ca:19:a1:b7:28:a0' 
+2017-01-06 05:19:16,452 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='6e:63:90:d8:3a:44' 
+2017-01-06 05:19:16,480 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='3e:04:0d:ae:aa:4d' 
+2017-01-06 05:19:16,480 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ca:fd:ae:ff:7f:c5' 
+2017-01-06 05:19:16,506 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='b2:63:b8:e1:ef:28' 
+2017-01-06 05:19:16,626 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='66:08:e7:3f:f2:58' 
+2017-01-06 05:19:16,686 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ce:fd:8a:92:35:dc' 
+2017-01-06 05:19:19,787 - DEBUG - broadcast received from src mac = 00:00:00:00:01:02 , switch dpid = 21 at in_port = 4
+2017-01-06 05:19:19,788 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:19:19,789 - DEBUG - KEY1 : Found dst_mac '00:00:00:00:02:02' for arp header dst ip '10.2.0.2' , puttin in arp reply
+2017-01-06 05:19:19,789 - DEBUG - Crafting an ARP reply
+2017-01-06 05:19:19,789 - DEBUG - Sending an arp reply in _send_packet
+2017-01-06 05:19:19,790 - INFO - crafted arp reply packet-out ethernet(dst='00:00:00:00:01:02',ethertype=2054,src='00:00:00:00:02:02'), arp(dst_ip='10.1.0.2',dst_mac='00:00:00:00:01:02',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.2.0.2',src_mac='00:00:00:00:02:02')
+2017-01-06 05:19:19,790 - DEBUG - Sending arp reply done
+2017-01-06 05:19:21,800 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:19:21,801 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:19:21,801 - DEBUG - KEY1 : Found dst_mac '00:00:00:00:01:02' for arp header dst ip '10.1.0.2' , puttin in arp reply
+2017-01-06 05:19:21,801 - DEBUG - Crafting an ARP reply
+2017-01-06 05:19:21,801 - DEBUG - Sending an arp reply in _send_packet
+2017-01-06 05:19:21,802 - INFO - crafted arp reply packet-out ethernet(dst='00:00:00:00:02:02',ethertype=2054,src='00:00:00:00:01:02'), arp(dst_ip='10.2.0.2',dst_mac='00:00:00:00:02:02',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.1.0.2',src_mac='00:00:00:00:01:02')
+2017-01-06 05:19:21,802 - DEBUG - Sending arp reply done
+2017-01-06 05:19:28,242 - DEBUG - broadcast received from src mac = 00:00:00:00:02:02 , switch dpid = 23 at in_port = 5
+2017-01-06 05:19:28,242 - DEBUG - RX_BCAST_SRC_MAC_ALREADY_LEARNT: Received a broadcast packet with source mac alrd in our l2_table, creating arp reply and attaching to OF packet_out
+2017-01-06 05:19:28,242 - DEBUG - KEY1 : Found dst_mac '00:00:00:00:01:01' for arp header dst ip '10.1.0.1' , puttin in arp reply
+2017-01-06 05:19:28,242 - DEBUG - Crafting an ARP reply
+2017-01-06 05:19:28,242 - DEBUG - Sending an arp reply in _send_packet
+2017-01-06 05:19:28,243 - INFO - crafted arp reply packet-out ethernet(dst='00:00:00:00:02:02',ethertype=2054,src='00:00:00:00:01:01'), arp(dst_ip='10.2.0.2',dst_mac='00:00:00:00:02:02',hlen=6,hwtype=1,opcode=2,plen=4,proto=2048,src_ip='10.1.0.1',src_mac='00:00:00:00:01:01')
+2017-01-06 05:19:28,243 - DEBUG - Sending arp reply done
+2017-01-06 05:20:19,351 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='62:5c:75:50:60:a3' 
+2017-01-06 05:20:19,390 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='6e:12:9e:c1:bb:61' 
+2017-01-06 05:20:19,477 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='2a:d0:fc:d5:b9:82' 
+2017-01-06 05:20:19,792 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='72:3b:46:b7:c6:93' 
+2017-01-06 05:20:19,830 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='32:58:51:c7:32:d9' 
+2017-01-06 05:20:19,830 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='6a:65:8e:c4:d9:d7' 
+2017-01-06 05:20:19,845 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='e2:58:35:38:c8:f0' 
+2017-01-06 05:20:20,040 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='d6:98:5d:a7:e4:a0' 
+2017-01-06 05:20:20,094 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ca:02:a4:fa:a2:44' 
+2017-01-06 05:20:20,103 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='fe:d5:85:6c:03:48' 
+2017-01-06 05:20:20,136 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='e2:38:51:78:d4:a9' 
+2017-01-06 05:20:20,177 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='aa:77:db:03:60:c7' 
+2017-01-06 05:20:20,178 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='36:d0:07:a6:2c:d1' 
+2017-01-06 05:20:20,191 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='8a:37:ae:5f:24:b2' 
+2017-01-06 05:20:20,216 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='72:42:78:78:4c:a0' 
+2017-01-06 05:20:20,276 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='26:da:26:11:3c:ff' 
+2017-01-06 05:20:20,295 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='e6:49:67:84:66:96' 
+2017-01-06 05:20:20,336 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='c6:74:43:9d:3e:d4' 
+2017-01-06 05:20:20,376 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='02:91:e8:93:1d:90' 
+2017-01-06 05:20:20,401 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='0a:c5:ab:b9:a6:11' 
+2017-01-06 05:20:20,401 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='42:11:76:bb:c2:8b' 
+2017-01-06 05:20:20,406 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ca:19:a1:b7:28:a0' 
+2017-01-06 05:20:20,453 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='6e:63:90:d8:3a:44' 
+2017-01-06 05:20:20,480 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='3e:04:0d:ae:aa:4d' 
+2017-01-06 05:20:20,481 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ca:fd:ae:ff:7f:c5' 
+2017-01-06 05:20:20,506 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='b2:63:b8:e1:ef:28' 
+2017-01-06 05:20:20,627 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='66:08:e7:3f:f2:58' 
+2017-01-06 05:20:20,687 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ce:fd:8a:92:35:dc' 
+2017-01-06 05:22:27,451 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='62:5c:75:50:60:a3' 
+2017-01-06 05:22:27,452 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='6e:12:9e:c1:bb:61' 
+2017-01-06 05:22:27,473 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='2a:d0:fc:d5:b9:82' 
+2017-01-06 05:22:27,792 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='72:3b:46:b7:c6:93' 
+2017-01-06 05:22:27,830 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='6a:65:8e:c4:d9:d7' 
+2017-01-06 05:22:27,831 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='32:58:51:c7:32:d9' 
+2017-01-06 05:22:27,845 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='e2:58:35:38:c8:f0' 
+2017-01-06 05:22:28,040 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='d6:98:5d:a7:e4:a0' 
+2017-01-06 05:22:28,093 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ca:02:a4:fa:a2:44' 
+2017-01-06 05:22:28,102 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='fe:d5:85:6c:03:48' 
+2017-01-06 05:22:28,134 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='e2:38:51:78:d4:a9' 
+2017-01-06 05:22:28,176 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='aa:77:db:03:60:c7' 
+2017-01-06 05:22:28,177 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='36:d0:07:a6:2c:d1' 
+2017-01-06 05:22:28,191 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='8a:37:ae:5f:24:b2' 
+2017-01-06 05:22:28,216 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='72:42:78:78:4c:a0' 
+2017-01-06 05:22:28,277 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='26:da:26:11:3c:ff' 
+2017-01-06 05:22:28,285 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='e6:49:67:84:66:96' 
+2017-01-06 05:22:28,337 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='c6:74:43:9d:3e:d4' 
+2017-01-06 05:22:28,371 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='02:91:e8:93:1d:90' 
+2017-01-06 05:22:28,399 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='0a:c5:ab:b9:a6:11' 
+2017-01-06 05:22:28,400 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='42:11:76:bb:c2:8b' 
+2017-01-06 05:22:28,405 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ca:19:a1:b7:28:a0' 
+2017-01-06 05:22:28,454 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='6e:63:90:d8:3a:44' 
+2017-01-06 05:22:28,482 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='3e:04:0d:ae:aa:4d' 
+2017-01-06 05:22:28,483 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ca:fd:ae:ff:7f:c5' 
+2017-01-06 05:22:28,506 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='b2:63:b8:e1:ef:28' 
+2017-01-06 05:22:28,628 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='66:08:e7:3f:f2:58' 
+2017-01-06 05:22:28,686 - DEBUG - Shall we Learn new MAC dst_mac='33:33:00:00:00:fb' src_mac='ce:fd:8a:92:35:dc' 

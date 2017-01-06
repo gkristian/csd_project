@@ -142,7 +142,7 @@ class CPM(app_manager.RyuApp):
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.modules_enabled = {'RPM': True, 'HUM': False,'NFM': False }
+        self.modules_enabled = {'RPM': False, 'HUM': True,'NFM': False }
         self.install_openflow_rules = True
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,
                           'flow_table_strategy_semi_proactive': True, 'logdir': '/var/www/html/spacey',
@@ -1214,17 +1214,27 @@ class CPM(app_manager.RyuApp):
             rpm_total_link_weight = 0.33 * rpm_link_weight  # All modules contribute equally to the output weight
             self.cpmlogger.debug("CALC_RPM_WEIGHT, src_node = %r , dst_node = %r, total_rpm_weight =  %r", src_node,dst_node,rpm_total_link_weight)
 
+        # If HUM enabled and hum data is not set to False then etner this block
         if self.modules_enabled['HUM'] and hum:
             #below two weights are from CSD metrics description document
             hum_core_weight = 0.9 #CPU utilization is more critical in our testbed where memory is not limited by the size of a TCAM
             hum_memory_weight = 0.1
-
-            hum_cores = hum[0][1]
+            #hum_metris as a sample is : [[u'core', {u'0': 11.11, u'1': 13.11,}]  , [u'memory', 89]]
+            #core dict is h[0][1]
+            #memory util is h[1][1]
+            hum_core_util_dict = hum[0][1]
             hum_memory = hum[1][1]
             #float doesnt work over itervalues
             #hum_total_weight = hum_core_weight * sum(float(hum_cores.itervalues)) + hum_memory_weight * float(hum_memory)
-            hum_total_weight = hum_core_weight * sum(hum_cores.itervalues) + hum_memory_weight * float(hum_memory)
+            hum_total_weight = 0
+            try:
+                hum_total_weight = hum_core_weight * sum(hum_core_util_dict.itervalues()) + hum_memory_weight * float(hum_memory)
+            except Exception:
+                self.cpmlogger.debug("Hum metrics data empty or invalid - seting hum_total_weight to 0")
+                hum_total_weight = 0 #better safe than sorry
+
             hum_total_weight = 0.333 * hum_total_weight
+            self.cpmlogger.debug("hum_total_weight contributed to link weight is = %r", hum_total_weight)
 
         link_weight = nfm_total_link_weight + rpm_total_link_weight + hum_total_weight
         return link_weight
@@ -1296,7 +1306,7 @@ class CPM(app_manager.RyuApp):
             return nfm_metrics_data
         else:
             #See my controller_core/tests/rest_nfm_get_with_packet_drops.py test script for more details
-            self.cpmlogger.debug("FETCH_NFM_METRICS: -----> EMPTY - nfm_metrics_data  = %r ", nfm_metrics_data)
+            self.cpmlogger.debug("FETCH_NFM_METRICS: -----> nfm_metrics_data  = %r ", nfm_metrics_data)
             #empty dicitionary like string evaluates to False
             if not(nfm_metrics_data[0][1] and nfm_metrics_data[1][1]):
                 self.cpmlogger.error("FETCH_NFM_METRICS : Empty NFM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served.")
@@ -1313,7 +1323,9 @@ class CPM(app_manager.RyuApp):
         h = [[u'core', {u'0': 11.11, u'1': 13.11,}]  , [u'memory', 89]]
         core dict is h[0][1]
         memory util is h[1][1]
+        #See my controller_core/tests/rest_hum_get.py test script for more details
         """
+
         hum_metrics_data = True
         #hum_what_metrics_to_fetch = {'module': 'nfm', 'keylist': ['link_utilization','packet_dropped']}
         hum_what_metrics_to_fetch = {'module': 'hum','keylist': ['core', 'memory']}
@@ -1324,14 +1336,15 @@ class CPM(app_manager.RyuApp):
             self.cpmlogger.error("FETCH_HUM_METRICS : HTTP Failure ...., Exception = %r",e)
             self.cpmlogger.error("FETCH_HUM_METRICS : HTTP Failure ...., Exception trace",exc_info=True)
             hum_metrics_data = False
-            return
+            return hum_metrics_data
         else:
-            #See my controller_core/tests/rest_hum_get.py test script for more details
-            if hum_metrics_data[0][1] and hum_metrics_data[1][1]:
+            #If core_utilization dict and memory utilization dict are empty
+            if not(hum_metrics_data[0][1] and hum_metrics_data[1][1]):
                 self.cpmlogger.error("FETCH_HUM_METRICS : Empty HUM data read, key value, either or both of link_util or packet_drop is empty. DM,DB running but blank data served")
                 hum_metrics_data = False
-            else:
-                self.cpmlogger.debug("FETCH_HUM_METRICS: OK - hum_metrics_data  = %r ", hum_metrics_data)
+
+        self.cpmlogger.debug("FETCH_HUM_METRICS: OK - hum_metrics_data  = %r ", hum_metrics_data)
+
         return hum_metrics_data
 
 

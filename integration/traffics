@@ -1,0 +1,45 @@
+h1 iperf3 -s | tee h1results.txt &
+h2 iperf3 -s | tee h2results.txt &
+h3 iperf3 -s | tee h3results.txt &
+h4 iperf3 -s | tee h4results.txt &
+f1 iperf3 -s | tee f1results.txt &
+f2 iperf3 -s | tee f2results.txt &
+f3 iperf3 -s | tee f3results.txt &
+f4 iperf3 -s | tee f4results.txt &
+u5 iperf3 -s | tee u5results.txt &
+u9 iperf3 -s | tee u9results.txt &
+u10 iperf3 -s | tee u10results.txt &
+v5 iperf3 -s | tee v5results.txt &
+v9 iperf3 -s | tee v9results.txt &
+v10 iperf3 -s | tee v10results.txt &
+
+u1 iperf3 -c 10.0.20.1 -u -b 10M -t 600 | tee u1results.txt &
+v8 iperf3 -c 10.0.10.9 -u -b 10M -t 600 | tee v8results.txt &
+u8 iperf3 -c 10.0.30.9 -u -b 10M -t 600 | tee u8results.txt &
+
+h1 sleep 60
+
+v3 iperf3 -c 10.0.10.5 -u -b 10M -t 480 | tee v3results.txt &
+v2 iperf3 -c 10.0.40.3 -u -b 10M -t 480 | tee v2results.txt &
+u3 iperf3 -c 10.0.30.5 -u -b 10M -t 480 | tee u3results.txt &
+
+h1 sleep 60
+
+u4 iperf3 -c 10.0.10.10 -u -b 10M -t 420 | tee u4results.txt &
+v4 iperf3 -c 10.0.30.10 -u -b 10M -t 420 | tee v4results.txt &
+
+h1 sleep 60
+
+v1 iperf3 -c 10.0.20.3 -u -b 10M -t 360 | tee v1results.txt &
+u2 iperf3 -c 10.0.40.1 -u -b 10M -t 360 | tee u2results.txt &
+
+h1 sleep 60
+
+u6 iperf3 -c 10.0.20.2 -u -b 10M -t 300 | tee u6results.txt &
+v6 iperf3 -c 10.0.20.4 -u -b 10M -t 300 | tee v6results.txt &
+u7 iperf3 -c 10.0.40.2 -u -b 10M -t 300 | tee u7results.txt &
+v7 iperf3 -c 10.0.40.4 -u -b 10M -t 300 | tee v7results.txt &
+
+h1 sleep 360
+
+h1 killall iperf3

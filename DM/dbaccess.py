@@ -45,7 +45,7 @@ class dbaccess(object):
         """
         q1_nfm_util = "CREATE TABLE IF NOT EXISTS nfm_util(timestamp VARCHAR(30),link VARCHAR(20),util FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,link))"
         q1_nfm_dropped = "CREATE TABLE IF NOT EXISTS nfm_dropped(timestamp VARCHAR(30),DPID VARCHAR(20),dropped FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,DPID))" 
-        q1_rpm = "CREATE TABLE IF NOT EXISTS rpm(timestamp VARCHAR(30),switch VARCHAR(20),median FLOAT, 25th FLOAT, 75th FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,switch))"
+        q1_rpm = "CREATE TABLE IF NOT EXISTS rpm(timestamp VARCHAR(30),switch VARCHAR(20),median FLOAT, 25th FLOAT, 75th FLOAT, normalized_latency FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp,switch))"
         #q1_rpm_stat = "CREATE TABLE IF NOT EXISTS rpm_stat(timestamp VARCHAR(30), max FLOAT, min FLOAT, mean FLOAT, median FLOAT, 25th FLOAT, 75th FLOAT, CONSTRAINT timelink PRIMARY KEY (timestamp))" 
         q1_hum = "CREATE TABLE IF NOT EXISTS hum(timestamp VARCHAR(30),core LONGTEXT,memory FLOAT, PRIMARY KEY (timestamp))"
 
@@ -142,7 +142,7 @@ class dbaccess(object):
                 latency = latencies[dpid]["median_latency"]
                 # -1 means no latency yet recorded
                 if latency != -1:
-                    q_insert = "INSERT INTO rpm(timestamp,switch,median,25th,75th) VALUES ('%s','%s',%f,%f,%f)" % (timestamp, dpid, latencies[dpid]["median_latency"], latencies[dpid]["25th_latency"], latencies[dpid]["75th_latency"])
+                    q_insert = "INSERT INTO rpm(timestamp,switch,median,25th,75th, normalized_latency) VALUES ('%s','%s',%f,%f,%f,%f)" % (timestamp, dpid, latencies[dpid]["median_latency"], latencies[dpid]["25th_latency"], latencies[dpid]["75th_latency"], latencies[dpid]["normalized_current_latency"])
                     cursor.execute(q_insert)
                     #Commit changes in the database
                     db.commit()

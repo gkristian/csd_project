@@ -255,7 +255,8 @@ class NFM(app_manager.RyuApp):
 				try:
 					TO_UTILS = self.linkUtilizations[TO]
 					TO_UTIL = TO_UTILS[FROM]
-					TOTAL_UTIL = FROM_UTIL + TO_UTIL
+					#TOTAL_UTIL = FROM_UTIL + TO_UTIL
+					TOTAL_UTIL = FROM_UTIL
 					TOTAL_UTIL_STRING = "{0:.2f}%".format(TOTAL_UTIL)
 					self.logger.debug("TOTAL UTILIZATION %d -> %d: %s", FROM, TO, TOTAL_UTIL_STRING)
 					DPID_TO_DPID = str(FROM)+'-'+str(TO)

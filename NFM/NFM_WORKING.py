@@ -33,31 +33,30 @@ class NFM(app_manager.RyuApp):
 		#self.net = app_manager._CONTEXTS['network']	#fetch graph object of physical network
 		self.shared_context = kwargs['network']  # fetch graph object of physical network
 		#self.shared_list = kwargs['dpidlist']
-		self.listDPID = []
 		self.net = self.shared_context.learnt_topology  ## net is a reference to learn_topology
 		#self.cpm_bootstrap_complete = app_manager._CONTEXTS['bootstrap_complete']  # fetch graph object of physical network
 		#self.cpm_bootstrap_complete = self.shared_context.bootstrap_complete ## this is NOT a reference to bootstrap complete because
 		# boostrap_complete isa primitive (see mutable/immutable discussion in python by refernce and pass by value)
-		self.csdlogger = logging.getLogger("NFM" + __name__)
-		self.csdlogger.setLevel(logging.DEBUG)
-		handler = logging.FileHandler('/var/www/html/spacey/nfmlog.log')
-		handler.setLevel(logging.DEBUG)
+		#self.csdlogger = logging.getLogger("NFM" + __name__)
+		#self.csdlogger.setLevel(logging.DEBUG)
+		#handler = logging.FileHandler('/var/www/html/spacey/nfmlog.log')
+		#handler.setLevel(logging.DEBUG)
 		# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-		formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-		handler.setFormatter(formatter)
-		self.csdlogger.addHandler(handler)
-		self.csdlogger.info("Starting up NFMlogger. edges are %r", self.net.edges())
+		#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+		#handler.setFormatter(formatter)
+		#self.csdlogger.addHandler(handler)
+		#self.csdlogger.info("Starting up NFMlogger. edges are %r", self.net.edges())
 
 
-		self.csdlogger.debug("NFM init  - self.net has nodes = %r",self.net.nodes())
-		self.csdlogger.debug("init self.shared_context.bootstrap_complete = %r", self.shared_context.bootstrap_complete)
+		#self.csdlogger.debug("NFM init  - self.net has nodes = %r",self.net.nodes())
+		#self.csdlogger.debug("init self.shared_context.bootstrap_complete = %r", self.shared_context.bootstrap_complete)
 		self.logger.debug("NFM init - self.net has edges = %r", self.net.edges())
 
 		#self.totalSwitches = self.determineNumberOfSwitches()	#calculate total switches by the graph topology object
 
 		#self.logger.info("NFM init TOTAL SWITCHES: %d", self.totalSwitches)
 		#self.csdlogger.info("NFM init TOTAL SWITCHES: %d", self.totalSwitches)
-		self.DICT_TO_DB = {'module':'nfm'}	#prepare a dictionary for updating and sending to Database
+		self.DICT_TO_DB = {'module':'nfm', 'packet_dropped':{}}	#prepare a dictionary for updating and sending to Database
 		self.pathComponents = {}
 		self.updateTime = 3
 		#self.flow_request_semaphore = threading.Event()
@@ -68,7 +67,6 @@ class NFM(app_manager.RyuApp):
 		#self.DMclient = client_side("http://127.0.0.1:8000/Tasks.txt")	#instance of Database module client
 		self.responsedSwitches = 0	#counter for amount of switch flows retrieving after a request
 		self.responsedSwitchesPortStatus = 0
-		self.flows = {}		#dictionary to store each switch's flows
 		self.dropped = {}	#dictionary to store dropped packets for each dp
 		self.transmittedBytes = {}	#dictionary to keep track of previous transmitted bytes
 		self.linkUtilizations = {}	#dictionary to keep track of link utilizations
@@ -116,19 +114,6 @@ class NFM(app_manager.RyuApp):
 		if self.totalSwitches == 0:
 			self.port_stat_request_semaphore.set()
 
-	"""
-	Function to calculate the number of switches in the physical topology with the help of graph object
-	"""
-	def determineNumberOfSwitches(self):
-		if len(self.listDPID) == 0:
-			for n in self.net.nodes():
-				if len(str(n).split(':')) == 1:
-					self.listDPID.append(self.getDatapathFromDPID(n))
-		return len(self.listDPID)
-		#return len([n for n in self.net.nodes() if len(str(n).split(':')) == 1])
-
-	def getDatapathFromDPID(self, dpid):
-		return api.get_datapath(self, dpid)
 
 
 	"""
@@ -136,7 +121,6 @@ class NFM(app_manager.RyuApp):
 	"""
 	def _monitor(self):
 		self.port_stat_request_semaphore.set()
-		#hub.sleep(10)
 		while True:
 			#print "-----------REQUESTING PORT STAT--------------"
 			#self.logger.debug("---------------------REQUESTING PORT STAT...")
@@ -172,16 +156,6 @@ class NFM(app_manager.RyuApp):
 		#datapath.send_msg(req)							DON'T USE THIS NOW
 		req = parser.OFPPortStatsRequest(datapath, 0, ofproto.OFPP_ANY)
 		datapath.send_msg(req)
-
-
-
-	"""
-	Function to print the event statistics as json dump
-	"""
-	def print_json(self, ev):
-		self.logger.error('datapath id: %016x', ev.msg.datapath.id)
-		self.logger.error('%s', json.dumps(ev.msg.to_jsondict(), ensure_ascii=True,
-						indent=3, sort_keys=True))
 
 
 	"""
@@ -232,7 +206,7 @@ class NFM(app_manager.RyuApp):
 	"""
 	def calculate_dropped_packets(self, ev):
 
-		self.DICT_TO_DB['packet_dropped'] = {}
+		#self.DICT_TO_DB['packet_dropped'] = {}
 
 		body = ev.msg.body
 		rx_packets = 0
@@ -254,9 +228,9 @@ class NFM(app_manager.RyuApp):
 			diff_tx = tx_packets - stored_tx_packets
 			dropped = diff_rx - diff_tx
 			percentage = 0.0
-			if diff_rx != 0:
+			if diff_rx != 0:	#if there is a difference between received and transmitted packets
 				percentage = float(dropped) / float(diff_rx)
-				if percentage < 0:
+				if percentage < 0:	#only allow positive values
 					percentage = 0
 			percentage_string = "{0:.2f}%".format(100*percentage)
 			self.logger.debug('DROPPED PACKETS PERCENTAGE ON SWITCH %x: %s', ev.msg.datapath.id, percentage_string)
@@ -325,7 +299,7 @@ class NFM(app_manager.RyuApp):
 
 	def pushDataToDM(self):
 		print "-..................PUSHING...........-"
-		url = 'http://130.229.146.35:8000/Tasks.txt'
+		url = 'http://127.0.0.1:8000/Tasks.txt'
 		DMclient = client_side(url)
 		response = DMclient.postme(self.DICT_TO_DB)
 		self.logger.debug("response is", response)

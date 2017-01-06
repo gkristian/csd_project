@@ -1,0 +1,5 @@
+2017-01-06 01:07:22,422 - INFO - Starting up NFMlogger. edges are []
+2017-01-06 01:07:22,422 - DEBUG - NFM init  - self.net has nodes = []
+2017-01-06 01:07:22,422 - DEBUG - init self.shared_context.bootstrap_complete = False
+2017-01-06 01:08:49,189 - DEBUG - Total responsed datapaths 8
+2017-01-06 01:08:49,190 - DEBUG - NFM : REST pushing this now : DICT_TO_DB = {'packet_dropped': {}, 'link_utilization': {}, 'module': 'nfm', 'timestamp': '2017-01-06 01:08:49.190001'}

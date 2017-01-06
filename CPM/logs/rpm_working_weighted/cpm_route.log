@@ -1,0 +1,314 @@
+2017-01-06 03:40:02,240 - INFO - Initializing CPM routelogger
+2017-01-06 03:40:55,158 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:40:55,158 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:02:01' that exist in our graph
+2017-01-06 03:40:55,158 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:02:01' , dst = '00:00:00:00:01:02' 
+2017-01-06 03:40:55,187 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:41:04,164 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:04,164 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:02:02' that exist in our graph
+2017-01-06 03:41:04,164 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:02:02' , dst = '00:00:00:00:01:02' 
+2017-01-06 03:41:04,205 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:41:08,739 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:08,739 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='56:ec:a5:1f:91:1f'  
+2017-01-06 03:41:08,740 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:08,740 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='76:12:23:3a:9e:31'  
+2017-01-06 03:41:08,848 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:08,848 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='c6:c0:07:e8:d0:e2'  
+2017-01-06 03:41:08,875 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:08,875 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='aa:9d:a1:8a:9e:65'  
+2017-01-06 03:41:08,877 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:08,877 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='fe:15:2b:bc:08:d0'  
+2017-01-06 03:41:08,934 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:08,934 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='2e:a6:a6:98:a0:fb'  
+2017-01-06 03:41:08,987 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:08,988 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='f2:4f:cd:df:3b:7b'  
+2017-01-06 03:41:09,002 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,002 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='7e:6e:a0:34:09:d6'  
+2017-01-06 03:41:09,025 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,025 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='6e:16:c0:26:74:97'  
+2017-01-06 03:41:09,036 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,037 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='2e:cc:a0:be:0e:13'  
+2017-01-06 03:41:09,037 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,037 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='3e:78:45:fc:67:dc'  
+2017-01-06 03:41:09,070 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,070 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='7e:7e:7e:0d:9e:20'  
+2017-01-06 03:41:09,088 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,088 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='ba:1f:fb:67:ff:7f'  
+2017-01-06 03:41:09,088 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,088 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='da:50:cb:c7:06:c6'  
+2017-01-06 03:41:09,109 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,110 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='1a:e5:41:57:60:3f'  
+2017-01-06 03:41:09,160 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,160 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='be:29:04:f2:22:ea'  
+2017-01-06 03:41:09,163 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,163 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='da:83:4f:12:36:c0'  
+2017-01-06 03:41:09,196 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,196 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='ca:14:b4:ca:17:25'  
+2017-01-06 03:41:09,320 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,320 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='6e:ac:f4:e8:82:77'  
+2017-01-06 03:41:09,343 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,343 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='1e:98:84:bf:48:37'  
+2017-01-06 03:41:09,506 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,506 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='a2:a3:f8:7e:9b:00'  
+2017-01-06 03:41:09,515 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,516 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='7a:e5:25:34:cc:cc'  
+2017-01-06 03:41:09,569 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,569 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='62:08:8f:dd:8c:f0'  
+2017-01-06 03:41:09,613 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,613 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='a2:4d:f7:88:cd:d4'  
+2017-01-06 03:41:09,636 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,636 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='f2:02:f9:31:10:25'  
+2017-01-06 03:41:09,672 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,672 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='de:2b:2b:a4:bd:8d'  
+2017-01-06 03:41:09,715 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,715 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='c2:f0:16:03:a5:7b'  
+2017-01-06 03:41:09,880 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:09,880 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='de:d0:6c:1b:10:57'  
+2017-01-06 03:41:14,170 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:14,170 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:01:01' that exist in our graph
+2017-01-06 03:41:14,171 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:01:01' , dst = '00:00:00:00:01:02' 
+2017-01-06 03:41:14,211 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:41:43,382 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:43,382 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:01:02' that exist in our graph
+2017-01-06 03:41:43,382 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:01:02' , dst = '00:00:00:00:01:01' 
+2017-01-06 03:41:43,416 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:41:44,384 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:44,384 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:01:02' that exist in our graph
+2017-01-06 03:41:44,384 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:01:02' , dst = '00:00:00:00:01:01' 
+2017-01-06 03:41:44,415 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:41:44,416 - DEBUG - Installing path : ['00:00:00:00:01:01', 21, '00:00:00:00:01:02']
+2017-01-06 03:41:44,416 - DEBUG - Installing rule : iteration = 1
+2017-01-06 03:41:44,416 - DEBUG - FWD FLOW in_port computed = self.net.edge['00:00:00:00:01:01'][21]['dst_port'] = 3
+2017-01-06 03:41:44,416 - DEBUG - FWD FLOW out_port computed = self.net.edge[21]['00:00:00:00:01:02']['src_port'] = 4 
+2017-01-06 03:41:44,416 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 3 ==== 21 === 4 -----> '00:00:00:00:01:02' 
+2017-01-06 03:41:44,418 - DEBUG - Installing rule : iteration = 1  
+2017-01-06 03:41:44,418 - DEBUG - REV FLOW in_port computed = self.net.edge['00:00:00:00:01:02'][21]['dst_port/in_port'] = 4
+2017-01-06 03:41:44,418 - DEBUG - REV LOW out_port computed = self.net.edge[21]['00:00:00:00:01:01']['src_port/out_port'] = 3
+2017-01-06 03:41:44,418 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:02' -----> 4 ==== 21 === 3 -----> '00:00:00:00:01:01' 
+2017-01-06 03:41:48,072 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:48,072 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:02:01' that exist in our graph
+2017-01-06 03:41:48,072 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:02:01' , dst = '00:00:00:00:01:01' 
+2017-01-06 03:41:48,166 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:41:49,073 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:49,074 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:02:01' that exist in our graph
+2017-01-06 03:41:49,074 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:02:01' , dst = '00:00:00:00:01:01' 
+2017-01-06 03:41:49,140 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:41:49,140 - DEBUG - Installing path : ['00:00:00:00:01:01', 21, 22, 23, '00:00:00:00:02:01']
+2017-01-06 03:41:49,140 - DEBUG - Installing rule : iteration = 1
+2017-01-06 03:41:49,141 - DEBUG - FWD FLOW in_port computed = self.net.edge['00:00:00:00:01:01'][21]['dst_port'] = 3
+2017-01-06 03:41:49,141 - DEBUG - FWD FLOW out_port computed = self.net.edge[21][22]['src_port'] = 2 
+2017-01-06 03:41:49,141 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 3 ==== 21 === 2 -----> '00:00:00:00:02:01' 
+2017-01-06 03:41:49,142 - DEBUG - Installing rule : iteration = 2
+2017-01-06 03:41:49,142 - DEBUG - FWD FLOW in_port computed = self.net.edge[21][22]['dst_port'] = 3
+2017-01-06 03:41:49,142 - DEBUG - FWD FLOW out_port computed = self.net.edge[22][23]['src_port'] = 4 
+2017-01-06 03:41:49,142 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 3 ==== 22 === 4 -----> '00:00:00:00:02:01' 
+2017-01-06 03:41:49,143 - DEBUG - Installing rule : iteration = 3
+2017-01-06 03:41:49,144 - DEBUG - FWD FLOW in_port computed = self.net.edge[22][23]['dst_port'] = 2
+2017-01-06 03:41:49,144 - DEBUG - FWD FLOW out_port computed = self.net.edge[23]['00:00:00:00:02:01']['src_port'] = 4 
+2017-01-06 03:41:49,144 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 2 ==== 23 === 4 -----> '00:00:00:00:02:01' 
+2017-01-06 03:41:49,144 - DEBUG - Installing rule : iteration = 3  
+2017-01-06 03:41:49,145 - DEBUG - REV FLOW in_port computed = self.net.edge['00:00:00:00:02:01'][23]['dst_port/in_port'] = 4
+2017-01-06 03:41:49,145 - DEBUG - REV LOW out_port computed = self.net.edge[23][22]['src_port/out_port'] = 2
+2017-01-06 03:41:49,145 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:01' -----> 4 ==== 23 === 2 -----> '00:00:00:00:01:01' 
+2017-01-06 03:41:49,146 - DEBUG - Installing rule : iteration = 2  
+2017-01-06 03:41:49,146 - DEBUG - REV FLOW in_port computed = self.net.edge[23][22]['dst_port/in_port'] = 4
+2017-01-06 03:41:49,146 - DEBUG - REV LOW out_port computed = self.net.edge[22][21]['src_port/out_port'] = 3
+2017-01-06 03:41:49,146 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:01' -----> 4 ==== 22 === 3 -----> '00:00:00:00:01:01' 
+2017-01-06 03:41:49,147 - DEBUG - Installing rule : iteration = 1  
+2017-01-06 03:41:49,147 - DEBUG - REV FLOW in_port computed = self.net.edge[22][21]['dst_port/in_port'] = 2
+2017-01-06 03:41:49,147 - DEBUG - REV LOW out_port computed = self.net.edge[21]['00:00:00:00:01:01']['src_port/out_port'] = 3
+2017-01-06 03:41:49,147 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:01' -----> 2 ==== 21 === 3 -----> '00:00:00:00:01:01' 
+2017-01-06 03:41:52,760 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:52,760 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:02:02' that exist in our graph
+2017-01-06 03:41:52,761 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:02:02' , dst = '00:00:00:00:01:01' 
+2017-01-06 03:41:52,797 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:41:53,752 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:53,752 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:02:02' that exist in our graph
+2017-01-06 03:41:53,753 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:02:02' , dst = '00:00:00:00:01:01' 
+2017-01-06 03:41:53,789 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:41:53,790 - DEBUG - Installing path : ['00:00:00:00:01:01', 21, 22, 23, '00:00:00:00:02:02']
+2017-01-06 03:41:53,790 - DEBUG - Installing rule : iteration = 1
+2017-01-06 03:41:53,790 - DEBUG - FWD FLOW in_port computed = self.net.edge['00:00:00:00:01:01'][21]['dst_port'] = 3
+2017-01-06 03:41:53,790 - DEBUG - FWD FLOW out_port computed = self.net.edge[21][22]['src_port'] = 2 
+2017-01-06 03:41:53,790 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 3 ==== 21 === 2 -----> '00:00:00:00:02:02' 
+2017-01-06 03:41:53,791 - DEBUG - Installing rule : iteration = 2
+2017-01-06 03:41:53,791 - DEBUG - FWD FLOW in_port computed = self.net.edge[21][22]['dst_port'] = 3
+2017-01-06 03:41:53,791 - DEBUG - FWD FLOW out_port computed = self.net.edge[22][23]['src_port'] = 4 
+2017-01-06 03:41:53,791 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 3 ==== 22 === 4 -----> '00:00:00:00:02:02' 
+2017-01-06 03:41:53,792 - DEBUG - Installing rule : iteration = 3
+2017-01-06 03:41:53,792 - DEBUG - FWD FLOW in_port computed = self.net.edge[22][23]['dst_port'] = 2
+2017-01-06 03:41:53,792 - DEBUG - FWD FLOW out_port computed = self.net.edge[23]['00:00:00:00:02:02']['src_port'] = 5 
+2017-01-06 03:41:53,792 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:01' -----> 2 ==== 23 === 5 -----> '00:00:00:00:02:02' 
+2017-01-06 03:41:53,793 - DEBUG - Installing rule : iteration = 3  
+2017-01-06 03:41:53,793 - DEBUG - REV FLOW in_port computed = self.net.edge['00:00:00:00:02:02'][23]['dst_port/in_port'] = 5
+2017-01-06 03:41:53,793 - DEBUG - REV LOW out_port computed = self.net.edge[23][22]['src_port/out_port'] = 2
+2017-01-06 03:41:53,793 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:02' -----> 5 ==== 23 === 2 -----> '00:00:00:00:01:01' 
+2017-01-06 03:41:53,794 - DEBUG - Installing rule : iteration = 2  
+2017-01-06 03:41:53,794 - DEBUG - REV FLOW in_port computed = self.net.edge[23][22]['dst_port/in_port'] = 4
+2017-01-06 03:41:53,794 - DEBUG - REV LOW out_port computed = self.net.edge[22][21]['src_port/out_port'] = 3
+2017-01-06 03:41:53,795 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:02' -----> 4 ==== 22 === 3 -----> '00:00:00:00:01:01' 
+2017-01-06 03:41:53,796 - DEBUG - Installing rule : iteration = 1  
+2017-01-06 03:41:53,796 - DEBUG - REV FLOW in_port computed = self.net.edge[22][21]['dst_port/in_port'] = 2
+2017-01-06 03:41:53,796 - DEBUG - REV LOW out_port computed = self.net.edge[21]['00:00:00:00:01:01']['src_port/out_port'] = 3
+2017-01-06 03:41:53,796 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:02' -----> 2 ==== 21 === 3 -----> '00:00:00:00:01:01' 
+2017-01-06 03:41:59,355 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:41:59,356 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:02:02' that exist in our graph
+2017-01-06 03:41:59,356 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:02:02' , dst = '00:00:00:00:02:01' 
+2017-01-06 03:41:59,395 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:42:00,355 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:00,355 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:02:02' that exist in our graph
+2017-01-06 03:42:00,355 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:02:02' , dst = '00:00:00:00:02:01' 
+2017-01-06 03:42:00,387 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:42:00,388 - DEBUG - Installing path : ['00:00:00:00:02:01', 23, '00:00:00:00:02:02']
+2017-01-06 03:42:00,388 - DEBUG - Installing rule : iteration = 1
+2017-01-06 03:42:00,388 - DEBUG - FWD FLOW in_port computed = self.net.edge['00:00:00:00:02:01'][23]['dst_port'] = 4
+2017-01-06 03:42:00,388 - DEBUG - FWD FLOW out_port computed = self.net.edge[23]['00:00:00:00:02:02']['src_port'] = 5 
+2017-01-06 03:42:00,388 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:01' -----> 4 ==== 23 === 5 -----> '00:00:00:00:02:02' 
+2017-01-06 03:42:00,389 - DEBUG - Installing rule : iteration = 1  
+2017-01-06 03:42:00,389 - DEBUG - REV FLOW in_port computed = self.net.edge['00:00:00:00:02:02'][23]['dst_port/in_port'] = 5
+2017-01-06 03:42:00,389 - DEBUG - REV LOW out_port computed = self.net.edge[23]['00:00:00:00:02:01']['src_port/out_port'] = 4
+2017-01-06 03:42:00,389 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:02' -----> 5 ==== 23 === 4 -----> '00:00:00:00:02:01' 
+2017-01-06 03:42:05,923 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:05,923 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:01:02' that exist in our graph
+2017-01-06 03:42:05,923 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:01:02' , dst = '00:00:00:00:02:01' 
+2017-01-06 03:42:05,964 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:42:06,920 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:06,920 - DEBUG - SPATH: Received ARP to specific dst mac '00:00:00:00:01:02' that exist in our graph
+2017-01-06 03:42:06,921 - DEBUG - SPATH Do we have a path to this destination mac? src= '00:00:00:00:01:02' , dst = '00:00:00:00:02:01' 
+2017-01-06 03:42:06,958 - DEBUG - WEIGHTED_ROUTING enabled, type = 'dijkrsta'
+2017-01-06 03:42:06,959 - DEBUG - Installing path : ['00:00:00:00:02:01', 23, 22, 21, '00:00:00:00:01:02']
+2017-01-06 03:42:06,959 - DEBUG - Installing rule : iteration = 1
+2017-01-06 03:42:06,959 - DEBUG - FWD FLOW in_port computed = self.net.edge['00:00:00:00:02:01'][23]['dst_port'] = 4
+2017-01-06 03:42:06,959 - DEBUG - FWD FLOW out_port computed = self.net.edge[23][22]['src_port'] = 2 
+2017-01-06 03:42:06,959 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:01' -----> 4 ==== 23 === 2 -----> '00:00:00:00:01:02' 
+2017-01-06 03:42:06,961 - DEBUG - Installing rule : iteration = 2
+2017-01-06 03:42:06,961 - DEBUG - FWD FLOW in_port computed = self.net.edge[23][22]['dst_port'] = 4
+2017-01-06 03:42:06,961 - DEBUG - FWD FLOW out_port computed = self.net.edge[22][21]['src_port'] = 3 
+2017-01-06 03:42:06,961 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:01' -----> 4 ==== 22 === 3 -----> '00:00:00:00:01:02' 
+2017-01-06 03:42:06,962 - DEBUG - Installing rule : iteration = 3
+2017-01-06 03:42:06,962 - DEBUG - FWD FLOW in_port computed = self.net.edge[22][21]['dst_port'] = 2
+2017-01-06 03:42:06,963 - DEBUG - FWD FLOW out_port computed = self.net.edge[21]['00:00:00:00:01:02']['src_port'] = 4 
+2017-01-06 03:42:06,963 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:02:01' -----> 2 ==== 21 === 4 -----> '00:00:00:00:01:02' 
+2017-01-06 03:42:06,964 - DEBUG - Installing rule : iteration = 3  
+2017-01-06 03:42:06,965 - DEBUG - REV FLOW in_port computed = self.net.edge['00:00:00:00:01:02'][21]['dst_port/in_port'] = 4
+2017-01-06 03:42:06,965 - DEBUG - REV LOW out_port computed = self.net.edge[21][22]['src_port/out_port'] = 2
+2017-01-06 03:42:06,965 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:02' -----> 4 ==== 21 === 2 -----> '00:00:00:00:02:01' 
+2017-01-06 03:42:06,966 - DEBUG - Installing rule : iteration = 2  
+2017-01-06 03:42:06,966 - DEBUG - REV FLOW in_port computed = self.net.edge[21][22]['dst_port/in_port'] = 3
+2017-01-06 03:42:06,966 - DEBUG - REV LOW out_port computed = self.net.edge[22][23]['src_port/out_port'] = 4
+2017-01-06 03:42:06,966 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:02' -----> 3 ==== 22 === 4 -----> '00:00:00:00:02:01' 
+2017-01-06 03:42:06,967 - DEBUG - Installing rule : iteration = 1  
+2017-01-06 03:42:06,967 - DEBUG - REV FLOW in_port computed = self.net.edge[22][23]['dst_port/in_port'] = 2
+2017-01-06 03:42:06,967 - DEBUG - REV LOW out_port computed = self.net.edge[23]['00:00:00:00:02:01']['src_port/out_port'] = 4
+2017-01-06 03:42:06,967 - DEBUG - FLOWMOD_1 : installing rule: '00:00:00:00:01:02' -----> 2 ==== 23 === 4 -----> '00:00:00:00:02:01' 
+2017-01-06 03:42:12,784 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:12,784 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='56:ec:a5:1f:91:1f'  
+2017-01-06 03:42:12,833 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:12,833 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='76:12:23:3a:9e:31'  
+2017-01-06 03:42:12,886 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:12,886 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='c6:c0:07:e8:d0:e2'  
+2017-01-06 03:42:12,936 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:12,936 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='fe:15:2b:bc:08:d0'  
+2017-01-06 03:42:12,937 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:12,937 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='aa:9d:a1:8a:9e:65'  
+2017-01-06 03:42:12,977 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:12,977 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='2e:a6:a6:98:a0:fb'  
+2017-01-06 03:42:12,998 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:12,998 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='f2:4f:cd:df:3b:7b'  
+2017-01-06 03:42:13,005 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,006 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='7e:6e:a0:34:09:d6'  
+2017-01-06 03:42:13,034 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,034 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='6e:16:c0:26:74:97'  
+2017-01-06 03:42:13,042 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,043 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='3e:78:45:fc:67:dc'  
+2017-01-06 03:42:13,048 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,048 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='2e:cc:a0:be:0e:13'  
+2017-01-06 03:42:13,069 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,069 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='7e:7e:7e:0d:9e:20'  
+2017-01-06 03:42:13,091 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,092 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='ba:1f:fb:67:ff:7f'  
+2017-01-06 03:42:13,093 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,093 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='da:50:cb:c7:06:c6'  
+2017-01-06 03:42:13,111 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,111 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='1a:e5:41:57:60:3f'  
+2017-01-06 03:42:13,161 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,162 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='be:29:04:f2:22:ea'  
+2017-01-06 03:42:13,170 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,170 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='da:83:4f:12:36:c0'  
+2017-01-06 03:42:13,196 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,196 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='ca:14:b4:ca:17:25'  
+2017-01-06 03:42:13,326 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,327 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='6e:ac:f4:e8:82:77'  
+2017-01-06 03:42:13,394 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,394 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='1e:98:84:bf:48:37'  
+2017-01-06 03:42:13,512 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,512 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='a2:a3:f8:7e:9b:00'  
+2017-01-06 03:42:13,519 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,519 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='7a:e5:25:34:cc:cc'  
+2017-01-06 03:42:13,569 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,569 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='62:08:8f:dd:8c:f0'  
+2017-01-06 03:42:13,613 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,614 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='a2:4d:f7:88:cd:d4'  
+2017-01-06 03:42:13,627 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,627 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='f2:02:f9:31:10:25'  
+2017-01-06 03:42:13,665 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,665 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='de:2b:2b:a4:bd:8d'  
+2017-01-06 03:42:13,715 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,715 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='c2:f0:16:03:a5:7b'  
+2017-01-06 03:42:13,882 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:42:13,882 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='de:d0:6c:1b:10:57'  
+2017-01-06 03:44:20,847 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:20,847 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='56:ec:a5:1f:91:1f'  
+2017-01-06 03:44:20,848 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:20,848 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='76:12:23:3a:9e:31'  
+2017-01-06 03:44:20,857 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:20,858 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='c6:c0:07:e8:d0:e2'  
+2017-01-06 03:44:20,871 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:20,872 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='aa:9d:a1:8a:9e:65'  
+2017-01-06 03:44:20,879 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:20,880 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='fe:15:2b:bc:08:d0'  
+2017-01-06 03:44:20,975 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:20,979 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='2e:a6:a6:98:a0:fb'  
+2017-01-06 03:44:21,048 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,048 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='f2:4f:cd:df:3b:7b'  
+2017-01-06 03:44:21,049 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,049 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='7e:6e:a0:34:09:d6'  
+2017-01-06 03:44:21,102 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,102 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='3e:78:45:fc:67:dc'  
+2017-01-06 03:44:21,108 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,108 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='6e:16:c0:26:74:97'  
+2017-01-06 03:44:21,109 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,110 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='2e:cc:a0:be:0e:13'  
+2017-01-06 03:44:21,152 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,152 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='ba:1f:fb:67:ff:7f'  
+2017-01-06 03:44:21,153 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,157 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='1a:e5:41:57:60:3f'  
+2017-01-06 03:44:21,158 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,159 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='7e:7e:7e:0d:9e:20'  
+2017-01-06 03:44:21,169 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,169 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='da:50:cb:c7:06:c6'  
+2017-01-06 03:44:21,188 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,188 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='da:83:4f:12:36:c0'  
+2017-01-06 03:44:21,191 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,191 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='be:29:04:f2:22:ea'  
+2017-01-06 03:44:21,213 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,214 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='ca:14:b4:ca:17:25'  
+2017-01-06 03:44:21,324 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,324 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='6e:ac:f4:e8:82:77'  
+2017-01-06 03:44:21,345 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,345 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='1e:98:84:bf:48:37'  
+2017-01-06 03:44:21,508 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,508 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='a2:a3:f8:7e:9b:00'  
+2017-01-06 03:44:21,513 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,513 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='7a:e5:25:34:cc:cc'  
+2017-01-06 03:44:21,571 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,572 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='62:08:8f:dd:8c:f0'  
+2017-01-06 03:44:21,616 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,616 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='a2:4d:f7:88:cd:d4'  
+2017-01-06 03:44:21,628 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,629 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='f2:02:f9:31:10:25'  
+2017-01-06 03:44:21,665 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,665 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='de:2b:2b:a4:bd:8d'  
+2017-01-06 03:44:21,715 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,716 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='c2:f0:16:03:a5:7b'  
+2017-01-06 03:44:21,882 - DEBUG - __________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________
+2017-01-06 03:44:21,882 - DEBUG -  Unable to find path from  src_mac='33:33:00:00:00:fb' to dst_mac='de:d0:6c:1b:10:57'  

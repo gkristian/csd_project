@@ -76,7 +76,8 @@ class Configuration(object):
     """
     def __init__(self):
         #self.module_metric_data_read_mode = {'loop_over_module_metrics_instead_of_topology': False}
-        self.disable_weighted_routing= True #this is not being used at the moment
+        self.enable_weighted_routing= True
+        self.weighted_routing_type = 'dijkrsta'
         """
         # 'praoctive', 'reactive' , 'semi_proactive'
         # only semiproactive strategy is currently implemented. It causes rules to be installed when CPM receives the packet to be routed for the first time, computes a
@@ -89,6 +90,7 @@ class SharedContext (object):
         self.learnt_topology = nx.DiGraph()
         self.bootstrap_complete = False
         self.time_of_last_fetch = 0
+
 
 #***********************************************************
 
@@ -140,7 +142,7 @@ class CPM(app_manager.RyuApp):
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.modules_enabled = {'RPM': True, 'HUM': False,'NFM': True }
+        self.modules_enabled = {'RPM': True, 'HUM': False,'NFM': False }
         self.install_openflow_rules = True
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,
                           'flow_table_strategy_semi_proactive': True, 'logdir': '/var/www/html/spacey',
@@ -672,13 +674,20 @@ class CPM(app_manager.RyuApp):
                 self.__log_all_graph("After WEIGHT_ADDED_TO_TOPOLOGY")
 
                 #dst mac  is in our topology graph
-                if self.config.disable_weighted_routing:
-                    self.cpmlogger.debug("WEIGHTED_ROUTING disabled")
-                    spath=nx.shortest_path(self.net,src_mac,dst_mac)
-
+                #None of below exceptions should trigger since I already checked if a shortest path exists or not earlier. But I am going to put exceptions just to be on safe side.
+                if self.config.enable_weighted_routing:
+                    if self.config.weighted_routing_type == 'dijkrsta':
+                        self.cpm_route_logger.debug("WEIGHTED_ROUTING enabled, type = %r", self.config.weighted_routing_type)
+                        try:
+                            spath = nx.dijkstra_path(self.net,src_mac,dst_mac)
+                        except Exception:
+                            self.cpm_route_logger.debug("No weighted shortest path exist between src = %r and dst = %r",src_mac,dst_mac)
                 else:
-                    self.cpmlogger.debug("WEIGHTED_ROUTING enabled")
-                    #spath = nx.shortest_path(self.net, src_mac, dst_mac, weighted=True) #TOFIX
+                    self.cpmlogger.debug("WEIGHTED_ROUTING disabled")
+                    try:
+                        spath = nx.shortest_path(self.net, src_mac, dst_mac) # If there are more than one shortest path between the source and target, it would just return one of them
+                    except Exception:
+                        self.cpm_route_logger.debug("No shortest path exist between src = %r and dst = %r",src_mac,dst_mac)
 
 
                 self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)

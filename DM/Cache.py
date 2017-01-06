@@ -45,7 +45,7 @@ class NotCache:
         rpm_dict.update({k : 0 for k in rpm_dict.iterkeys()}) # set default values
         rpm_dict['module'] = 'rpm'
         rpm_dict['timestamp'] = "0"
-        rpm_dict['latenices'] = {}
+        rpm_dict['latencies'] = {}
 
 
 

@@ -10,7 +10,7 @@ class dbaccess(object):
     CURRENT PROGRESS : Just to insert data to SQL database
     input example :
     {'nfm':nfmdict,'rpm':rpmdict,'hum':humdict}
-    
+
     nfmdict : {'timestamp':'201610221144','link_utilization':{'1-2':0.5,'4-5':0.4}, 'packet_dropped': {DPID, %}}
     """
 
@@ -54,47 +54,69 @@ class dbaccess(object):
             cursor.execute(q1_nfm_util)
             #print "Table created : nfm_util"
         except: pass
-        
+
         try:
             cursor.execute(q1_nfm_dropped)
             #print "Table created : nfm_dropped"
         except: pass
-        
+
         try:
             cursor.execute(q1_rpm)
             #print "Table created : rpm"
         except: pass
-        
+
         try:
             cursor.execute(q1_hum)
             #print "Table created : hum"
         except: pass
-        
-        #Parsing NFM data dictionary and insert to table
+
+        #Parsing NFM_UTIL data dictionary and insert to table
+        isSuccess = None
         try:
             timestamp = nfmdict['timestamp']
             link_utilization = nfmdict['link_utilization']
+            #isSuccess = False
             for key in link_utilization:
                 q3 = "INSERT INTO nfm_util(timestamp,link,util) VALUES ('%s','%s',%f)" %(timestamp,key,link_utilization[key])
                 cursor.execute(q3)
+                isSuccess = True
                 #Commit changes in the database
-                db.commit()
-            #print "SUCCESS : Insert NFM util into SQL DB"
+            db.commit()
+        except MySQLdb.Error, e:
+            isSuccess = False
+            print "ERROR : NFM_UTIL insertion failed %s" % str(e)
+            # Rollback in case there is any error
+            db.rollback()
 
-
+        if isSuccess: 
+            print "SUCCESS : Insert NFM util into SQL DB"
+        elif isSuccess is None:
+            print "ERROR : no NFM_UTIL from cache"
+            
+        #NFM DROPPED
+        isSuccess2 = None
+        try:
             timestamp = nfmdict['timestamp']
             dropped = nfmdict['packet_dropped']
+            #isSuccess2 = False
             for key in dropped:
                 q3 = "INSERT INTO nfm_dropped(timestamp,DPID,dropped) VALUES ('%s','%s',%f)" %(timestamp,key,dropped[key])
                 cursor.execute(q3)
                 # Commit changes in the database
-                db.commit()
-                #print "SUCCESS : Insert NFM dropped into SQL DB"
-
+                #db.commit()
+                isSuccess2 = True
+            db.commit()
+        
         except MySQLdb.Error, e:
-            print "ERROR : NFM insertion failed %s" % str(e)
+            isSuccess2 = False
+            print "ERROR : NFM_DROPPED insertion failed %s" % str(e)
             # Rollback in case there is any error
             db.rollback()
+
+        if isSuccess2 is True: 
+            print "SUCCESS : Insert NFM dropped into SQL DB"
+        elif isSuccess2 is None:
+            print "ERROR : no NFM_DROPPED from cache"
 
         #Parsing HUM data dictionary and insert to table
         try:
@@ -105,20 +127,16 @@ class dbaccess(object):
             cursor.execute(q4)
             #Commit changes in the database
             db.commit()
-            #print "SUCCESS : Insert HUM into SQL DB"
+            print "SUCCESS : Insert HUM into SQL DB"
         except MySQLdb.Error, e:
             print "ERROR : HUM insertion failed %s" % str(e)
             # Rollback in case there is any error
             db.rollback()
 
         # Parsing RPM data dictionary and insert to table
+        isSuccess3 = None
         try:
             timestamp = rpmdict['timestamp']
-            #q_insert = "INSERT INTO rpm_stat(timestamp,max,min,mean,median,25th,75th) VALUES ('%s','%f','%f','%f','%f','%f','%f')" % (timestamp, rpmdict['max_latency'],rpmdict['min_latency'], rpmdict['mean_latency'], rpmdict['median_latency'], rpmdict['25th_latency'], rpmdict['75th_latency'])
-            #cursor.execute(q_insert)
-            #Commit changes in the database
-            #db.commit()
-
             latencies = rpmdict['latencies']
             for dpid in latencies:
                 latency = latencies[dpid]["median_latency"]
@@ -128,10 +146,19 @@ class dbaccess(object):
                     cursor.execute(q_insert)
                     #Commit changes in the database
                     db.commit()
+                    isSuccess3 = True
+
         except MySQLdb.Error, e:
+            isSuccess3 = False
             print "ERROR : RPM insertion failed %s" % str(e)
             # Rollback in case there is any error
             db.rollback()
+
+        if isSuccess3 is True:
+            print "SUCCESS : Insert RPM dropped into SQL DB"
+        elif isSuccess3 is None:
+            print "ERROR : no RPM from cache"
+
 
         #disconnect from server
         db.close()

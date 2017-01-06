@@ -10,7 +10,6 @@ from repeattimer import RepeatedTimer
 import os
 import sys
 
-
 try:
 	# function to start a server in another thread,
 	# takes a port number and a queue pointer
@@ -23,7 +22,7 @@ try:
 
 	# function to push from cache, used in our repeattimer
 	def push_from_cache():
-		start_time = time.time()
+		starttime = time.time()
 		if cache.get_state() == True:
 			try:
 				print "\nPush data from cache to DB:"
@@ -40,8 +39,8 @@ try:
 				print e
 		else:
 			print "Cache not initialized"
-		#print("Time taken to push from cache to db %s seconds " % (time.time() - start_time))
-
+		pushtime = time.time() - starttime
+		print "PUSH done. Time needed : %.4f secs" % pushtime
 
 	server_quit = {'interrupted' : False}
 
@@ -50,13 +49,11 @@ try:
 	#hum_keys = []
 	#nfm_keys = ['flow', 'delay']
 
-
 	cache = NotCache()
 	db = dbaccess()
 
 	# start pushing old data from the cache to the db, every 2 seconds
 	rt_push = RepeatedTimer(time_intervall, push_from_cache) 
-
 
 	# controller format json
 	controller_data = {'module': 'nfm', 'id':000, 'keylist': ['flow','delay']}
@@ -94,7 +91,6 @@ try:
 		server_quit['interrupted'] = True 
 		sys.exit
 
-
 	# sleep until we have no more threads , or interupt is called
 	while threading.active_count() > 0:
 		if server_quit['interrupted']:
@@ -106,4 +102,3 @@ except KeyboardInterrupt: # to exit
 	rt_push.stop()
 	server_quit['interrupted'] = True 
 	sys.exit
-

@@ -88,6 +88,22 @@ class Configuration(object):
         a weighted shortest path to its desinationa and praoctively installs rules on the all the switches on the path.
         """
         self.switch_rule_installation_strategy = 'semiproactive'
+        """
+        As described in the openflow switch specification on page 28 , https://www.opennetworking.org/images/stories/downloads/sdn-resources/onf-specifications/openflow/openflow-spec-v1.0.0.pdf
+        "The idle_timeout and hard_timeout fields control how quickly flows expire.
+        If the idle_timeout is set and the hard_timeout is zero, the entry must expire
+        after idle_timeout seconds with no received traffic. If the idle_timeout
+        is zero and the hard_timeout is set, the entry must expire in hard_timeout
+        seconds regardless of whether or not packets are hitting the entry.
+        If both idle_timeout and hard_timeout are set, the flow will timeout after
+        idle_timeout seconds with no traffic, or hard_timeout seconds, whichever
+        comes first. If both idle_timeout and hard_timeout are zero, the entry is
+        considered permanent and will never time out. It can still be removed with a
+        flow_mod message of type OFPFC_DELETE."
+        Its takes value in seconds ranging from 0 implying never timeout to 65535.
+        """
+        self.switch_idle_timeout = 3
+        self.switch_hardtimeout = 0
 
 
 class SharedContext (object):
@@ -522,7 +538,8 @@ class CPM(app_manager.RyuApp):
 
         cookie = cookie_mask = 0
         table_id = 0
-        idle_timeout = hard_timeout = 0
+        idle_timeout = self.config.switch_idle_timeout
+        hard_timeout = self.config.switch_hardtimeout
         priority = 32768  # this is default priority assumed if no priority specified
         buffer_id = ofp.OFP_NO_BUFFER
         match = ofp_parser.OFPMatch(

@@ -15,25 +15,26 @@
 
 from ryu.base import app_manager
 from ryu.controller import ofp_event
-from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER, DEAD_DISPATCHER
+from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER,DEAD_DISPATCHER
 from ryu.controller.handler import set_ev_cls
 from ryu.ofproto import ofproto_v1_3
 from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 import networkx as nx
 
-# REST
+#REST
 import sys
 import os
 import time
 from datetime import datetime
-# import REST client library here provided by DM team
+#import REST client library here provided by DM team
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib'))
-if path not in sys.path:
+if not path in sys.path:
     sys.path.insert(1, path)
 del path
 
 from client import client_side
+
 
 
 class NFMdummy(app_manager.RyuApp):
@@ -58,81 +59,61 @@ class NFMdummy(app_manager.RyuApp):
 
         """
 
-        # NFM dict to be REST pushed to cache
+        #NFM dict to be REST pushed to cache
         self.nfmpush = {'module': 'nfm'}
-        self.nfmpush['timestamp'] = timestamp = datetime.now(
-        ).strftime("%Y-%m-%d %H:%M:%S.%f")
+        self.nfmpush['timestamp'] = timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         self.nfmpush['packet_dropped'] = {}
         self.nfmpush['link_utilization'] = {}
         self.NFM_FETCH_TIMER = 4
 
-    @set_ev_cls(ofp_event.EventOFPStateChange, [
-                MAIN_DISPATCHER, DEAD_DISPATCHER])
+    @set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
     def _state_change_handler(self, ev):
         if not self.shared_context.bootstrap_complete:
             self.logger.info(
                 " ----------------- NFMDUMMY  NO xxxxxxxx bootstrap NOT complete - doing nothing xxxxxxxx  ------------")
-            self.logger.debug(
-                "NFMDUMMY:  self.net.nodes() = %r ||| self.net.edge() = %r",
-                self.net.nodes(),
-                self.net.edges())
+            self.logger.debug("NFMDUMMY:  self.net.nodes() = %r ||| self.net.edge() = %r", self.net.nodes(),
+                              self.net.edges())
             # self.logger.debug("TESTNFM1: self.bcomplete = %r",self.bcomplete)
-            self.logger.debug(
-                "NFMDUMMY: self.bcomplete = %r",
-                self.shared_context.bootstrap_complete)
+            self.logger.debug("NFMDUMMY: self.bcomplete = %r", self.shared_context.bootstrap_complete)
             return
-        self.logger.info(
-            " -------------- NFM  YES booooooooootstrap COMPLETE ------------- ")
-        self.logger.debug(
-            "NFMDUMMY:  self.net.nodes() = %r ||| self.net.edge() = %r",
-            self.net.nodes(),
-            self.net.edges())
+        self.logger.info(" -------------- NFM  YES booooooooootstrap COMPLETE ------------- ")
+        self.logger.debug("NFMDUMMY:  self.net.nodes() = %r ||| self.net.edge() = %r", self.net.nodes(),
+                          self.net.edges())
         # self.logger.debug("TESTNFM1: self.bcomplete = %r",self.bcomplete)
-        self.logger.debug(
-            "NFMDUMMY: self.bcomplete = %r",
-            self.shared_context.bootstrap_complete)
+        self.logger.debug("NFMDUMMY: self.bcomplete = %r", self.shared_context.bootstrap_complete)
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
-        self.logger.debug(
-            "NFMDUMMY:  self.net.nodes() = %r ||| self.net.edge() = %r",
-            self.net.nodes(),
-            self.net.edges())
+        self.logger.debug("NFMDUMMY:  self.net.nodes() = %r ||| self.net.edge() = %r",self.net.nodes(), self.net.edges())
         #self.logger.debug("TESTNFM1: self.bcomplete = %r",self.bcomplete)
-        self.logger.debug(
-            "NFMDUMMY: self.bcomplete = %r",
-            self.shared_context.bootstrap_complete)
+        self.logger.debug("NFMDUMMY: self.bcomplete = %r", self.shared_context.bootstrap_complete)
         # self.logger.debug("TESTNFM1, self.net_k.nodes() = %r ||| self.net_k.edge() = %r", self.netnfm_k.nodes(),self.netnfm_k.edges())
 
-        # Check1: Is bootstrap completed?
+        #Check1: Is bootstrap completed?
         if not self.shared_context.bootstrap_complete:
             return
 
-        # Check2: Is it time to post the updated topology to the Cache/DM with
-        # NFM metrics
+        #Check2: Is it time to post the updated topology to the Cache/DM with NFM metrics
         self.current_time = int(round(time.time() * 1000))
         # every 4 seconds
-        time_max_limit = self.NFM_FETCH_TIMER * 1000
-        self.logger.debug(
-            "FETCH fetch_metric_and_insert_ingraph, time_max_limit IN SECONDS = %r",
-            time_max_limit)
-        # if not (self.current_time - self.time_of_last_fetch > time_max_limit)
-        # or self.defines_D['bootstrap_in_progress']:
+        time_max_limit =  self.NFM_FETCH_TIMER * 1000
+        self.logger.debug("FETCH fetch_metric_and_insert_ingraph, time_max_limit IN SECONDS = %r", time_max_limit)
+        #if not (self.current_time - self.time_of_last_fetch > time_max_limit) or self.defines_D['bootstrap_in_progress']:
         if not (self.current_time - self.time_of_last_fetch > time_max_limit):
             return
         else:
             self.time_of_last_fetch = self.current_time
             self.logger.debug("FETCH_TIME_CHECK_OK, about to fetch_KPI")
 
-        # self.shared_context.learnt_topology
+        #self.shared_context.learnt_topology
         """
         obvious concept of edge_iter for networkx graph learnt from below link:
         http://stackoverflow.com/questions/15644684/best-practices-for-querying-graphs-by-edge-and-node-attributes-in-networkx
         """
         # Iterate through the graph object
-        # for node, data in self.net.nodes_iter(data=True):
-        for src_node, dst_node, data in self.net.edges_iter(data=True):
-            # post each data element to graph
+        #for node, data in self.net.nodes_iter(data=True):
+        for src_node,dst_node, data in self.net.edges_iter(data=True):
+            #post each data element to graph
             src_to_dst_node = str(src_node) + '-' + str(dst_node)
             dst_to_src_node = str(dst_node) + '-' + str(src_node)
             """
@@ -143,20 +124,15 @@ class NFMdummy(app_manager.RyuApp):
             src_to_dst_node = src_node '+' dst_node
             """
 
-            # if src_to_dst_node.__contains__(':'):
+            #if src_to_dst_node.__contains__(':'):
             try:
                 if ':' in src_to_dst_node:
                     continue
-            except Exception as e:
-                self.logger.error(
-                    "Exception encountered when parsing a graph node =%r for : ", e)
-                # exc_info causes a Trace exception details to be printed to
-                # log but it does not halt program execution
-                self.logger.error(
-                    "Exception encountered when parsing a graph node =%r for : ",
-                    src_to_dst_node,
-                    exc_info=True)
-                # raise #raise causes program termination
+            except Exception,e:
+                self.logger.error("Exception encountered when parsing a graph node =%r for : ", e)
+                #exc_info causes a Trace exception details to be printed to log but it does not halt program execution
+                self.logger.error("Exception encountered when parsing a graph node =%r for : ",src_to_dst_node,exc_info = True)
+                #raise #raise causes program termination
 
             self.nfmpush['link_utilization'][src_to_dst_node] = 93
             self.nfmpush['link_utilization'][dst_to_src_node] = 93
@@ -172,14 +148,14 @@ class NFMdummy(app_manager.RyuApp):
 
         self.rest_nfm_post()
 
-        # if (data['bw'] == 10):
-        #    self.logger.info("bw is 10")
+            #if (data['bw'] == 10):
+            #    self.logger.info("bw is 10")
 
-        # get all edges out from these nodes
-        # then recursively follow using a filter for a specific statement_id
+            # get all edges out from these nodes
+            # then recursively follow using a filter for a specific statement_id
 
-        # or get all edges with a specific statement id
-        # look for  with a node attribute of "cat"
+            # or get all edges with a specific statement id
+            # look for  with a node attribute of "cat"
     def rest_nfm_post(self):
         url = 'http://127.0.0.1:8000/Tasks.txt'
         DMclient = client_side(url)
@@ -187,3 +163,4 @@ class NFMdummy(app_manager.RyuApp):
         #######response = DMclient.getme(rest_query_dict_nfm)
         print "request is", self.nfmpush
         print "repsonse is", response
+

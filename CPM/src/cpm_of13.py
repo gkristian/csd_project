@@ -673,11 +673,14 @@ class CPM(app_manager.RyuApp):
             #self.logger.info("RX_NO_BCAST_ONLY_TARGETED_DST_MAC : compute shortest path and install flows if bstrap completed")
             # This is if block ensures that code after it only gets executed once the network has bootstraped i.e. bootstrap time limit has reached
             if self.defines_D['bootstrap_in_progress']:
-                self.cpm_bstrap_logger.info("RX_NO_BCddAST_ONLY_TARGETED_DST_MAC : Sorry network bootstrap still in progress not computing spath , not installing any flows")
+                self.cpm_bstrap_logger.info("Received a packet which is not broadcast. It has a mac address. But bootstrap is still in progress not computing spath , not installing any flows")
+                self.cpm_bstrap_logger.info(
+                    "Received a packet which is not broadcast. src = %r, dst=%r",src_mac,dst_mac)
                 #if int(time.time()) - self.epoc_starttime > self.network_bootstrap_time:
                 #    self.defines_D['bootstrap_in_progress'] = False
                 return #below code wont get executed during network bootstrap
-            self.cpm_route_logger.debug("__________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________")
+
+            #self.cpm_route_logger.debug("__________RX_NO_BCAST_ONLY_TARGETED_DST_MAC : Network Bootstrap Completed. Proceeding with shortest path calculation________")
 
             if dst_mac in self.net:
                 if self.disable_cpm_openflow_ruleinstaller:

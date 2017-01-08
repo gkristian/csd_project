@@ -2,6 +2,7 @@ import stanfordVisulization
 from Tkinter import Tk
 import random
 from client import client_side
+from os import sys
 
 root = Tk()
 ts = stanfordVisulization.UI(root)
@@ -20,6 +21,8 @@ for line in f:
 	line = line.split(' ')
 	mapLinks[line[0]] = line[1]
 	switches = line[0].split('-')
+	reverse = switches[1]+'-'+switches[0]
+	mapLinks[reverse] = line[1]+str(46)
 	linkList.append(switches)
 	#linkID = int(line[1].split('\n')[0])
 	#print(switches, linkID)
@@ -29,22 +32,28 @@ for line in f:
 	#testDict[oppositDirection] = linkID
 
 
+cloudVM = 'http://192.16.125.183:9002/Tasks.txt'
 localurl = 'http://127.0.0.1:8000/Tasks.txt'
-url = 'http://130.229.146.35:8000/Tasks.txt'
+url = 'http://130.229.146.35:8070/Tasks.txt'
 nfm_data = {'module': 'nfm', 'timestamp': 000,'keylist':['link_utilization','packet_dropped']}
 hum_data = {'module': 'hum', 'timestamp': 000,'keylist':['core','memory']}
 rpm_data = {'module': 'rpm', 'keylist':['latencies']}
 
 def fetchDataFromDM():
-	cl = client_side(localurl)
-	nfm_result = cl.getme(nfm_data)
-	link_utilization = nfm_result[0]
-	packet_dropped = nfm_result[1]
-	mapp = link_utilization[1]
-	for key,value in mapp.iteritems():
-		encoded_key = key.encode('utf-8')
+	try:
+		cl = client_side(url)
+		nfm_result = cl.getme(nfm_data)
+		link_utilization = nfm_result[0]
+		packet_dropped = nfm_result[1]
+		mapp = link_utilization[1]
+		print "received items: ", len(mapp)
+		for key,value in mapp.iteritems():
+			encoded_key = key.encode('utf-8')
 		#print key, value
-		testLinkUtil(encoded_key, value)
+			testLinkUtil(encoded_key, value)
+	except:
+		e = sys.exc_info()[0]
+		print "Error", e
 	#rpm_result = cl.getme(rpm_data)
 	#latencies = rpm_result[1]
 	#for dpid, value in latencies:
@@ -53,9 +62,12 @@ def fetchDataFromDM():
 def testLinkUtil(key, value):
 
 	if key in mapLinks:
+		print key, mapLinks[key]
+		"""
 		k = mapLinks[key].split('\n')[0]
 		k = int(k) - 1
 		ts.setLinkUtilization(k, int(value))
+		"""
 	#hum_result = cl.getme(hum_data)
 
 def updateUtilizations():

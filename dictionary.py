@@ -139,16 +139,21 @@ class Dictionary():
 
          self.linkMapReverse = {}
 
-	 self.linkSwitchMap = {}
+         self.linkSwitchMap = {}
+         self.linkSwitchMapReverse = {}
 	 f = open('stanfordlinks.txt')
 	 for line in f:
 		line = line.split(' ')
 		direction = line[0]
+		#print line
 		linkID = int(line[1].split('\n')[0])
 		[FROM, TO] = direction.split('-')
 		oppositDirection = TO+'-'+FROM
 		self.linkSwitchMap[direction] = linkID
-		self.linkSwitchMap[oppositDirection] = linkID
+		#self.linkSwitchMap[oppositDirection] = linkID
+		self.linkSwitchMapReverse[oppositDirection] = linkID
+	 #print self.linkSwitchMap
+	 #print self.linkSwitchMapReverse
 
          self.totalLinks = list(self.linkMap.items())[-1][0]  #set total links
 

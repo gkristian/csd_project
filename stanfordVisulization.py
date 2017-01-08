@@ -45,6 +45,7 @@ class UI(Frame):
         self.serverCoordinates = self.DataDictionary.serverCoordinates
         self.totalServers = self.DataDictionary.totalServers
         self.linkSwitchMap = self.DataDictionary.linkSwitchMap
+        self.linkSwitchMapReverse = self.DataDictionary.linkSwitchMapReverse
         self.currentLoads = {}                      #dictionary of switches' current rgb values
 
         
@@ -235,7 +236,7 @@ class UI(Frame):
 
     def getLinkXY(self, nr):
         return self.linkMap[nr]
-
+    """
     def setLinkUtilization(self, linkID, utilization):
         utilization = float(utilization)/float(100)
         if utilization >= 0 and utilization <= 1:
@@ -245,15 +246,20 @@ class UI(Frame):
             mycolor = '#%02x%02x%02x' % (l[0],l[1],l[2])
             self.canvas.itemconfig(self.links[linkID], fill=mycolor)
     """
-    def setLinkUtilization(self, from_dpid, to_dpid, utilization):
+    def setLinkUtilization(self, from_to, utilization):
+    #def setLinkUtilization(self, from_dpid, to_dpid, utilization):
         if utilization >= 0 and utilization <= 1:
             rgba0 = self.scalarMap.to_rgba(utilization)
             l = [250*n for n in rgba0]
             mycolor = '#%02x%02x%02x' % (l[0],l[1],l[2])
-            linkString = str(from_dpid)+'-'+str(to_dpid)
-            linkID = self.linkSwitchMap[linkString]-1
-            self.canvas.itemconfig(self.links[linkID], fill=mycolor)
-    """
+            #linkString = str(from_dpid)+'-'+str(to_dpid)
+            if from_to in self.linkSwitchMap:
+            	linkID = self.linkSwitchMap[from_to]-1
+            	self.canvas.itemconfig(self.links[linkID], fill=mycolor)
+            elif from_to in self.linkSwitchMapReverse:
+                linkID = self.linkSwitchMapReverse[from_to]-1
+                self.canvas.itemconfig(self.linksReverse[linkID], fill=mycolor)
+    
     def setRPMUtilization(self, switchID, latency):
         latency = latency/float(10)
         print "RPM", switchID, latency

@@ -46,7 +46,7 @@ class RPM(app_manager.RyuApp):
 		# Sleep time between barrier requests
 		self.MIN_SLEEP = 0.002
 		# Time between sending DM updates
-		self.UPDATE_TIME = 3
+		self.UPDATE_TIME = 1
 
 		self.net = None	
 
@@ -96,6 +96,7 @@ class RPM(app_manager.RyuApp):
 		self.MAX = 5000
 		self.MIN = 500
 		self.HAVE_NET = False
+		
 
 	def calculateStats(self):
 		for dpid in self.switches_data:
@@ -103,18 +104,18 @@ class RPM(app_manager.RyuApp):
 			with self.LOCK:
 				#print "VALUES LIST for switch %d" % dpid
 				#print self.switches_data[dpid]["values_list"]
-				if self.switches_data[dpid]["values_array"] == []: # if values array is not set
+
+				# Check if we have 10, latency values for this switch, 
+				# if not use the values we have,
+				# if 10 values then we already have a full array
+				#list_flag = True
+				if self.switches_data[dpid]["values_array"] == [] and self.switches_data[dpid]["values_count"] < 10: # if values array is not set
 					self.switches_data[dpid]["values_array"] = numpy.array(self.switches_data[dpid]["values_list"])
-
-				else: 
-					self.switches_data[dpid]["values_array"] = numpy.append(self.switches_data[dpid]["values_array"], numpy.array(self.switches_data[dpid]["values_list"]))
-
 				
-				self.switches_data[dpid]["values_list"] = []
+				elif self.switches_data[dpid]["values_count"] == 10:
+					self.switches_data[dpid]["values_array"] = numpy.array(self.switches_data[dpid]["values_list"])
+					#list_flag = False
 
-			
-			#print self.latency_array
-			#self.DICT_TO_DB['mean_latency'] = numpy.mean(self.latency_array)
 			self.DICT_TO_DB["latencies"][dpid]['median_latency'] = self.normalize(numpy.median(self.switches_data[dpid]["values_array"]))
 			self.DICT_TO_DB["latencies"][dpid]['25th_latency'] = self.normalize(numpy.percentile(self.switches_data[dpid]["values_array"],25))
 			self.DICT_TO_DB["latencies"][dpid]['75th_latency'] = self.normalize(numpy.percentile(self.switches_data[dpid]["values_array"],75))
@@ -147,9 +148,9 @@ class RPM(app_manager.RyuApp):
 		update_counter = 0
 		looping = True
 		while looping:
-			#self._print("SENDING FLOW MODS...")
+			self._print("SENDING FLOW MODS...")
 
-			for dpid in dpids:
+			for dpid in self.switches_DPIDs:
 				with lock:
 					# if it has gone min UPDATE_TIME seconds since last update
 					# send an update to DM 
@@ -162,7 +163,7 @@ class RPM(app_manager.RyuApp):
 
 
 						self.calculateStats()
-						#self._print("SEND UPDATE TO DM")
+						self._print("RPM SEND UPDATE TO DM")
 						# set timestamp
 						self.DICT_TO_DB['timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
@@ -180,7 +181,7 @@ class RPM(app_manager.RyuApp):
 						#	looping = False
 						#	break
 
-				with lock:
+				with lock: 
 					# Get the datapath object
 					dp = self.switches_DPIDs[dpid]
 
@@ -362,7 +363,25 @@ class RPM(app_manager.RyuApp):
 				# Store the measured latency time
 				self.switches_data[dpid]["measured_time"] = timed
 				# Store the latency value for statistics
-				self.switches_data[dpid]["values_list"].append(timed)
+				# If we do not have 10 values yet, append the data to a list
+				# if we do have 10 values, start replacing the old ones
+				if len(self.switches_data[dpid]["values_list"]) < 10:
+					#print "RPM VALUES COUNT %r switch %r" % (self.switches_data[dpid]["values_count"], dpid)
+					#print "RPM length of values_list %r " % len(self.switches_data[dpid]["values_list"])
+					self.switches_data[dpid]["values_list"].append(timed)
+					self.switches_data[dpid]["values_count"] += 1
+
+				else:
+					place = self.switches_data[dpid]["values_place"]
+					array = numpy.insert(self.switches_data[dpid]["values_array"], place, timed)
+					#print "RPM SW %r VALUES ARRAY, insert into place %r" % (dpid, place)
+					#print array
+
+					if self.switches_data[dpid]["values_place"] == 9:
+						self.switches_data[dpid]["values_place"] = 0
+					else:
+						self.switches_data[dpid]["values_place"] += 1
+
 				self.DICT_TO_DB["latencies"][dpid]["normalized_current_latency"] = self.normalize(timed)
 				#self.latency_array[dpid-1] = timed
 
@@ -387,14 +406,17 @@ class RPM(app_manager.RyuApp):
 		datapath = ev.datapath
 		if ev.state == MAIN_DISPATCHER:
 			if datapath.id not in self.switches_DPIDs:
-				print 'registered datapath: %016x', datapath.id
-				self.logger.info('registered datapath: %016x', datapath.id)
+				print 'registered datapath: %r', datapath.id
+				self.logger.info('registered datapath: %r', datapath.id)
 				self.switches_DPIDs[datapath.id] = datapath
+				self.switches_data[datapath.id] = {"start_time": -1, "measured_time": -1, "xid": -1, "values_array": [], "values_list": [], "values_count": 0, "values_place": 0}
+				self.DICT_TO_DB['latencies'][datapath.id] = {"median_latency": -1, "25th_latency": -1, "75th_latency": -1, "normalized_current_latency": -1}
 		elif ev.state == DEAD_DISPATCHER:
 			if datapath.id in self.switches_DPIDs:
-				print 'unregister.datapath: %016x', datapath.id
-				self.logger.info('unregister.datapath: %016x', datapath.id)
+				print 'unregister.datapath: %r', datapath.id
+				self.logger.info('unregister.datapath: %r', datapath.id)
 				del self.switches_DPIDs[datapath.id]
+				del self.switches_data[datapath.id]
 
 		DPIDS = self.switches_DPIDs.viewkeys()
 		while(True):
@@ -412,14 +434,14 @@ class RPM(app_manager.RyuApp):
 
 		if len(DPIDS) == self.totalSwitchesNr and self.started_monitoring == False:
 			#print DPIDS
-			for key in DPIDS:
+			#for key in DPIDS:
 				#print key
-				self.switches_data[key] = {"start_time": -1, "measured_time": -1, "xid": -1, "values_array": [], "values_list": []}
-				self.DICT_TO_DB['latencies'][key] = {"median_latency": -1, "25th_latency": -1, "75th_latency": -1, "normalized_current_latency": -1}
+			#	self.switches_data[key] = {"start_time": -1, "measured_time": -1, "xid": -1, "values_array": [], "values_list": [], "values_count": 0, "values_place": 0}
+			#	self.DICT_TO_DB['latencies'][key] = {"median_latency": -1, "25th_latency": -1, "75th_latency": -1, "normalized_current_latency": -1}
 				#self.DICT_TO_DB['normalized_delays'][key] = -1
 			#self._print(str(self.switches_data.viewitems()))
 
-			# Start monitoring thread sending flow mods and barrier requests
+			# If we have contact from all the switches, start monitoring thread sending flow mods and barrier requests
 			self.monitoring_thread = hub.spawn(self._monitor)
 			self._print("Monitoring thread started")
 			self.started_monitoring = True

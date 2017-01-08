@@ -50,6 +50,7 @@ import time
 #below imports are used to import the database client library
 import sys
 import os
+from collections import defaultdict
 
 #path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../lib'))
@@ -97,9 +98,23 @@ class Configuration(object):
                  considered permanent and will never time out. It can still be removed with a
                  flow_mod message of type OFPFC_DELETE."
                  Its takes value in seconds ranging from 0 implying never timeout to 65535.
-                 """
+        """
         self.switch_idle_timeout = 3
         self.switch_hardtimeout = 0
+        """
+        Admission Control settings
+        """
+        self.ac_enabled = True
+        self.ac_packet_drops_overload_threshold_enabled = True
+        #a link with nfm reported link_utilization ABOVE this level shall be considered overloaded
+        self.ac_link_utilization_overload_threshold = 90
+        self.ac_link_utilization_restoration_threshold = 70 #if a disabled link achieves link utilization LESS than this threshold, it is enabled and traffic is sent
+        #a link with nfm reported packet drops ABOVE this level shall be considered overloaded
+        self.ac_packet_drops_overload_threshold = 95
+        self.ac_packet_drops_restoration_threshold = 70 #if a disabled link achieves packet drops  LESS than this threshold, it is enabled and traffic is sent
+
+
+
         #Export graph to file in this format
         # "dot" , "networkx_native", "graph_ml"
         self.export_topology_to_networx_native_png= False
@@ -280,6 +295,75 @@ class CPM(app_manager.RyuApp):
         self.datapathDb = {}
         self.already_installed_paths_SET = set()
         self.cpmlogger.info("BOOTSTRAP, type = %r , host_count = %r",self.network_bootstrap_type, self.network_bootstrap_discovery_count)
+
+        """
+        ADMISSION CONTROLLER data structures
+          Very important dictionary
+        ac_disabled_links[src_dpid_as_int][dst_dpid_as_int]=self.net[src_dpid_as_int][dst_dpid_as_int]
+        => disabled_links[src_dpid_as_int][dst_dpid_as_int]['weight'] and all other attributes would be stored in it
+
+        """
+        self.ac_disabled_links = defaultdict(dict) #note that dict is a keyword, this allows us to created nested dictionaries.
+
+    def ac_link_utilization_overload_manager(self, nfm_link_util, nfm_pkt_drops,src_dpid,dst_dpid):
+        if not self.config.ac_enabled:
+            return
+        ac_applied_and_link_disabled = None
+        if nfm_link_util > self.config.ac_link_utilization_overload_threshold:
+            ac_applied_and_link_disabled = True
+
+        if self.config.ac_packet_drops_overload_threshold_enabled:
+            if nfm_pkt_drops > self.config.ac_packet_drops_overload_threshold:
+                ac_applied_and_link_disabled = True
+
+        if ac_applied_and_link_disabled:
+            self.ac_disable_link(src_dpid, dst_dpid)
+
+        self.ac_check_to_enable_disabled_links(src_dpid,dst_dpid,nfm_link_util,nfm_pkt_drops)
+
+
+    def ac_disable_link(self, src_dpid, dst_dpid):
+        #backup edge info so that we can restore the link in the topology when the edge is reported by nfm as not overloaded
+        self.ac_disabled_links[src_dpid][dst_dpid]=self.net[src_dpid][dst_dpid]
+        #disconnect the edge (only in the direction of the overload)
+        self.net.remove_edge(src_dpid,dst_dpid)
+
+        #I thought about setting a blocking timer but it did not win below argument
+        #why block traffic for a certain period while a good admission control system would enable asynchronously i.e. as soon as the reported link value
+        # becomes  OK it will enable. No new packet will be sent along this link anyway
+        #----reset overload timer
+        #----self.config.ac_blocking_period
+
+    def ac_enable_link(self, src_dpid, dst_dpid):
+        # backup edge info so that we can restore the link in the topology when the edge is reported by nfm as not overloaded
+        self.net.add_edge(src_dpid,dst_dpid)
+        self.net[src_dpid][dst_dpid] = self.ac_disabled_links[src_dpid][dst_dpid]
+
+    def ac_check_to_enable_disabled_links(self,src_dpid,dst_dpid,nfm_reported_link_util, nfm_reported_packet_drop):
+        """
+
+        :param src_dpid:
+        :param dst_dpid:
+        :param nfm_reported_link_util:
+        :param nfm_reported_packet_drop:
+        :return:
+        """
+        #is the given link disabled, yes if found in disabled_links
+        # Implementation: Instead of using excpetion this time, just trying to show that it can be done with get() as well as it doesnt throw exception
+        src_dpid_in_disabled_links_found = self.ac_disabled_links.get(src_dpid,False)
+        restore_link = False
+        if src_dpid_in_disabled_links_found:
+            dst_dpid_found = src_dpid_in_disabled_links_found.get(dst_dpid,False)
+            if dst_dpid_found:
+                #now check if it meets the restoration criteria then enable it
+                if nfm_reported_link_util < self.config.ac_link_utilization_restoration_threshold:
+                    restore_link = True
+                if self.config.ac_packet_drops_overload_threshold_enabled:
+                    if nfm_reported_packet_drop < self.config.ac_packet_drops_restoration_threshold:
+                        restore_link = True
+        if restore_link:
+            self.ac_enable_link(src_dpid,dst_dpid)
+
 
 
     # Handy function that lists all attributes in the given object
@@ -1182,6 +1266,10 @@ class CPM(app_manager.RyuApp):
                 nfm_total_link_weight = 1 * nfm_total_link_weight # keeping this 1 just to remind it is copy of the below block
             self.cpmlogger.debug("CALC_CPMTESTER_WEIGHT, src_node = %r , dst_node = %r, nfm_total_link_weight =  %r", src_node,
                                  dst_node, nfm_total_link_weight)
+            #This enforces admission control check. It itself checked if admission control is enabled or not in the configuration. You dont need to put an if here
+            self.ac_link_utilization_overload_manager(nfm_link_util_value,nfm_packet_dropped_link_value,src_node,dst_node)
+
+
         except Exception,e:
             self.cpmlogger.error("CPM_TESTER: Exceptions encountered in the code block, = %r", e)
 
@@ -1207,6 +1295,10 @@ class CPM(app_manager.RyuApp):
 
             nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value + nfm_packet_dropped_weight* nfm_packet_dropped_link_value
             nfm_total_link_weight = 0.33 * nfm_total_link_weight #All modules contribute equally to the output weight, see Metric desc. document and weights specified by the teacher
+
+            #This enforces admission control check. It itself checked if admission control is enabled or not in the configuration. You dont need to put an if here
+            self.ac_link_utilization_overload_manager(nfm_link_util_value, nfm_packet_dropped_link_value, src_node,
+                                                  dst_node)
         self.cpmlogger.debug("CALC_NFM_WEIGHT, src_node = %r , dst_node = %r, nfm_total_link_weight =  %r", src_node,
                              dst_node, nfm_total_link_weight)
 

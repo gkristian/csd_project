@@ -164,7 +164,7 @@ class CPM(app_manager.RyuApp):
         # Do not change below line. It means if CPM tester is enabled, NFM metrics are still fetched as CPM tester sends the metric in NFM format but when
         # weight are computed then CPM_TESTER shall cause weight of the link to be equal to link_utilization specified in the CPM_Tester module
         if self.modules_enabled['CPM_TESTER'] == True:
-            self.module_enabled['NFM'] = True
+            self.modules_enabled['NFM'] = True
         self.install_openflow_rules = True
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,
                           'flow_table_strategy_semi_proactive': True, 'logdir': '/var/www/html/spacey',
@@ -755,8 +755,10 @@ class CPM(app_manager.RyuApp):
 
             else: #this is not an lldp packet, this is not arp broadcast, the dst mac is not known but is not broadcast either
                 #check if its a valid openflow packet
-                self.cpm_route_logger.debug(" Unable to find path from  src_mac=%r to dst_mac=%r  ", dst_mac, src_mac)
-                self.cpm_bstrap_logger.debug("Shall we Learn new MAC dst_mac=%r src_mac=%r ", dst_mac,src_mac)
+                pass
+                #below lines were flooding the log file
+                #self.cpm_route_logger.debug(" Unable to find path from  src_mac=%r to dst_mac=%r  ", dst_mac, src_mac)
+                #self.cpm_bstrap_logger.debug("Shall we Learn new MAC dst_mac=%r src_mac=%r ", dst_mac,src_mac)
 
             self.show_graph_stats()
 

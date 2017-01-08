@@ -50,7 +50,7 @@ class CPMRoutingTester(app_manager.RyuApp):
         #self.bcomplete = self.shared_context.bootstrap_complete
         self.epoc_starttime = int(time.time())
         #file name containing the nfm values, this can also be an absolute path e.g. /etc/cpm_tester.ini
-        self.filename_containing_nfm_metrics = "cpm_tester_weights_feeder.txt"
+        self.filename_containing_nfm_metrics = "/etc/spacey/cpm_tester_weights_feeder.ini"
 
         """
         Pitfall:
@@ -72,7 +72,7 @@ class CPMRoutingTester(app_manager.RyuApp):
 
         #cpm_routing_tester.log
         # cpmroutinglogger
-        self.cpm_test_logger = logging.getLogger("cpm_route" + __name__)
+        self.cpm_test_logger = logging.getLogger("cpm_tester" + __name__)
         self.cpm_test_logger.setLevel(logging.DEBUG)
         handler = logging.FileHandler("/var/www/html/spacey/cpm_test.log")
         handler.setLevel(logging.DEBUG)
@@ -218,7 +218,7 @@ class CPMRoutingTester(app_manager.RyuApp):
                     link_util, packet_drops = nfm_values.split(',')
                     #assign nfm values read to nfm_metrics
                     self.update_nfm_metrics(src_node_to_dst_node, link_util, packet_drops)
-                    self.cpm_test_logger("NFM_VALUES_READ_FROM_FILE : node =%r , link_util = %r , packet_drops = %r", src_node_to_dst_node, link_util,packet_drops)
+                    self.cpm_test_logger.debug("NFM_VALUES_READ_FROM_FILE : node =%r , link_util = %r , packet_drops = %r", src_node_to_dst_node, link_util,packet_drops)
         except Exception,e:
             self.cpm_test_logger.error("read_nfm_metric_from_and_update function: Exception encountered = %r",e)
 

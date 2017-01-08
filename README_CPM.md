@@ -1,3 +1,4 @@
+README
 How to run?
 All scripts under bin, run as root, make sure ryu is installed as root or (ryu-manager and required python libs indicated in the install docs are in OS PATH )
 

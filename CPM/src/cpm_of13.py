@@ -1206,29 +1206,32 @@ class CPM(app_manager.RyuApp):
         #This will help us change weights of the link and see how traffic responds
         #nfm would be False if HTTP GET of nfm_metric_data returned blank or failed due to connection error
         # Below block could be summarized to just few lines but I kept as it is as it helps me compare to the NFM block in a way.
-        if self.modules_enabled['CPM_TESTER'] and nfm:
-            nfm_link_util_weight = 1  # just add link_utilization to weight
-            nfm_packet_dropped_weight = 1 # and packet_drops if specified
+        try:
+            if self.modules_enabled['CPM_TESTER'] and nfm:
+                nfm_link_util_weight = 1  # just add link_utilization to weight
+                nfm_packet_dropped_weight = 1 # and packet_drops if specified
 
-            nfm_link_util = nfm[0][1]
-            nfm_packet_dropped = nfm[1][1]
+                nfm_link_util = nfm[0][1]
+                nfm_packet_dropped = nfm[1][1]
 
-            nfm_dict_key = unicode(src_node) + '-' + unicode(dst_node)
+                nfm_dict_key = unicode(src_node) + '-' + unicode(dst_node)
 
-            if nfm_dict_key in nfm_link_util:
-                nfm_link_util_value = float(nfm_link_util[nfm_dict_key])
-            else:
-                nfm_link_util_value = 0
-            if nfm_dict_key in nfm_packet_dropped:
-                nfm_packet_dropped_link_value = float(nfm_packet_dropped[nfm_dict_key])
-            else:
-                nfm_packet_dropped_link_value = 0
+                if nfm_dict_key in nfm_link_util:
+                    nfm_link_util_value = float(nfm_link_util[nfm_dict_key])
+                else:
+                    nfm_link_util_value = 0
+                if nfm_dict_key in nfm_packet_dropped:
+                    nfm_packet_dropped_link_value = float(nfm_packet_dropped[nfm_dict_key])
+                else:
+                    nfm_packet_dropped_link_value = 0
 
-            nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value + nfm_packet_dropped_weight* nfm_packet_dropped_link_value
-            #nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value
-            nfm_total_link_weight = 1 * nfm_total_link_weight # keeping this 1 just to remind it is copy of the below block
-        self.cpmlogger.debug("CALC_CPMTESTER_WEIGHT, src_node = %r , dst_node = %r, nfm_total_link_weight =  %r", src_node,
-                             dst_node, nfm_total_link_weight)
+                nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value + nfm_packet_dropped_weight* nfm_packet_dropped_link_value
+                #nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value
+                nfm_total_link_weight = 1 * nfm_total_link_weight # keeping this 1 just to remind it is copy of the below block
+            self.cpmlogger.debug("CALC_CPMTESTER_WEIGHT, src_node = %r , dst_node = %r, nfm_total_link_weight =  %r", src_node,
+                                 dst_node, nfm_total_link_weight)
+        except Exception,e:
+            self.cpmlogger.error("CPM_TESTER: Exceptions encountered in the code block, = %r", e)
 
         #If CPM_TESTER module is not enabled, and NFM module is enabled, then this block will hit and NFM metrics shall be computed according to the metrics specificaiton document (Teacher's assigned weights)
         #CPM_TESTER should not be enabled in the final test run of the code

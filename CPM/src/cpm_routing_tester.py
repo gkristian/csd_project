@@ -49,7 +49,7 @@ class CPMRoutingTester(app_manager.RyuApp):
         self.net = self.shared_context.learnt_topology
         #self.bcomplete = self.shared_context.bootstrap_complete
         self.epoc_starttime = int(time.time())
-        #file name containing the nfm values
+        #file name containing the nfm values, this can also be an absolute path e.g. /etc/cpm_tester.ini
         self.filename_containing_nfm_metrics = "cpm_tester_weights_feeder.txt"
 
         """
@@ -156,12 +156,18 @@ class CPMRoutingTester(app_manager.RyuApp):
                 self.logger.error("Exception encountered when parsing a graph node =%r for : ",src_to_dst_node,exc_info = True)
                 #raise #raise causes program termination
 
+            #Intialize nfm_metrics with some values
             self.nfmpush['link_utilization'][src_to_dst_node] = 1
             self.nfmpush['link_utilization'][dst_to_src_node] = 1
             self.nfmpush['packet_dropped'][src_to_dst_node] = 0
             self.nfmpush['packet_dropped'][dst_to_src_node] = 0
 
             # over load a certain link to test weighted routing
+            try:
+                self.read_nfm_metrics_from_file_and_update_nfm_metrics()
+            except Exception,e:
+                self.cpm_test_logger.debug("CPM_FILE_READ block : Exception encountered = %r ",e)
+            self.cpm_test_logger.debug("CPM_NFM_METRICS_PRINT: After reading weights from file, this is what nfm_metrics dict to be pushed looks like : \n %r",self.nfmpush)
 
 
 
@@ -200,19 +206,23 @@ class CPMRoutingTester(app_manager.RyuApp):
 
     def read_nfm_metrics_from_file_and_update_nfm_metrics(self):
         #read from file
+        try:
+            with open(self.filename_containing_nfm_metrics, "r") as f:
+                for line in f:
+                    line = line.strip()  # remove space from start and end of line
+                    # ignore lines i n file beginning with a # continue. I could have also used a pattern matcher '^#' but that would have been expensive
+                    if not line or line[0] == '#':
+                        continue
 
-        with open(self.filename_containing_nfm_metrics, "r") as f:
-            for line in f:
-                line = line.strip()  # remove space from start and end of line
-                # ignore lines i n file beginning with a # continue. I could have also used a pattern matcher '^#' but that would have been expensive
-                if not line or line[0] == '#':
-                    continue
+                    src_node_to_dst_node, nfm_values = line.split(':')
+                    link_util, packet_drops = nfm_values.split(',')
+                    #assign nfm values read to nfm_metrics
+                    self.update_nfm_metrics(src_node_to_dst_node, link_util, packet_drops)
+                    self.cpm_test_logger("NFM_VALUES_READ_FROM_FILE : node =%r , link_util = %r , packet_drops = %r", src_node_to_dst_node, link_util,packet_drops)
+        except Exception,e:
+            self.cpm_test_logger.error("read_nfm_metric_from_and_update function: Exception encountered = %r",e)
 
-                src_node_to_dst_node, nfm_values = line.split(':')
-                link_util, packet_drops = nfm_values.split(',')
-                #assign nfm values read to nfm_metrics
-                self.update_nfm_metrics(src_node_to_dst_node, link_util, packet_drops)
-                self.cpm_test_logger("NFM_VALUES_READ_FROM_FILE : node =%r , link_util = %r , packet_drops = %r", src_node_to_dst_node, link_util,packet_drops)
+
 
 
 

@@ -48,8 +48,9 @@ class CPMRoutingTester(app_manager.RyuApp):
         self.shared_context = kwargs['network']
         self.net = self.shared_context.learnt_topology
         #self.bcomplete = self.shared_context.bootstrap_complete
-
         self.epoc_starttime = int(time.time())
+        #file name containing the nfm values
+        self.filename_containing_nfm_metrics = "cpm_tester_weights_feeder.txt"
 
         """
         Pitfall:
@@ -114,18 +115,22 @@ class CPMRoutingTester(app_manager.RyuApp):
         self.current_time = int(round(time.time() * 1000))
         # every 4 seconds
         time_max_limit = self.NFM_PUSH_TIMER * 1000
-        self.logger.debug("FETCH fetch_metric_and_insert_ingraph, time_max_limit IN SECONDS = %r", time_max_limit)
+
         #if not (self.current_time - self.time_of_last_fetch > time_max_limit) or self.defines_D['bootstrap_in_progress']:
         if not (self.current_time - self.time_of_last_push > time_max_limit):
+            self.cpm_test_logger.debug("CPMTESTER : Time Check Failed : Not Pushing metric to DM, time_of_last_fetch = %r",
+                                       self.time_of_last_push)
             return
-        else:
-            self.time_of_last_push = self.current_time
-            self.logger.debug("FETCH_TIME_CHECK_OK, about to fetch_KPI, time_of_last_fetch = %r",self.time_of_last_push)
+
+        self.cpm_test_logger.debug("CPMTESTER : Time Check passed : Pushing metric to DM, time_of_last_fetch = %r",self.time_of_last_push)
+        self.time_of_last_push = self.current_time
+
+        #Read wegiths from file
+
 
         #self.shared_context.learnt_topology
         """
-        obvious concept of edge_iter for networkx graph learnt from below link:
-        http://stackoverflow.com/questions/15644684/best-practices-for-querying-graphs-by-edge-and-node-attributes-in-networkx
+        Iterating over topology graph using edge_iter
         """
         # Iterate through the graph object
         #for node, data in self.net.nodes_iter(data=True):
@@ -135,8 +140,8 @@ class CPMRoutingTester(app_manager.RyuApp):
             dst_to_src_node = str(dst_node) + '-' + str(src_node)
             """
             Pitfall:
-            One run wasted because of not knowing below:
-            src_node and dst_node are of type() and not str()
+            One run wasted because of not remembering below:
+            src_node and dst_node are of type int() and not str()
             so below threw error and could have only worked if they were str()
             src_to_dst_node = src_node '+' dst_node
             """
@@ -157,10 +162,7 @@ class CPMRoutingTester(app_manager.RyuApp):
             self.nfmpush['packet_dropped'][dst_to_src_node] = 0
 
             # over load a certain link to test weighted routing
-            if src_node == 21 and dst_node == 22:
-                link_util = 60
-                packet_drop = 1
-                self.update_nfm_metrics(src_node,dst_node,link_util,packet_drop)
+
 
 
         self.rest_nfm_post()
@@ -181,12 +183,38 @@ class CPMRoutingTester(app_manager.RyuApp):
         print "request is", self.nfmpush
         print "repsonse is", response
 
-    def update_nfm_metrics(self,src_node,dst_node, src_to_dst_link_util_value, dst_to_src_link_util_value, src_to_dst_drop_value, dst_to_src_drop_value):
-        src_to_dst_node = str(src_node) + '-' + str(dst_node)
-        dst_to_src_node = str(dst_node) + '-' + str(src_node)
-        self.nfmpush['link_utilization'][src_to_dst_node] = src_to_dst_link_util_value
-        self.nfmpush['link_utilization'][dst_to_src_node] = dst_to_src_link_util_value
-        self.nfmpush['packet_dropped'][src_to_dst_node] = src_to_dst_drop_value
-        self.nfmpush['packet_dropped'][dst_to_src_node] = dst_to_src_drop_value
+    def update_nfm_metrics(self,src_node_to_dst_node, src_to_dst_link_util_value, src_to_dst_drop_value):
+        """
+        link_util + drop_value is added and added as a weight to graph. during testing we set drop_value to 0 and use link_util to set weights on the links
+        :param src_node_to_dst_node: e.g '21-11' means src_node = 21 and dste_node = 11
+        :param src_to_dst_link_util_value:  link_utilization value to be assigned to the link
+        :param src_to_dst_drop_value:  can be zero
+        :return:
+        """
+        #src_to_dst_node = str(src_node) + '-' + str(dst_node)
+        #dst_to_src_node = str(dst_node) + '-' + str(src_node)
+        self.nfmpush['link_utilization'][src_node_to_dst_node] = src_to_dst_link_util_value
+        #self.nfmpush['link_utilization'][dst_to_src_node] = dst_to_src_link_util_value
+        self.nfmpush['packet_dropped'][src_node_to_dst_node] = src_to_dst_drop_value
+        #self.nfmpush['packet_dropped'][dst_to_src_node] = dst_to_src_drop_value
+
+    def read_nfm_metrics_from_file_and_update_nfm_metrics(self):
+        #read from file
+
+        with open(self.filename_containing_nfm_metrics, "r") as f:
+            for line in f:
+                line = line.strip()  # remove space from start and end of line
+                # ignore lines i n file beginning with a # continue. I could have also used a pattern matcher '^#' but that would have been expensive
+                if not line or line[0] == '#':
+                    continue
+
+                src_node_to_dst_node, nfm_values = line.split(':')
+                link_util, packet_drops = nfm_values.split(',')
+                #assign nfm values read to nfm_metrics
+                self.update_nfm_metrics(src_node_to_dst_node, link_util, packet_drops)
+                self.cpm_test_logger("NFM_VALUES_READ_FROM_FILE : node =%r , link_util = %r , packet_drops = %r", src_node_to_dst_node, link_util,packet_drops)
+
+
+
 
 

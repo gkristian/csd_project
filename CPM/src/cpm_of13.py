@@ -1201,13 +1201,14 @@ class CPM(app_manager.RyuApp):
         rpm_total_weight = 0
         rpm_total_link_weight = 0
         hum_total_weight = 0
-        #If CPM_TESTER is enabled, below block will cause link_utilization specified in the cpm_tester module to become the weight of the link
+        #If CPM_TESTER is enabled, below block will cause link_utilization specified in the cpm_tester module to become the weight of the link.
+        #if packet_drops are specified then it will be added to link_util and assigned as weights but during test just keep packet_dropped to 0
         #This will help us change weights of the link and see how traffic responds
         #nfm would be False if HTTP GET of nfm_metric_data returned blank or failed due to connection error
         # Below block could be summarized to just few lines but I kept as it is as it helps me compare to the NFM block in a way.
         if self.modules_enabled['CPM_TESTER'] and nfm:
             nfm_link_util_weight = 1  # just add link_utilization to weight
-            nfm_packet_dropped_weight = 0 # DO NOT add dropped packets to the weight
+            nfm_packet_dropped_weight = 1 # and packet_drops if specified
 
             nfm_link_util = nfm[0][1]
             nfm_packet_dropped = nfm[1][1]
@@ -1223,8 +1224,8 @@ class CPM(app_manager.RyuApp):
             else:
                 nfm_packet_dropped_link_value = 0
 
-            #nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value + nfm_packet_dropped_weight* nfm_packet_dropped_link_value
-            nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value
+            nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value + nfm_packet_dropped_weight* nfm_packet_dropped_link_value
+            #nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value
             nfm_total_link_weight = 1 * nfm_total_link_weight # keeping this 1 just to remind it is copy of the below block
         self.cpmlogger.debug("CALC_CPMTESTER_WEIGHT, src_node = %r , dst_node = %r, nfm_total_link_weight =  %r", src_node,
                              dst_node, nfm_total_link_weight)

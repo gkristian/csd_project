@@ -1,0 +1,92 @@
+#SORRY THERE IS A HISTORY WITH THESE COMMENTS SO I WOULD LIKE TO KEEP THEM
+                # lookup dst mac in our graph, has_path()
+                # if yes find path
+                # install_path_flows(path)
+                # print (src in self.net)
+                # print nx.shortest_path(self.net,1,4)
+                # print nx.shortest_path(self.net,4,1)
+                # print nx.shortest_path(self.net,src,4)
+                # path=nx.shortest_path(self.net,src,dst)
+                # next=path[path.index(dpid)+1]
+                # out_port=self.net[dpid][next]['port']
+                # else:
+                #    self.logger.debug("MAC_port table %r", self.mac_to_port)
+                # out_port = ofproto.OFPP_FLOOD
+
+                #####actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+
+                # install a flow to avoid packet_in next time
+
+                # if out_port != ofproto.OFPP_FLOOD:
+                #   self.add_flow(datapath, msg.in_port, dst, actions)
+
+                #     out = datapath.ofproto_parser.OFPPacketOut(
+                #     datapath=datapath, buffer_id=msg.buffer_id, in_port=msg.in_port,
+                #     actions=actions)
+                # datapath.send_msg(out)
+
+                # pass
+
+
+####################################################self.print_l2_table()
+
+
+# here we get dst mac to be fffff all the time
+
+# #Is            it            a            valid            openflow - check msg len
+# #do we have this packet in our mac_to_port table
+# if dst_mac in self.mac_to_port[dpid]:
+#     #compute
+#     #find output to prepaer a flow-mod to all the switches in the path
+#     #this outport just tells
+#     #route this packet to switch dpid's out_port
+#
+#     #out_port = self.mac_to_port[dpid][dst_mac]
+#
+#     pass
+# #else:
+#     #we have no path to the destination mac address, we ll just wait and wont flood the network.
+     #pass
+
+# self.logger("type of msg.in_port is %s",type(msg.in_port))
+# self.logger.debug("Received PacketIn: dpid = %r , in_port = %r , srcmac= %r, dstmac = %r , packet_type = %r",dpid, msg.match['in_port'] , src,dst, eth.ethertype)
+# print "Received PacketIn: dpid = ", dpid, "srcmac=", src, "dstmac = ", dst, "packet_type = ", eth.ethertype
+# store in a dict what types of packets received and how many
+# uncomment following till
+# if pkt_eth.ethertype in self.rxpkts_types_D:
+#     self.rxpkts_types_D[pkt_eth.ethertype] += 1
+# else:
+#     self.rxpkts_types_D.setdefault(pkt_eth.ethertype,1) #for dictionary D, against a key eth.ethertype, set a default value 1
+# till HERE when u wanna develop a statistics counter
+
+# eth.etheretype == ether_types.ETH_TYPE_ARP
+# eth.etheretype == ether_types.ETH_TYPE_LLDP
+# eth.etheretype == ether_types.
+
+
+# print "start mac_to_port: _____"
+# pprint (self.mac_to_port)
+
+# print "nodes"
+# print self.net.nodes()
+# print "edges"
+# print self.net.edges()
+# self.logger.info("packet in %s %s %s %s", dpid, src, dst, msg.in_port)
+
+# In exampleswitch13-rev1 in_port was like below
+# in_port = msg.match['in_port']
+# self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
+
+# we are never able to enter this if, showing net graph is super quickly built
+# if src_mac not in self.net:
+#
+#     #####self.net.add_node(src)
+#     edge_dict={'port': msg.in_port}
+#     self.logger.debug("Entering the control loop : Received PacketIn: in_port = %r", edge_dict['port'])
+
+# self.net.add_edge(dpid,src,edge_dict) #to this edge we are attaching a dictionary edge_dict
+# self.net.add_edge(src,dpid)
+# if dst_mac in self.net:
+#   pass
+#    self.logger.debug("dst mac in our graph")
+

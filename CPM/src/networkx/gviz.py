@@ -1,5 +1,4 @@
-import pygraphviz
-import networkx
+#import pygraphviz
 import networkx as nx
 #G = nx.Graph()
 G = nx.DiGraph()

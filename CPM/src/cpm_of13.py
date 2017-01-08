@@ -100,6 +100,10 @@ class Configuration(object):
                  """
         self.switch_idle_timeout = 3
         self.switch_hardtimeout = 0
+        #Export graph to file in this format
+        # "dot" , "networkx_native"
+        self.graph_diagram_format="dot"
+        self.save_topology_to_file_post_bootstrap_only_once = True #just save the topology to file only once after boostrap has completed
 
 class SharedContext (object):
     def __init__(self):
@@ -361,6 +365,9 @@ class CPM(app_manager.RyuApp):
 
         if self.bootstrap_complete and self.defines_D['temp_bstrap_print_once']:
             self.cpm_bstrap_logger.info("CPM : *******    BOOTSTRAP COMPLETE   ********")
+            if (self.config.save_topology_to_file_post_bootstrap_only_once):
+                pass
+                #self.save_topolog_to_file()
             self.print_l2_table()
             self.defines_D['temp_bstrap_print_once'] = False
 
@@ -699,176 +706,112 @@ class CPM(app_manager.RyuApp):
                 self.__fetch_ALL_metrics_and_insert_weight_in_topology_graph()
                 self.__log_all_graph("After WEIGHT_ADDED_TO_TOPOLOGY")
 
-                #dst mac  is in our topology graph
-                #None of below exceptions should trigger since I already checked if a shortest path exists or not earlier. But I am going to put exceptions just to be on safe side.
-                if self.config.enable_weighted_routing:
-                    if self.config.weighted_routing_type == 'dijkrsta':
-                        self.cpm_route_logger.debug("WEIGHTED_ROUTING enabled, type = %r", self.config.weighted_routing_type)
-                        try:
-                            spath = nx.dijkstra_path(self.net,src_mac,dst_mac)
-                        except Exception:
-                            self.cpm_route_logger.debug("No weighted shortest path exist between src = %r and dst = %r",src_mac,dst_mac)
-                else:
-                    self.cpmlogger.debug("WEIGHTED_ROUTING disabled")
-                    try:
-                        spath = nx.shortest_path(self.net, src_mac, dst_mac) # If there are more than one shortest path between the source and target, it would just return one of them
-                    except Exception:
-                        self.cpm_route_logger.debug("No shortest path exist between src = %r and dst = %r",src_mac,dst_mac)
 
+                self.__shortest_path_computer_and_install(src_mac,dst_mac)
+    #     else:  # this is not an lldp packet, this is not arp broadcast, the dst mac is not known but is not broadcast either
+    #     # check if its a valid openflow packet
+    #     pass
+    #     # below lines were flooding the log file
+    #     # self.cpm_route_logger.debug(" Unable to find path from  src_mac=%r to dst_mac=%r  ", dst_mac, src_mac)
+    #     # self.cpm_bstrap_logger.debug("Shall we Learn new MAC dst_mac=%r src_mac=%r ", dst_mac,src_mac)
+    #
+    # self.show_graph_stats()
 
-                self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac,spath)
-                if self.__isPathNotAlreadyInstalled(spath):
-                    if self.config.switch_rule_installation_strategy == 'semiproactive':
-                        self.cpm_route_logger.debug("Installing path : %r", spath)
-                        self.__install_path_flow(spath)
-                    if self.config.switch_rule_installation_strategy == 'proactive':
-                        self.cpm_route_logger("proactive strategy not implemented. TODO if time avaialble")
+    def __shortest_path_computer_and_install(self,src_mac, dst_mac):
+        """
+        This method computes the forward path and reverse path of the packet using weighted or non-weighted shortest path algorithm and installs the flows
+        into the switches according to the selected openflow rule installation strategy
+        """
+        # dst mac  is in our topology graph
+        # None of below exceptions should trigger since I already checked if a shortest path exists or not earlier. But I am going to put exceptions just to be on safe side.
+        if self.config.enable_weighted_routing:
+            if self.config.weighted_routing_type == 'dijkrsta':
+                self.cpm_route_logger.debug("WEIGHTED_ROUTING enabled, type = %r", self.config.weighted_routing_type)
+                try:
+                    spath_fwd_path = nx.dijkstra_path(self.net, src_mac, dst_mac)
+                    spath_rev_path = nx.dijkstra_path(self.net, dst_mac, src_mac)
+                except Exception:
+                    self.cpm_route_logger.debug("No weighted shortest path exist between src = %r and dst = %r",
+                                                src_mac, dst_mac)
+        else:
+            self.cpmlogger.debug("WEIGHTED_ROUTING disabled")
+            try:
+                # In this case, fwd_path and rev_path would be the same, we can reduce this to just one TODO
+                spath_fwd_path = nx.shortest_path(self.net, src_mac,
+                                                  dst_mac)  # If there are more than one shortest path between the source and target, it would just return one of them
+                spath_rev_path = nx.dijkstra_path(self.net, dst_mac, src_mac)
+            except Exception:
+                self.cpm_route_logger.debug("No shortest path exist between src = %r and dst = %r", src_mac, dst_mac)
 
-                    if self.config.switch_rule_installation_strategy == 'reactive':
-                        self.cpm_route_logger("reactive strategy not implemented. TODO if time avaialble though current semi-reactive is almost like reactive except the packet hits the slow path only the first time")
+        self.logger.debug("Found shortest path from src mac %r to dst mac %r as %r", src_mac, dst_mac, spath_fwd_path)
 
+        if self.__isPathNotAlreadyInstalled(spath_fwd_path):
+            if self.config.switch_rule_installation_strategy == 'semiproactive':
+                self.cpm_route_logger.debug("Installing path FWD : %r", spath_fwd_path)
+                self.__install_path_flow(spath_fwd_path)
+            if self.config.switch_rule_installation_strategy == 'proactive':
+                self.cpm_route_logger("proactive strategy not implemented. TODO if time avaialble")
 
-                #lookup dst mac in our graph, has_path()
-                #if yes find path
-                #install_path_flows(path)
-                # print (src in self.net)
-                # print nx.shortest_path(self.net,1,4)
-                # print nx.shortest_path(self.net,4,1)
-                # print nx.shortest_path(self.net,src,4)
-                # path=nx.shortest_path(self.net,src,dst)
-                # next=path[path.index(dpid)+1]
-                # out_port=self.net[dpid][next]['port']
-                # else:
-                #    self.logger.debug("MAC_port table %r", self.mac_to_port)
-                # out_port = ofproto.OFPP_FLOOD
+            if self.config.switch_rule_installation_strategy == 'reactive':
+                self.cpm_route_logger(
+                    "reactive strategy not implemented. TODO if time avaialble though current semi-reactive is almost like reactive except the packet hits the slow path only the first time")
 
-                #####actions = [datapath.ofproto_parser.OFPActionOutput(out_port)]
+        if self.__isPathNotAlreadyInstalled(spath_rev_path):
+            if self.config.switch_rule_installation_strategy == 'semiproactive':
+                self.cpm_route_logger.debug("Installing path REV : %r", spath_rev_path)
+                self.__install_path_flow(spath_rev_path)
+            if self.config.switch_rule_installation_strategy == 'proactive':
+                self.cpm_route_logger("proactive strategy not implemented. TODO if time avaialble")
 
-                # install a flow to avoid packet_in next time
-
-                # if out_port != ofproto.OFPP_FLOOD:
-                #   self.add_flow(datapath, msg.in_port, dst, actions)
-
-                #     out = datapath.ofproto_parser.OFPPacketOut(
-                #     datapath=datapath, buffer_id=msg.buffer_id, in_port=msg.in_port,
-                #     actions=actions)
-                # datapath.send_msg(out)
-
-                #pass
-
-            else: #this is not an lldp packet, this is not arp broadcast, the dst mac is not known but is not broadcast either
-                #check if its a valid openflow packet
-                pass
-                #below lines were flooding the log file
-                #self.cpm_route_logger.debug(" Unable to find path from  src_mac=%r to dst_mac=%r  ", dst_mac, src_mac)
-                #self.cpm_bstrap_logger.debug("Shall we Learn new MAC dst_mac=%r src_mac=%r ", dst_mac,src_mac)
-
-            self.show_graph_stats()
-
-                ####################################################self.print_l2_table()
-
-
-            #here we get dst mac to be fffff all the time
-
-            # #Is            it            a            valid            openflow - check msg len
-            # #do we have this packet in our mac_to_port table
-            # if dst_mac in self.mac_to_port[dpid]:
-            #     #compute
-            #     #find output to prepaer a flow-mod to all the switches in the path
-            #     #this outport just tells
-            #     #route this packet to switch dpid's out_port
-            #
-            #     #out_port = self.mac_to_port[dpid][dst_mac]
-            #
-            #     pass
-            # #else:
-            #     #we have no path to the destination mac address, we ll just wait and wont flood the network.
-            #     #pass
-
-            #self.logger("type of msg.in_port is %s",type(msg.in_port))
-            #self.logger.debug("Received PacketIn: dpid = %r , in_port = %r , srcmac= %r, dstmac = %r , packet_type = %r",dpid, msg.match['in_port'] , src,dst, eth.ethertype)
-            #print "Received PacketIn: dpid = ", dpid, "srcmac=", src, "dstmac = ", dst, "packet_type = ", eth.ethertype
-            #store in a dict what types of packets received and how many
-            #uncomment following till
-            # if pkt_eth.ethertype in self.rxpkts_types_D:
-            #     self.rxpkts_types_D[pkt_eth.ethertype] += 1
-            # else:
-            #     self.rxpkts_types_D.setdefault(pkt_eth.ethertype,1) #for dictionary D, against a key eth.ethertype, set a default value 1
-            # till HERE when u wanna develop a statistics counter
-
-            #eth.etheretype == ether_types.ETH_TYPE_ARP
-            #eth.etheretype == ether_types.ETH_TYPE_LLDP
-            #eth.etheretype == ether_types.
-
-
-            #print "start mac_to_port: _____"
-            #pprint (self.mac_to_port)
-
-            #print "nodes"
-            #print self.net.nodes()
-            #print "edges"
-            #print self.net.edges()
-            #self.logger.info("packet in %s %s %s %s", dpid, src, dst, msg.in_port)
-
-            #In exampleswitch13-rev1 in_port was like below
-            #in_port = msg.match['in_port']
-            #self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
-
-            #we are never able to enter this if, showing net graph is super quickly built
-            # if src_mac not in self.net:
-            #
-            #     #####self.net.add_node(src)
-            #     edge_dict={'port': msg.in_port}
-            #     self.logger.debug("Entering the control loop : Received PacketIn: in_port = %r", edge_dict['port'])
-
-                #self.net.add_edge(dpid,src,edge_dict) #to this edge we are attaching a dictionary edge_dict
-                #self.net.add_edge(src,dpid)
-            #if dst_mac in self.net:
-            #   pass
-            #    self.logger.debug("dst mac in our graph")
+            if self.config.switch_rule_installation_strategy == 'reactive':
+                self.cpm_route_logger(
+                    "reactive strategy not implemented. TODO if time avaialble though current semi-reactive is almost like reactive except the packet hits the slow path only the first time")
 
 
 
-    """
-    Save the current network graph to a PNG file
-
-    """
     def save_topolog_to_file(self):
+        #Save the current network graph to a PNG file
+        if self.config.graph_diagram_format == "dot":
+            net_dot = nx.nx_agraph.to_agraph(self.net)
+            net_dot.layout('dot', args='-Nfontsize=10 -Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
+            filename=self.defines_D['logdir'] + '/CPM_network_dot_fomrat.png'
+            net_dot.draw(filename)
 
-        #nx.draw(self.net, with_labels=True)
+        if self.config.graph_diagram_format == "networkx_native":
+            #nx.draw(self.net, with_labels=True)
 
-        ###
-        #pos = nx.random_layout(self.net)
-        ###pos = nx.circular_layout(G)
-        # pos = nx.shell_layout(G)
-        pos = nx.spring_layout(self.net)
-        #pos = nx.graphviz_layout(self.net,prog='dot')
-        nx.draw(self.net, pos, with_labels=True , hold= False)
-        #Below is a do it later when have time : plot one topology graph with lot of info
-        #label_src_dst_allinone = nx.get_edge_attributes(self.net, 'src_dst')
-        #nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_src_dst_allinone)
-        #plt.savefig("network_with_src_dst_allinone.png")
-        #print in_port and out_port as well
-        label_src = nx.get_edge_attributes(self.net, 'src_port')
-        nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_src)
-        filename_src = self.defines_D['logdir'] + '/CPM_network_with_src_port.png'
-        plt.savefig(filename_src)
-        label_dst = nx.get_edge_attributes(self.net, 'dst_port')
-        nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_dst)
-        filename_dst = self.defines_D['logdir'] + '/CPM_network_with_dst_port.png'
+            ###
+            #pos = nx.random_layout(self.net)
+            ###pos = nx.circular_layout(G)
+            # pos = nx.shell_layout(G)
+            pos = nx.spring_layout(self.net)
+            #pos = nx.graphviz_layout(self.net,prog='dot')
+            nx.draw(self.net, pos, with_labels=True , hold= False)
+            #Below is a do it later when have time : plot one topology graph with lot of info
+            #label_src_dst_allinone = nx.get_edge_attributes(self.net, 'src_dst')
+            #nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_src_dst_allinone)
+            #plt.savefig("network_with_src_dst_allinone.png")
+            #print in_port and out_port as well
+            label_src = nx.get_edge_attributes(self.net, 'src_port')
+            nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_src)
+            filename_src = self.defines_D['logdir'] + '/CPM_network_with_src_port.png'
+            plt.savefig(filename_src)
+            label_dst = nx.get_edge_attributes(self.net, 'dst_port')
+            nx.draw_networkx_edge_labels(self.net, pos, edge_labels=label_dst)
+            filename_dst = self.defines_D['logdir'] + '/CPM_network_with_dst_port.png'
 
-        #nx.draw_graphviz(self.net)
-        #nx.draw_circular(self.net, with_labels=True)
+            #nx.draw_graphviz(self.net)
+            #nx.draw_circular(self.net, with_labels=True)
 
-        #nx.draw_random(self.net, with_labels=True)
-        # doesnt worknx.graphviz(self.net,prog='dot',with_labels=True)
-        # A=nx.to_agraph(self.net)
-        # A.layout()
-        # A.draw('test.png')
+            #nx.draw_random(self.net, with_labels=True)
+            # doesnt worknx.graphviz(self.net,prog='dot',with_labels=True)
+            # A=nx.to_agraph(self.net)
+            # A.layout()
+            # A.draw('test.png')
 
-        #labels = nx.get_edge_attributes(self.net, 'weight')
-        #nx.draw_networkx_edge_labels(self.net, pos, edge_labels=labels) #this will draw weights as well
-        ###
+            #labels = nx.get_edge_attributes(self.net, 'weight')
+            #nx.draw_networkx_edge_labels(self.net, pos, edge_labels=labels) #this will draw weights as well
+            ###
 
 
         #plt.show() #Do not uncomment this in a realtime application. This will invoke a standalone application to view the graph.

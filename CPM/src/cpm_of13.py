@@ -101,8 +101,10 @@ class Configuration(object):
         self.switch_idle_timeout = 3
         self.switch_hardtimeout = 0
         #Export graph to file in this format
-        # "dot" , "networkx_native"
-        self.graph_diagram_format="networkx_native" #the dot format doesnt work. pydot has some issue
+        # "dot" , "networkx_native", "graph_ml"
+        self.export_topology_to_networx_native_png= False
+        self.export_topology_to_graphviz_dot = False # the dot format doesnt work. pydot has some issue
+        self.export_topology_to_graphml_format = True
         self.save_topology_to_file_post_bootstrap_only_once = True #just save the topology to file only once after boostrap has completed
 
 class SharedContext (object):
@@ -162,7 +164,8 @@ class CPM(app_manager.RyuApp):
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.modules_enabled = {'RPM': True, 'HUM': True,'NFM': True,'CPM_TESTER': False }
+        #self.modules_enabled = {'RPM': True, 'HUM': True,'NFM': True,'CPM_TESTER': False }
+        self.modules_enabled = {'RPM': False, 'HUM': False,'NFM': False,'CPM_TESTER': True }
 
 
         # Do not change below line. It means if CPM tester is enabled, NFM metrics are still fetched as CPM tester sends the metric in NFM format but when
@@ -171,7 +174,8 @@ class CPM(app_manager.RyuApp):
             self.modules_enabled['NFM'] = True
         self.install_openflow_rules = True
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,
-                          'flow_table_strategy_semi_proactive': True, 'logdir': '/var/www/html/spacey',
+                          'flow_table_strategy_semi_proactive': True,
+                          'logdir': '/var/www/html/spacey',
                           'cpmlogdir': '/var/www/html/spacey/cpmweights.log',
                           'metrics_fetch_rest_url': 'http://127.0.0.1:8000/Tasks.txt', 'fetch_timer_in_seconds': 4,
                           'enable_save_topology_to_file': False,
@@ -366,8 +370,8 @@ class CPM(app_manager.RyuApp):
         if self.bootstrap_complete and self.defines_D['temp_bstrap_print_once']:
             self.cpm_bstrap_logger.info("CPM : *******    BOOTSTRAP COMPLETE   ********")
             if (self.config.save_topology_to_file_post_bootstrap_only_once):
-                pass
-                #self.save_topolog_to_file()
+                #pass
+                self.save_topolog_to_file()
             self.print_l2_table()
             self.defines_D['temp_bstrap_print_once'] = False
 
@@ -771,13 +775,15 @@ class CPM(app_manager.RyuApp):
 
     def save_topolog_to_file(self):
         #Save the current network graph to a PNG file
-        if self.config.graph_diagram_format == "dot":
+        if self.config.export_topology_to_graphviz_dot:
             net_dot = nx.nx_agraph.to_agraph(self.net)
             net_dot.layout('dot', args='-Nfontsize=10 -Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
             filename=self.defines_D['logdir'] + '/CPM_network_dot_fomrat.png'
             net_dot.draw(filename)
-
-        if self.config.graph_diagram_format == "networkx_native":
+        if self.config.export_topology_to_graphml_format:
+            filename = self.defines_D['logdir'] + '/CPM_built_topology.graphml'
+            nx.write_graphml(self.net, filename)
+        if self.config.export_topology_to_networx_native_png:
             #nx.draw(self.net, with_labels=True)
 
             ###
@@ -812,12 +818,10 @@ class CPM(app_manager.RyuApp):
             #labels = nx.get_edge_attributes(self.net, 'weight')
             #nx.draw_networkx_edge_labels(self.net, pos, edge_labels=labels) #this will draw weights as well
             ###
+            #plt.show() #Do not uncomment this in a realtime application. This will invoke a standalone application to view the graph.
 
-
-        #plt.show() #Do not uncomment this in a realtime application. This will invoke a standalone application to view the graph.
-
-        plt.savefig(filename_dst)
-        plt.clf() #this cleans the palette for the next time, otherwise it will keep on drawing the same image.
+            plt.savefig(filename_dst)
+            plt.clf() #this cleans the palette for the next time, otherwise it will keep on drawing the same image.
 
 
     def show_graph_stats(self):

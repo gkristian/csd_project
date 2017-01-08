@@ -102,7 +102,7 @@ class Configuration(object):
         self.switch_hardtimeout = 0
         #Export graph to file in this format
         # "dot" , "networkx_native"
-        self.graph_diagram_format="dot"
+        self.graph_diagram_format="networkx_native" #the dot format doesnt work. pydot has some issue
         self.save_topology_to_file_post_bootstrap_only_once = True #just save the topology to file only once after boostrap has completed
 
 class SharedContext (object):
@@ -162,7 +162,7 @@ class CPM(app_manager.RyuApp):
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.modules_enabled = {'RPM': False, 'HUM': False,'NFM': False,'CPM_TESTER': True }
+        self.modules_enabled = {'RPM': True, 'HUM': True,'NFM': True,'CPM_TESTER': False }
 
 
         # Do not change below line. It means if CPM tester is enabled, NFM metrics are still fetched as CPM tester sends the metric in NFM format but when

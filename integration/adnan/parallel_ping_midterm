@@ -1,0 +1,949 @@
+u1 ping -c 5 -W 2 10.0.10.1 &
+u1 ping -c 5 -W 2 10.0.10.2 &
+u1 ping -c 5 -W 2 10.0.10.3 &
+u1 ping -c 5 -W 2 10.0.10.4 &
+u1 ping -c 5 -W 2 10.0.10.5 &
+u1 ping -c 5 -W 2 10.0.10.6 &
+u1 ping -c 5 -W 2 10.0.10.7 &
+u1 ping -c 5 -W 2 10.0.10.8 &
+u1 ping -c 5 -W 2 10.0.10.9 &
+u1 ping -c 5 -W 2 10.0.10.10 &
+
+u1 ping -c 5 -W 2 10.0.30.1 &
+u1 ping -c 5 -W 2 10.0.30.2 &
+u1 ping -c 5 -W 2 10.0.30.3 &
+u1 ping -c 5 -W 2 10.0.30.4 &
+u1 ping -c 5 -W 2 10.0.30.5 &
+u1 ping -c 5 -W 2 10.0.30.6 &
+u1 ping -c 5 -W 2 10.0.30.7 &
+u1 ping -c 5 -W 2 10.0.30.8 &
+u1 ping -c 5 -W 2 10.0.30.9 &
+u1 ping -c 5 -W 2 10.0.30.10 &
+
+u1 ping -c 5 -W 2 10.0.20.1 &
+u1 ping -c 5 -W 2 10.0.20.2 &
+u1 ping -c 5 -W 2 10.0.20.3 &
+u1 ping -c 5 -W 2 10.0.20.4 &
+
+u1 ping -c 5 -W 2 10.0.40.1 &
+u1 ping -c 5 -W 2 10.0.40.2 &
+u1 ping -c 5 -W 2 10.0.40.3 &
+u1 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+u2 ping -c 5 -W 2 10.0.10.1 &
+u2 ping -c 5 -W 2 10.0.10.2 &
+u2 ping -c 5 -W 2 10.0.10.3 &
+u2 ping -c 5 -W 2 10.0.10.4 &
+u2 ping -c 5 -W 2 10.0.10.5 &
+u2 ping -c 5 -W 2 10.0.10.6 &
+u2 ping -c 5 -W 2 10.0.10.7 &
+u2 ping -c 5 -W 2 10.0.10.8 &
+u2 ping -c 5 -W 2 10.0.10.9 &
+u2 ping -c 5 -W 2 10.0.10.10 &
+
+u2 ping -c 5 -W 2 10.0.30.1 &
+u2 ping -c 5 -W 2 10.0.30.2 &
+u2 ping -c 5 -W 2 10.0.30.3 &
+u2 ping -c 5 -W 2 10.0.30.4 &
+u2 ping -c 5 -W 2 10.0.30.5 &
+u2 ping -c 5 -W 2 10.0.30.6 &
+u2 ping -c 5 -W 2 10.0.30.7 &
+u2 ping -c 5 -W 2 10.0.30.8 &
+u2 ping -c 5 -W 2 10.0.30.9 &
+u2 ping -c 5 -W 2 10.0.30.10 &
+
+u2 ping -c 5 -W 2 10.0.20.1 &
+u2 ping -c 5 -W 2 10.0.20.2 &
+u2 ping -c 5 -W 2 10.0.20.3 &
+u2 ping -c 5 -W 2 10.0.20.4 &
+
+u2 ping -c 5 -W 2 10.0.40.1 &
+u2 ping -c 5 -W 2 10.0.40.2 &
+u2 ping -c 5 -W 2 10.0.40.3 &
+u2 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+u3 ping -c 5 -W 2 10.0.10.1 &
+u3 ping -c 5 -W 2 10.0.10.2 &
+u3 ping -c 5 -W 2 10.0.10.3 &
+u3 ping -c 5 -W 2 10.0.10.4 &
+u3 ping -c 5 -W 2 10.0.10.5 &
+u3 ping -c 5 -W 2 10.0.10.6 &
+u3 ping -c 5 -W 2 10.0.10.7 &
+u3 ping -c 5 -W 2 10.0.10.8 &
+u3 ping -c 5 -W 2 10.0.10.9 &
+u3 ping -c 5 -W 2 10.0.10.10 &
+
+u3 ping -c 5 -W 2 10.0.30.1 &
+u3 ping -c 5 -W 2 10.0.30.2 &
+u3 ping -c 5 -W 2 10.0.30.3 &
+u3 ping -c 5 -W 2 10.0.30.4 &
+u3 ping -c 5 -W 2 10.0.30.5 &
+u3 ping -c 5 -W 2 10.0.30.6 &
+u3 ping -c 5 -W 2 10.0.30.7 &
+u3 ping -c 5 -W 2 10.0.30.8 &
+u3 ping -c 5 -W 2 10.0.30.9 &
+u3 ping -c 5 -W 2 10.0.30.10 &
+
+u3 ping -c 5 -W 2 10.0.20.1 &
+u3 ping -c 5 -W 2 10.0.20.2 &
+u3 ping -c 5 -W 2 10.0.20.3 &
+u3 ping -c 5 -W 2 10.0.20.4 &
+
+u3 ping -c 5 -W 2 10.0.40.1 &
+u3 ping -c 5 -W 2 10.0.40.2 &
+u3 ping -c 5 -W 2 10.0.40.3 &
+u3 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+u4 ping -c 5 -W 2 10.0.10.1 &
+u4 ping -c 5 -W 2 10.0.10.2 &
+u4 ping -c 5 -W 2 10.0.10.3 &
+u4 ping -c 5 -W 2 10.0.10.4 &
+u4 ping -c 5 -W 2 10.0.10.5 &
+u4 ping -c 5 -W 2 10.0.10.6 &
+u4 ping -c 5 -W 2 10.0.10.7 &
+u4 ping -c 5 -W 2 10.0.10.8 &
+u4 ping -c 5 -W 2 10.0.10.9 &
+u4 ping -c 5 -W 2 10.0.10.10 &
+
+u4 ping -c 5 -W 2 10.0.30.1 &
+u4 ping -c 5 -W 2 10.0.30.2 &
+u4 ping -c 5 -W 2 10.0.30.3 &
+u4 ping -c 5 -W 2 10.0.30.4 &
+u4 ping -c 5 -W 2 10.0.30.5 &
+u4 ping -c 5 -W 2 10.0.30.6 &
+u4 ping -c 5 -W 2 10.0.30.7 &
+u4 ping -c 5 -W 2 10.0.30.8 &
+u4 ping -c 5 -W 2 10.0.30.9 &
+u4 ping -c 5 -W 2 10.0.30.10 &
+
+u4 ping -c 5 -W 2 10.0.20.1 &
+u4 ping -c 5 -W 2 10.0.20.2 &
+u4 ping -c 5 -W 2 10.0.20.3 &
+u4 ping -c 5 -W 2 10.0.20.4 &
+
+u4 ping -c 5 -W 2 10.0.40.1 &
+u4 ping -c 5 -W 2 10.0.40.2 &
+u4 ping -c 5 -W 2 10.0.40.3 &
+u4 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+u5 ping -c 5 -W 2 10.0.10.1 &
+u5 ping -c 5 -W 2 10.0.10.2 &
+u5 ping -c 5 -W 2 10.0.10.3 &
+u5 ping -c 5 -W 2 10.0.10.4 &
+u5 ping -c 5 -W 2 10.0.10.5 &
+u5 ping -c 5 -W 2 10.0.10.6 &
+u5 ping -c 5 -W 2 10.0.10.7 &
+u5 ping -c 5 -W 2 10.0.10.8 &
+u5 ping -c 5 -W 2 10.0.10.9 &
+u5 ping -c 5 -W 2 10.0.10.10 &
+
+u5 ping -c 5 -W 2 10.0.30.1 &
+u5 ping -c 5 -W 2 10.0.30.2 &
+u5 ping -c 5 -W 2 10.0.30.3 &
+u5 ping -c 5 -W 2 10.0.30.4 &
+u5 ping -c 5 -W 2 10.0.30.5 &
+u5 ping -c 5 -W 2 10.0.30.6 &
+u5 ping -c 5 -W 2 10.0.30.7 &
+u5 ping -c 5 -W 2 10.0.30.8 &
+u5 ping -c 5 -W 2 10.0.30.9 &
+u5 ping -c 5 -W 2 10.0.30.10 &
+
+u5 ping -c 5 -W 2 10.0.20.1 &
+u5 ping -c 5 -W 2 10.0.20.2 &
+u5 ping -c 5 -W 2 10.0.20.3 &
+u5 ping -c 5 -W 2 10.0.20.4 &
+
+u5 ping -c 5 -W 2 10.0.40.1 &
+u5 ping -c 5 -W 2 10.0.40.2 &
+u5 ping -c 5 -W 2 10.0.40.3 &
+u5 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+u6 ping -c 5 -W 2 10.0.10.1 &
+u6 ping -c 5 -W 2 10.0.10.2 &
+u6 ping -c 5 -W 2 10.0.10.3 &
+u6 ping -c 5 -W 2 10.0.10.4 &
+u6 ping -c 5 -W 2 10.0.10.5 &
+u6 ping -c 5 -W 2 10.0.10.6 &
+u6 ping -c 5 -W 2 10.0.10.7 &
+u6 ping -c 5 -W 2 10.0.10.8 &
+u6 ping -c 5 -W 2 10.0.10.9 &
+u6 ping -c 5 -W 2 10.0.10.10 &
+
+u6 ping -c 5 -W 2 10.0.30.1 &
+u6 ping -c 5 -W 2 10.0.30.2 &
+u6 ping -c 5 -W 2 10.0.30.3 &
+u6 ping -c 5 -W 2 10.0.30.4 &
+u6 ping -c 5 -W 2 10.0.30.5 &
+u6 ping -c 5 -W 2 10.0.30.6 &
+u6 ping -c 5 -W 2 10.0.30.7 &
+u6 ping -c 5 -W 2 10.0.30.8 &
+u6 ping -c 5 -W 2 10.0.30.9 &
+u6 ping -c 5 -W 2 10.0.30.10 &
+
+u6 ping -c 5 -W 2 10.0.20.1 &
+u6 ping -c 5 -W 2 10.0.20.2 &
+u6 ping -c 5 -W 2 10.0.20.3 &
+u6 ping -c 5 -W 2 10.0.20.4 &
+
+u6 ping -c 5 -W 2 10.0.40.1 &
+u6 ping -c 5 -W 2 10.0.40.2 &
+u6 ping -c 5 -W 2 10.0.40.3 &
+u6 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+u7 ping -c 5 -W 2 10.0.10.1 &
+u7 ping -c 5 -W 2 10.0.10.2 &
+u7 ping -c 5 -W 2 10.0.10.3 &
+u7 ping -c 5 -W 2 10.0.10.4 &
+u7 ping -c 5 -W 2 10.0.10.5 &
+u7 ping -c 5 -W 2 10.0.10.6 &
+u7 ping -c 5 -W 2 10.0.10.7 &
+u7 ping -c 5 -W 2 10.0.10.8 &
+u7 ping -c 5 -W 2 10.0.10.9 &
+u7 ping -c 5 -W 2 10.0.10.10 &
+
+u7 ping -c 5 -W 2 10.0.30.1 &
+u7 ping -c 5 -W 2 10.0.30.2 &
+u7 ping -c 5 -W 2 10.0.30.3 &
+u7 ping -c 5 -W 2 10.0.30.4 &
+u7 ping -c 5 -W 2 10.0.30.5 &
+u7 ping -c 5 -W 2 10.0.30.6 &
+u7 ping -c 5 -W 2 10.0.30.7 &
+u7 ping -c 5 -W 2 10.0.30.8 &
+u7 ping -c 5 -W 2 10.0.30.9 &
+u7 ping -c 5 -W 2 10.0.30.10 &
+
+u7 ping -c 5 -W 2 10.0.20.1 &
+u7 ping -c 5 -W 2 10.0.20.2 &
+u7 ping -c 5 -W 2 10.0.20.3 &
+u7 ping -c 5 -W 2 10.0.20.4 &
+
+u7 ping -c 5 -W 2 10.0.40.1 &
+u7 ping -c 5 -W 2 10.0.40.2 &
+u7 ping -c 5 -W 2 10.0.40.3 &
+u7 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+u8 ping -c 5 -W 2 10.0.10.1 &
+u8 ping -c 5 -W 2 10.0.10.2 &
+u8 ping -c 5 -W 2 10.0.10.3 &
+u8 ping -c 5 -W 2 10.0.10.4 &
+u8 ping -c 5 -W 2 10.0.10.5 &
+u8 ping -c 5 -W 2 10.0.10.6 &
+u8 ping -c 5 -W 2 10.0.10.7 &
+u8 ping -c 5 -W 2 10.0.10.8 &
+u8 ping -c 5 -W 2 10.0.10.9 &
+u8 ping -c 5 -W 2 10.0.10.10 &
+
+u8 ping -c 5 -W 2 10.0.30.1 &
+u8 ping -c 5 -W 2 10.0.30.2 &
+u8 ping -c 5 -W 2 10.0.30.3 &
+u8 ping -c 5 -W 2 10.0.30.4 &
+u8 ping -c 5 -W 2 10.0.30.5 &
+u8 ping -c 5 -W 2 10.0.30.6 &
+u8 ping -c 5 -W 2 10.0.30.7 &
+u8 ping -c 5 -W 2 10.0.30.8 &
+u8 ping -c 5 -W 2 10.0.30.9 &
+u8 ping -c 5 -W 2 10.0.30.10 &
+
+u8 ping -c 5 -W 2 10.0.20.1 &
+u8 ping -c 5 -W 2 10.0.20.2 &
+u8 ping -c 5 -W 2 10.0.20.3 &
+u8 ping -c 5 -W 2 10.0.20.4 &
+
+u8 ping -c 5 -W 2 10.0.40.1 &
+u8 ping -c 5 -W 2 10.0.40.2 &
+u8 ping -c 5 -W 2 10.0.40.3 &
+u8 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+u9 ping -c 5 -W 2 10.0.10.1 &
+u9 ping -c 5 -W 2 10.0.10.2 &
+u9 ping -c 5 -W 2 10.0.10.3 &
+u9 ping -c 5 -W 2 10.0.10.4 &
+u9 ping -c 5 -W 2 10.0.10.5 &
+u9 ping -c 5 -W 2 10.0.10.6 &
+u9 ping -c 5 -W 2 10.0.10.7 &
+u9 ping -c 5 -W 2 10.0.10.8 &
+u9 ping -c 5 -W 2 10.0.10.9 &
+u9 ping -c 5 -W 2 10.0.10.10 &
+
+u9 ping -c 5 -W 2 10.0.30.1 &
+u9 ping -c 5 -W 2 10.0.30.2 &
+u9 ping -c 5 -W 2 10.0.30.3 &
+u9 ping -c 5 -W 2 10.0.30.4 &
+u9 ping -c 5 -W 2 10.0.30.5 &
+u9 ping -c 5 -W 2 10.0.30.6 &
+u9 ping -c 5 -W 2 10.0.30.7 &
+u9 ping -c 5 -W 2 10.0.30.8 &
+u9 ping -c 5 -W 2 10.0.30.9 &
+u9 ping -c 5 -W 2 10.0.30.10 &
+
+u9 ping -c 5 -W 2 10.0.20.1 &
+u9 ping -c 5 -W 2 10.0.20.2 &
+u9 ping -c 5 -W 2 10.0.20.3 &
+u9 ping -c 5 -W 2 10.0.20.4 &
+
+u9 ping -c 5 -W 2 10.0.40.1 &
+u9 ping -c 5 -W 2 10.0.40.2 &
+u9 ping -c 5 -W 2 10.0.40.3 &
+u9 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+u10 ping -c 5 -W 2 10.0.10.1 &
+u10 ping -c 5 -W 2 10.0.10.2 &
+u10 ping -c 5 -W 2 10.0.10.3 &
+u10 ping -c 5 -W 2 10.0.10.4 &
+u10 ping -c 5 -W 2 10.0.10.5 &
+u10 ping -c 5 -W 2 10.0.10.6 &
+u10 ping -c 5 -W 2 10.0.10.7 &
+u10 ping -c 5 -W 2 10.0.10.8 &
+u10 ping -c 5 -W 2 10.0.10.9 &
+u10 ping -c 5 -W 2 10.0.10.10 &
+
+u10 ping -c 5 -W 2 10.0.30.1 &
+u10 ping -c 5 -W 2 10.0.30.2 &
+u10 ping -c 5 -W 2 10.0.30.3 &
+u10 ping -c 5 -W 2 10.0.30.4 &
+u10 ping -c 5 -W 2 10.0.30.5 &
+u10 ping -c 5 -W 2 10.0.30.6 &
+u10 ping -c 5 -W 2 10.0.30.7 &
+u10 ping -c 5 -W 2 10.0.30.8 &
+u10 ping -c 5 -W 2 10.0.30.9 &
+u10 ping -c 5 -W 2 10.0.30.10 &
+
+u10 ping -c 5 -W 2 10.0.20.1 &
+u10 ping -c 5 -W 2 10.0.20.2 &
+u10 ping -c 5 -W 2 10.0.20.3 &
+u10 ping -c 5 -W 2 10.0.20.4 &
+
+u10 ping -c 5 -W 2 10.0.40.1 &
+u10 ping -c 5 -W 2 10.0.40.2 &
+u10 ping -c 5 -W 2 10.0.40.3 &
+u10 ping -c 5 -W 2 10.0.40.4 &
+
+u1 sleep 5
+
+v1 ping -c 5 -W 2 10.0.10.1 &
+v1 ping -c 5 -W 2 10.0.10.2 &
+v1 ping -c 5 -W 2 10.0.10.3 &
+v1 ping -c 5 -W 2 10.0.10.4 &
+v1 ping -c 5 -W 2 10.0.10.5 &
+v1 ping -c 5 -W 2 10.0.10.6 &
+v1 ping -c 5 -W 2 10.0.10.7 &
+v1 ping -c 5 -W 2 10.0.10.8 &
+v1 ping -c 5 -W 2 10.0.10.9 &
+v1 ping -c 5 -W 2 10.0.10.10 &
+
+v1 ping -c 5 -W 2 10.0.30.1 &
+v1 ping -c 5 -W 2 10.0.30.2 &
+v1 ping -c 5 -W 2 10.0.30.3 &
+v1 ping -c 5 -W 2 10.0.30.4 &
+v1 ping -c 5 -W 2 10.0.30.5 &
+v1 ping -c 5 -W 2 10.0.30.6 &
+v1 ping -c 5 -W 2 10.0.30.7 &
+v1 ping -c 5 -W 2 10.0.30.8 &
+v1 ping -c 5 -W 2 10.0.30.9 &
+v1 ping -c 5 -W 2 10.0.30.10 &
+
+v1 ping -c 5 -W 2 10.0.20.1 &
+v1 ping -c 5 -W 2 10.0.20.2 &
+v1 ping -c 5 -W 2 10.0.20.3 &
+v1 ping -c 5 -W 2 10.0.20.4 &
+
+v1 ping -c 5 -W 2 10.0.40.1 &
+v1 ping -c 5 -W 2 10.0.40.2 &
+v1 ping -c 5 -W 2 10.0.40.3 &
+v1 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+v2 ping -c 5 -W 2 10.0.10.1 &
+v2 ping -c 5 -W 2 10.0.10.2 &
+v2 ping -c 5 -W 2 10.0.10.3 &
+v2 ping -c 5 -W 2 10.0.10.4 &
+v2 ping -c 5 -W 2 10.0.10.5 &
+v2 ping -c 5 -W 2 10.0.10.6 &
+v2 ping -c 5 -W 2 10.0.10.7 &
+v2 ping -c 5 -W 2 10.0.10.8 &
+v2 ping -c 5 -W 2 10.0.10.9 &
+v2 ping -c 5 -W 2 10.0.10.10 &
+
+v2 ping -c 5 -W 2 10.0.30.1 &
+v2 ping -c 5 -W 2 10.0.30.2 &
+v2 ping -c 5 -W 2 10.0.30.3 &
+v2 ping -c 5 -W 2 10.0.30.4 &
+v2 ping -c 5 -W 2 10.0.30.5 &
+v2 ping -c 5 -W 2 10.0.30.6 &
+v2 ping -c 5 -W 2 10.0.30.7 &
+v2 ping -c 5 -W 2 10.0.30.8 &
+v2 ping -c 5 -W 2 10.0.30.9 &
+v2 ping -c 5 -W 2 10.0.30.10 &
+
+v2 ping -c 5 -W 2 10.0.20.1 &
+v2 ping -c 5 -W 2 10.0.20.2 &
+v2 ping -c 5 -W 2 10.0.20.3 &
+v2 ping -c 5 -W 2 10.0.20.4 &
+
+v2 ping -c 5 -W 2 10.0.40.1 &
+v2 ping -c 5 -W 2 10.0.40.2 &
+v2 ping -c 5 -W 2 10.0.40.3 &
+v2 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+v3 ping -c 5 -W 2 10.0.10.1 &
+v3 ping -c 5 -W 2 10.0.10.2 &
+v3 ping -c 5 -W 2 10.0.10.3 &
+v3 ping -c 5 -W 2 10.0.10.4 &
+v3 ping -c 5 -W 2 10.0.10.5 &
+v3 ping -c 5 -W 2 10.0.10.6 &
+v3 ping -c 5 -W 2 10.0.10.7 &
+v3 ping -c 5 -W 2 10.0.10.8 &
+v3 ping -c 5 -W 2 10.0.10.9 &
+v3 ping -c 5 -W 2 10.0.10.10 &
+
+v3 ping -c 5 -W 2 10.0.30.1 &
+v3 ping -c 5 -W 2 10.0.30.2 &
+v3 ping -c 5 -W 2 10.0.30.3 &
+v3 ping -c 5 -W 2 10.0.30.4 &
+v3 ping -c 5 -W 2 10.0.30.5 &
+v3 ping -c 5 -W 2 10.0.30.6 &
+v3 ping -c 5 -W 2 10.0.30.7 &
+v3 ping -c 5 -W 2 10.0.30.8 &
+v3 ping -c 5 -W 2 10.0.30.9 &
+v3 ping -c 5 -W 2 10.0.30.10 &
+
+v3 ping -c 5 -W 2 10.0.20.1 &
+v3 ping -c 5 -W 2 10.0.20.2 &
+v3 ping -c 5 -W 2 10.0.20.3 &
+v3 ping -c 5 -W 2 10.0.20.4 &
+
+v3 ping -c 5 -W 2 10.0.40.1 &
+v3 ping -c 5 -W 2 10.0.40.2 &
+v3 ping -c 5 -W 2 10.0.40.3 &
+v3 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+v4 ping -c 5 -W 2 10.0.10.1 &
+v4 ping -c 5 -W 2 10.0.10.2 &
+v4 ping -c 5 -W 2 10.0.10.3 &
+v4 ping -c 5 -W 2 10.0.10.4 &
+v4 ping -c 5 -W 2 10.0.10.5 &
+v4 ping -c 5 -W 2 10.0.10.6 &
+v4 ping -c 5 -W 2 10.0.10.7 &
+v4 ping -c 5 -W 2 10.0.10.8 &
+v4 ping -c 5 -W 2 10.0.10.9 &
+v4 ping -c 5 -W 2 10.0.10.10 &
+
+v4 ping -c 5 -W 2 10.0.30.1 &
+v4 ping -c 5 -W 2 10.0.30.2 &
+v4 ping -c 5 -W 2 10.0.30.3 &
+v4 ping -c 5 -W 2 10.0.30.4 &
+v4 ping -c 5 -W 2 10.0.30.5 &
+v4 ping -c 5 -W 2 10.0.30.6 &
+v4 ping -c 5 -W 2 10.0.30.7 &
+v4 ping -c 5 -W 2 10.0.30.8 &
+v4 ping -c 5 -W 2 10.0.30.9 &
+v4 ping -c 5 -W 2 10.0.30.10 &
+
+v4 ping -c 5 -W 2 10.0.20.1 &
+v4 ping -c 5 -W 2 10.0.20.2 &
+v4 ping -c 5 -W 2 10.0.20.3 &
+v4 ping -c 5 -W 2 10.0.20.4 &
+
+v4 ping -c 5 -W 2 10.0.40.1 &
+v4 ping -c 5 -W 2 10.0.40.2 &
+v4 ping -c 5 -W 2 10.0.40.3 &
+v4 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+v5 ping -c 5 -W 2 10.0.10.1 &
+v5 ping -c 5 -W 2 10.0.10.2 &
+v5 ping -c 5 -W 2 10.0.10.3 &
+v5 ping -c 5 -W 2 10.0.10.4 &
+v5 ping -c 5 -W 2 10.0.10.5 &
+v5 ping -c 5 -W 2 10.0.10.6 &
+v5 ping -c 5 -W 2 10.0.10.7 &
+v5 ping -c 5 -W 2 10.0.10.8 &
+v5 ping -c 5 -W 2 10.0.10.9 &
+v5 ping -c 5 -W 2 10.0.10.10 &
+
+v5 ping -c 5 -W 2 10.0.30.1 &
+v5 ping -c 5 -W 2 10.0.30.2 &
+v5 ping -c 5 -W 2 10.0.30.3 &
+v5 ping -c 5 -W 2 10.0.30.4 &
+v5 ping -c 5 -W 2 10.0.30.5 &
+v5 ping -c 5 -W 2 10.0.30.6 &
+v5 ping -c 5 -W 2 10.0.30.7 &
+v5 ping -c 5 -W 2 10.0.30.8 &
+v5 ping -c 5 -W 2 10.0.30.9 &
+v5 ping -c 5 -W 2 10.0.30.10 &
+
+v5 ping -c 5 -W 2 10.0.20.1 &
+v5 ping -c 5 -W 2 10.0.20.2 &
+v5 ping -c 5 -W 2 10.0.20.3 &
+v5 ping -c 5 -W 2 10.0.20.4 &
+
+v5 ping -c 5 -W 2 10.0.40.1 &
+v5 ping -c 5 -W 2 10.0.40.2 &
+v5 ping -c 5 -W 2 10.0.40.3 &
+v5 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+v6 ping -c 5 -W 2 10.0.10.1 &
+v6 ping -c 5 -W 2 10.0.10.2 &
+v6 ping -c 5 -W 2 10.0.10.3 &
+v6 ping -c 5 -W 2 10.0.10.4 &
+v6 ping -c 5 -W 2 10.0.10.5 &
+v6 ping -c 5 -W 2 10.0.10.6 &
+v6 ping -c 5 -W 2 10.0.10.7 &
+v6 ping -c 5 -W 2 10.0.10.8 &
+v6 ping -c 5 -W 2 10.0.10.9 &
+v6 ping -c 5 -W 2 10.0.10.10 &
+
+v6 ping -c 5 -W 2 10.0.30.1 &
+v6 ping -c 5 -W 2 10.0.30.2 &
+v6 ping -c 5 -W 2 10.0.30.3 &
+v6 ping -c 5 -W 2 10.0.30.4 &
+v6 ping -c 5 -W 2 10.0.30.5 &
+v6 ping -c 5 -W 2 10.0.30.6 &
+v6 ping -c 5 -W 2 10.0.30.7 &
+v6 ping -c 5 -W 2 10.0.30.8 &
+v6 ping -c 5 -W 2 10.0.30.9 &
+v6 ping -c 5 -W 2 10.0.30.10 &
+
+v6 ping -c 5 -W 2 10.0.20.1 &
+v6 ping -c 5 -W 2 10.0.20.2 &
+v6 ping -c 5 -W 2 10.0.20.3 &
+v6 ping -c 5 -W 2 10.0.20.4 &
+
+v6 ping -c 5 -W 2 10.0.40.1 &
+v6 ping -c 5 -W 2 10.0.40.2 &
+v6 ping -c 5 -W 2 10.0.40.3 &
+v6 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+v7 ping -c 5 -W 2 10.0.10.1 &
+v7 ping -c 5 -W 2 10.0.10.2 &
+v7 ping -c 5 -W 2 10.0.10.3 &
+v7 ping -c 5 -W 2 10.0.10.4 &
+v7 ping -c 5 -W 2 10.0.10.5 &
+v7 ping -c 5 -W 2 10.0.10.6 &
+v7 ping -c 5 -W 2 10.0.10.7 &
+v7 ping -c 5 -W 2 10.0.10.8 &
+v7 ping -c 5 -W 2 10.0.10.9 &
+v7 ping -c 5 -W 2 10.0.10.10 &
+
+v7 ping -c 5 -W 2 10.0.30.1 &
+v7 ping -c 5 -W 2 10.0.30.2 &
+v7 ping -c 5 -W 2 10.0.30.3 &
+v7 ping -c 5 -W 2 10.0.30.4 &
+v7 ping -c 5 -W 2 10.0.30.5 &
+v7 ping -c 5 -W 2 10.0.30.6 &
+v7 ping -c 5 -W 2 10.0.30.7 &
+v7 ping -c 5 -W 2 10.0.30.8 &
+v7 ping -c 5 -W 2 10.0.30.9 &
+v7 ping -c 5 -W 2 10.0.30.10 &
+
+v7 ping -c 5 -W 2 10.0.20.1 &
+v7 ping -c 5 -W 2 10.0.20.2 &
+v7 ping -c 5 -W 2 10.0.20.3 &
+v7 ping -c 5 -W 2 10.0.20.4 &
+
+v7 ping -c 5 -W 2 10.0.40.1 &
+v7 ping -c 5 -W 2 10.0.40.2 &
+v7 ping -c 5 -W 2 10.0.40.3 &
+v7 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+v8 ping -c 5 -W 2 10.0.10.1 &
+v8 ping -c 5 -W 2 10.0.10.2 &
+v8 ping -c 5 -W 2 10.0.10.3 &
+v8 ping -c 5 -W 2 10.0.10.4 &
+v8 ping -c 5 -W 2 10.0.10.5 &
+v8 ping -c 5 -W 2 10.0.10.6 &
+v8 ping -c 5 -W 2 10.0.10.7 &
+v8 ping -c 5 -W 2 10.0.10.8 &
+v8 ping -c 5 -W 2 10.0.10.9 &
+v8 ping -c 5 -W 2 10.0.10.10 &
+
+v8 ping -c 5 -W 2 10.0.30.1 &
+v8 ping -c 5 -W 2 10.0.30.2 &
+v8 ping -c 5 -W 2 10.0.30.3 &
+v8 ping -c 5 -W 2 10.0.30.4 &
+v8 ping -c 5 -W 2 10.0.30.5 &
+v8 ping -c 5 -W 2 10.0.30.6 &
+v8 ping -c 5 -W 2 10.0.30.7 &
+v8 ping -c 5 -W 2 10.0.30.8 &
+v8 ping -c 5 -W 2 10.0.30.9 &
+v8 ping -c 5 -W 2 10.0.30.10 &
+
+v8 ping -c 5 -W 2 10.0.20.1 &
+v8 ping -c 5 -W 2 10.0.20.2 &
+v8 ping -c 5 -W 2 10.0.20.3 &
+v8 ping -c 5 -W 2 10.0.20.4 &
+
+v8 ping -c 5 -W 2 10.0.40.1 &
+v8 ping -c 5 -W 2 10.0.40.2 &
+v8 ping -c 5 -W 2 10.0.40.3 &
+v8 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+v9 ping -c 5 -W 2 10.0.10.1 &
+v9 ping -c 5 -W 2 10.0.10.2 &
+v9 ping -c 5 -W 2 10.0.10.3 &
+v9 ping -c 5 -W 2 10.0.10.4 &
+v9 ping -c 5 -W 2 10.0.10.5 &
+v9 ping -c 5 -W 2 10.0.10.6 &
+v9 ping -c 5 -W 2 10.0.10.7 &
+v9 ping -c 5 -W 2 10.0.10.8 &
+v9 ping -c 5 -W 2 10.0.10.9 &
+v9 ping -c 5 -W 2 10.0.10.10 &
+
+v9 ping -c 5 -W 2 10.0.30.1 &
+v9 ping -c 5 -W 2 10.0.30.2 &
+v9 ping -c 5 -W 2 10.0.30.3 &
+v9 ping -c 5 -W 2 10.0.30.4 &
+v9 ping -c 5 -W 2 10.0.30.5 &
+v9 ping -c 5 -W 2 10.0.30.6 &
+v9 ping -c 5 -W 2 10.0.30.7 &
+v9 ping -c 5 -W 2 10.0.30.8 &
+v9 ping -c 5 -W 2 10.0.30.9 &
+v9 ping -c 5 -W 2 10.0.30.10 &
+
+v9 ping -c 5 -W 2 10.0.20.1 &
+v9 ping -c 5 -W 2 10.0.20.2 &
+v9 ping -c 5 -W 2 10.0.20.3 &
+v9 ping -c 5 -W 2 10.0.20.4 &
+
+v9 ping -c 5 -W 2 10.0.40.1 &
+v9 ping -c 5 -W 2 10.0.40.2 &
+v9 ping -c 5 -W 2 10.0.40.3 &
+v9 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+v10 ping -c 5 -W 2 10.0.10.1 &
+v10 ping -c 5 -W 2 10.0.10.2 &
+v10 ping -c 5 -W 2 10.0.10.3 &
+v10 ping -c 5 -W 2 10.0.10.4 &
+v10 ping -c 5 -W 2 10.0.10.5 &
+v10 ping -c 5 -W 2 10.0.10.6 &
+v10 ping -c 5 -W 2 10.0.10.7 &
+v10 ping -c 5 -W 2 10.0.10.8 &
+v10 ping -c 5 -W 2 10.0.10.9 &
+v10 ping -c 5 -W 2 10.0.10.10 &
+
+v10 ping -c 5 -W 2 10.0.30.1 &
+v10 ping -c 5 -W 2 10.0.30.2 &
+v10 ping -c 5 -W 2 10.0.30.3 &
+v10 ping -c 5 -W 2 10.0.30.4 &
+v10 ping -c 5 -W 2 10.0.30.5 &
+v10 ping -c 5 -W 2 10.0.30.6 &
+v10 ping -c 5 -W 2 10.0.30.7 &
+v10 ping -c 5 -W 2 10.0.30.8 &
+v10 ping -c 5 -W 2 10.0.30.9 &
+v10 ping -c 5 -W 2 10.0.30.10 &
+
+v10 ping -c 5 -W 2 10.0.20.1 &
+v10 ping -c 5 -W 2 10.0.20.2 &
+v10 ping -c 5 -W 2 10.0.20.3 &
+v10 ping -c 5 -W 2 10.0.20.4 &
+
+v10 ping -c 5 -W 2 10.0.40.1 &
+v10 ping -c 5 -W 2 10.0.40.2 &
+v10 ping -c 5 -W 2 10.0.40.3 &
+v10 ping -c 5 -W 2 10.0.40.4 &
+
+v1 sleep 5
+
+h1 ping -c 5 -W 2 10.0.10.1 &
+h1 ping -c 5 -W 2 10.0.10.2 &
+h1 ping -c 5 -W 2 10.0.10.3 &
+h1 ping -c 5 -W 2 10.0.10.4 &
+h1 ping -c 5 -W 2 10.0.10.5 &
+h1 ping -c 5 -W 2 10.0.10.6 &
+h1 ping -c 5 -W 2 10.0.10.7 &
+h1 ping -c 5 -W 2 10.0.10.8 &
+h1 ping -c 5 -W 2 10.0.10.9 &
+h1 ping -c 5 -W 2 10.0.10.10 &
+
+h1 ping -c 5 -W 2 10.0.30.1 &
+h1 ping -c 5 -W 2 10.0.30.2 &
+h1 ping -c 5 -W 2 10.0.30.3 &
+h1 ping -c 5 -W 2 10.0.30.4 &
+h1 ping -c 5 -W 2 10.0.30.5 &
+h1 ping -c 5 -W 2 10.0.30.6 &
+h1 ping -c 5 -W 2 10.0.30.7 &
+h1 ping -c 5 -W 2 10.0.30.8 &
+h1 ping -c 5 -W 2 10.0.30.9 &
+h1 ping -c 5 -W 2 10.0.30.10 &
+
+h1 ping -c 5 -W 2 10.0.20.1 &
+h1 ping -c 5 -W 2 10.0.20.2 &
+h1 ping -c 5 -W 2 10.0.20.3 &
+h1 ping -c 5 -W 2 10.0.20.4 &
+
+h1 ping -c 5 -W 2 10.0.40.1 &
+h1 ping -c 5 -W 2 10.0.40.2 &
+h1 ping -c 5 -W 2 10.0.40.3 &
+h1 ping -c 5 -W 2 10.0.40.4 &
+
+h1 sleep 5
+
+h2 ping -c 5 -W 2 10.0.10.1 &
+h2 ping -c 5 -W 2 10.0.10.2 &
+h2 ping -c 5 -W 2 10.0.10.3 &
+h2 ping -c 5 -W 2 10.0.10.4 &
+h2 ping -c 5 -W 2 10.0.10.5 &
+h2 ping -c 5 -W 2 10.0.10.6 &
+h2 ping -c 5 -W 2 10.0.10.7 &
+h2 ping -c 5 -W 2 10.0.10.8 &
+h2 ping -c 5 -W 2 10.0.10.9 &
+h2 ping -c 5 -W 2 10.0.10.10 &
+
+h2 ping -c 5 -W 2 10.0.30.1 &
+h2 ping -c 5 -W 2 10.0.30.2 &
+h2 ping -c 5 -W 2 10.0.30.3 &
+h2 ping -c 5 -W 2 10.0.30.4 &
+h2 ping -c 5 -W 2 10.0.30.5 &
+h2 ping -c 5 -W 2 10.0.30.6 &
+h2 ping -c 5 -W 2 10.0.30.7 &
+h2 ping -c 5 -W 2 10.0.30.8 &
+h2 ping -c 5 -W 2 10.0.30.9 &
+h2 ping -c 5 -W 2 10.0.30.10 &
+
+h2 ping -c 5 -W 2 10.0.20.1 &
+h2 ping -c 5 -W 2 10.0.20.2 &
+h2 ping -c 5 -W 2 10.0.20.3 &
+h2 ping -c 5 -W 2 10.0.20.4 &
+
+h2 ping -c 5 -W 2 10.0.40.1 &
+h2 ping -c 5 -W 2 10.0.40.2 &
+h2 ping -c 5 -W 2 10.0.40.3 &
+h2 ping -c 5 -W 2 10.0.40.4 &
+
+h1 sleep 5
+
+h3 ping -c 5 -W 2 10.0.10.1 &
+h3 ping -c 5 -W 2 10.0.10.2 &
+h3 ping -c 5 -W 2 10.0.10.3 &
+h3 ping -c 5 -W 2 10.0.10.4 &
+h3 ping -c 5 -W 2 10.0.10.5 &
+h3 ping -c 5 -W 2 10.0.10.6 &
+h3 ping -c 5 -W 2 10.0.10.7 &
+h3 ping -c 5 -W 2 10.0.10.8 &
+h3 ping -c 5 -W 2 10.0.10.9 &
+h3 ping -c 5 -W 2 10.0.10.10 &
+
+h3 ping -c 5 -W 2 10.0.30.1 &
+h3 ping -c 5 -W 2 10.0.30.2 &
+h3 ping -c 5 -W 2 10.0.30.3 &
+h3 ping -c 5 -W 2 10.0.30.4 &
+h3 ping -c 5 -W 2 10.0.30.5 &
+h3 ping -c 5 -W 2 10.0.30.6 &
+h3 ping -c 5 -W 2 10.0.30.7 &
+h3 ping -c 5 -W 2 10.0.30.8 &
+h3 ping -c 5 -W 2 10.0.30.9 &
+h3 ping -c 5 -W 2 10.0.30.10 &
+
+h3 ping -c 5 -W 2 10.0.20.1 &
+h3 ping -c 5 -W 2 10.0.20.2 &
+h3 ping -c 5 -W 2 10.0.20.3 &
+h3 ping -c 5 -W 2 10.0.20.4 &
+
+h3 ping -c 5 -W 2 10.0.40.1 &
+h3 ping -c 5 -W 2 10.0.40.2 &
+h3 ping -c 5 -W 2 10.0.40.3 &
+h3 ping -c 5 -W 2 10.0.40.4 &
+
+h1 sleep 5
+
+h4 ping -c 5 -W 2 10.0.10.1 &
+h4 ping -c 5 -W 2 10.0.10.2 &
+h4 ping -c 5 -W 2 10.0.10.3 &
+h4 ping -c 5 -W 2 10.0.10.4 &
+h4 ping -c 5 -W 2 10.0.10.5 &
+h4 ping -c 5 -W 2 10.0.10.6 &
+h4 ping -c 5 -W 2 10.0.10.7 &
+h4 ping -c 5 -W 2 10.0.10.8 &
+h4 ping -c 5 -W 2 10.0.10.9 &
+h4 ping -c 5 -W 2 10.0.10.10 &
+
+h4 ping -c 5 -W 2 10.0.30.1 &
+h4 ping -c 5 -W 2 10.0.30.2 &
+h4 ping -c 5 -W 2 10.0.30.3 &
+h4 ping -c 5 -W 2 10.0.30.4 &
+h4 ping -c 5 -W 2 10.0.30.5 &
+h4 ping -c 5 -W 2 10.0.30.6 &
+h4 ping -c 5 -W 2 10.0.30.7 &
+h4 ping -c 5 -W 2 10.0.30.8 &
+h4 ping -c 5 -W 2 10.0.30.9 &
+h4 ping -c 5 -W 2 10.0.30.10 &
+
+h4 ping -c 5 -W 2 10.0.20.1 &
+h4 ping -c 5 -W 2 10.0.20.2 &
+h4 ping -c 5 -W 2 10.0.20.3 &
+h4 ping -c 5 -W 2 10.0.20.4 &
+
+h4 ping -c 5 -W 2 10.0.40.1 &
+h4 ping -c 5 -W 2 10.0.40.2 &
+h4 ping -c 5 -W 2 10.0.40.3 &
+h4 ping -c 5 -W 2 10.0.40.4 &
+
+h1 sleep 5
+
+f1 ping -c 5 -W 2 10.0.10.1 &
+f1 ping -c 5 -W 2 10.0.10.2 &
+f1 ping -c 5 -W 2 10.0.10.3 &
+f1 ping -c 5 -W 2 10.0.10.4 &
+f1 ping -c 5 -W 2 10.0.10.5 &
+f1 ping -c 5 -W 2 10.0.10.6 &
+f1 ping -c 5 -W 2 10.0.10.7 &
+f1 ping -c 5 -W 2 10.0.10.8 &
+f1 ping -c 5 -W 2 10.0.10.9 &
+f1 ping -c 5 -W 2 10.0.10.10 &
+
+f1 ping -c 5 -W 2 10.0.30.1 &
+f1 ping -c 5 -W 2 10.0.30.2 &
+f1 ping -c 5 -W 2 10.0.30.3 &
+f1 ping -c 5 -W 2 10.0.30.4 &
+f1 ping -c 5 -W 2 10.0.30.5 &
+f1 ping -c 5 -W 2 10.0.30.6 &
+f1 ping -c 5 -W 2 10.0.30.7 &
+f1 ping -c 5 -W 2 10.0.30.8 &
+f1 ping -c 5 -W 2 10.0.30.9 &
+f1 ping -c 5 -W 2 10.0.30.10 &
+
+f1 ping -c 5 -W 2 10.0.20.1 &
+f1 ping -c 5 -W 2 10.0.20.2 &
+f1 ping -c 5 -W 2 10.0.20.3 &
+f1 ping -c 5 -W 2 10.0.20.4 &
+
+f1 ping -c 5 -W 2 10.0.40.1 &
+f1 ping -c 5 -W 2 10.0.40.2 &
+f1 ping -c 5 -W 2 10.0.40.3 &
+f1 ping -c 5 -W 2 10.0.40.4 &
+
+f1 sleep 5
+
+f2 ping -c 5 -W 2 10.0.10.1 &
+f2 ping -c 5 -W 2 10.0.10.2 &
+f2 ping -c 5 -W 2 10.0.10.3 &
+f2 ping -c 5 -W 2 10.0.10.4 &
+f2 ping -c 5 -W 2 10.0.10.5 &
+f2 ping -c 5 -W 2 10.0.10.6 &
+f2 ping -c 5 -W 2 10.0.10.7 &
+f2 ping -c 5 -W 2 10.0.10.8 &
+f2 ping -c 5 -W 2 10.0.10.9 &
+f2 ping -c 5 -W 2 10.0.10.10 &
+
+f2 ping -c 5 -W 2 10.0.30.1 &
+f2 ping -c 5 -W 2 10.0.30.2 &
+f2 ping -c 5 -W 2 10.0.30.3 &
+f2 ping -c 5 -W 2 10.0.30.4 &
+f2 ping -c 5 -W 2 10.0.30.5 &
+f2 ping -c 5 -W 2 10.0.30.6 &
+f2 ping -c 5 -W 2 10.0.30.7 &
+f2 ping -c 5 -W 2 10.0.30.8 &
+f2 ping -c 5 -W 2 10.0.30.9 &
+f2 ping -c 5 -W 2 10.0.30.10 &
+
+f2 ping -c 5 -W 2 10.0.20.1 &
+f2 ping -c 5 -W 2 10.0.20.2 &
+f2 ping -c 5 -W 2 10.0.20.3 &
+f2 ping -c 5 -W 2 10.0.20.4 &
+
+f2 ping -c 5 -W 2 10.0.40.1 &
+f2 ping -c 5 -W 2 10.0.40.2 &
+f2 ping -c 5 -W 2 10.0.40.3 &
+f2 ping -c 5 -W 2 10.0.40.4 &
+
+f1 sleep 5
+
+f3 ping -c 5 -W 2 10.0.10.1 &
+f3 ping -c 5 -W 2 10.0.10.2 &
+f3 ping -c 5 -W 2 10.0.10.3 &
+f3 ping -c 5 -W 2 10.0.10.4 &
+f3 ping -c 5 -W 2 10.0.10.5 &
+f3 ping -c 5 -W 2 10.0.10.6 &
+f3 ping -c 5 -W 2 10.0.10.7 &
+f3 ping -c 5 -W 2 10.0.10.8 &
+f3 ping -c 5 -W 2 10.0.10.9 &
+f3 ping -c 5 -W 2 10.0.10.10 &
+
+f3 ping -c 5 -W 2 10.0.30.1 &
+f3 ping -c 5 -W 2 10.0.30.2 &
+f3 ping -c 5 -W 2 10.0.30.3 &
+f3 ping -c 5 -W 2 10.0.30.4 &
+f3 ping -c 5 -W 2 10.0.30.5 &
+f3 ping -c 5 -W 2 10.0.30.6 &
+f3 ping -c 5 -W 2 10.0.30.7 &
+f3 ping -c 5 -W 2 10.0.30.8 &
+f3 ping -c 5 -W 2 10.0.30.9 &
+f3 ping -c 5 -W 2 10.0.30.10 &
+
+f3 ping -c 5 -W 2 10.0.20.1 &
+f3 ping -c 5 -W 2 10.0.20.2 &
+f3 ping -c 5 -W 2 10.0.20.3 &
+f3 ping -c 5 -W 2 10.0.20.4 &
+
+f3 ping -c 5 -W 2 10.0.40.1 &
+f3 ping -c 5 -W 2 10.0.40.2 &
+f3 ping -c 5 -W 2 10.0.40.3 &
+f3 ping -c 5 -W 2 10.0.40.4 &
+
+f1 sleep 5
+
+f4 ping -c 5 -W 2 10.0.10.1 &
+f4 ping -c 5 -W 2 10.0.10.2 &
+f4 ping -c 5 -W 2 10.0.10.3 &
+f4 ping -c 5 -W 2 10.0.10.4 &
+f4 ping -c 5 -W 2 10.0.10.5 &
+f4 ping -c 5 -W 2 10.0.10.6 &
+f4 ping -c 5 -W 2 10.0.10.7 &
+f4 ping -c 5 -W 2 10.0.10.8 &
+f4 ping -c 5 -W 2 10.0.10.9 &
+f4 ping -c 5 -W 2 10.0.10.10 &
+
+f4 ping -c 5 -W 2 10.0.30.1 &
+f4 ping -c 5 -W 2 10.0.30.2 &
+f4 ping -c 5 -W 2 10.0.30.3 &
+f4 ping -c 5 -W 2 10.0.30.4 &
+f4 ping -c 5 -W 2 10.0.30.5 &
+f4 ping -c 5 -W 2 10.0.30.6 &
+f4 ping -c 5 -W 2 10.0.30.7 &
+f4 ping -c 5 -W 2 10.0.30.8 &
+f4 ping -c 5 -W 2 10.0.30.9 &
+f4 ping -c 5 -W 2 10.0.30.10 &
+
+f4 ping -c 5 -W 2 10.0.20.1 &
+f4 ping -c 5 -W 2 10.0.20.2 &
+f4 ping -c 5 -W 2 10.0.20.3 &
+f4 ping -c 5 -W 2 10.0.20.4 &
+
+f4 ping -c 5 -W 2 10.0.40.1 &
+f4 ping -c 5 -W 2 10.0.40.2 &
+f4 ping -c 5 -W 2 10.0.40.3 &
+f4 ping -c 5 -W 2 10.0.40.4 &

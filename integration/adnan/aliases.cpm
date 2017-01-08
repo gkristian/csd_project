@@ -1,0 +1,10 @@
+ln -s /var/www/html/spacey /slogs
+alias e='vim /etc/cpm_tester_weights_feeder.ini'
+alias cpm_testlog='tail -f /slogs/cpm_test.log |grep -v Not'
+alias cpm_test='tail -f /slogs/cpm_test.log  |grep -v 'Failed''
+alias cpm_check_routing='tail -f /var/www/html/spacey/cpm_route.log  |grep -v Unable'
+alias cpm_list_spaths="cat /slogs/cpm_route.log|grep 'Installing path'"
+alias cpm_list_spaths_tail="tail -f /slogs/cpm_route.log|grep 'Installing path'"
+alias cpm_error_check="tail -f /slogs/* |grep '(ERROR|Trace|Exception)'"
+alias cpm_monitor_bootstrap="tail -f  /slogs/cpm_bootstrap.log  |grep COMPLETE"
+

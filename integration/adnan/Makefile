@@ -85,13 +85,15 @@ mstop:
 
 #dm: this is a compile keyword 'dm' and u wud see dm is up to date message
 dmstart:
+	-make dmstop
 	rm -f /var/www/html/spacey/dm.log
 #python ./dm/dm_main.py > /var/www/html/spacey/dm.log 2>&1
 #python ./dm/dm_main.py
 #source: http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-3.html
 # python test.py >test.out 2>&1; pyrg <test.out
 	#export SHELL=/bin/bash
-	python ./DM/DM/dm_main.py > /var/www/html/spacey/dm.log 2>&1 &
+	#python ./DM/DM/dm_main.py > /var/www/html/spacey/dm.log 2>&1 &
+	python ./DM/DM/dm_main.py &> /var/www/html/spacey/dm.log &
 #python ./DM/dm_main.py &> /var/www/html/spacey/dm.log
 dmlog:
 	tail -f /var/www/html/spacey/dm.log 
@@ -111,14 +113,16 @@ stopall:
 	-mn -c
 	-make truncate
 truncate:
-	 mysql -u root -p12345678 -e 'use testdb; show tables;truncate rpm;truncate rpm_stat;truncate hum;truncate nfm_dropped;truncate nfm_util;show tables; select * from nfm_util, nfm_dropped, rpm, rpm_stat, hum;'
+	 #mysql -u root -p12345678 -e 'use testdb; show tables;truncate rpm;truncate hum;truncate nfm_dropped;truncate nfm_util;show tables; select * from nfm_util, nfm_dropped, rpm, rpm_stat, hum;'
+	 #mysql -u root -p12345678 -e 'drop database testdb; create database testdb;"
+	 mysql -u root -p12345678 -e 'use testdb; show tables;truncate table rpm;truncate table hum;truncate table nfm_dropped;truncate table nfm_util;show tables; select * from nfm_util, nfm_dropped, rpm, hum;'
+	 #mysql -u root -p12345678 -e 'use testdb; show tables;truncate table rpm;truncate table hum;truncate table nfm_dropped;truncate table nfm_util;show tables; select * from nfm_util, nfm_dropped, rpm, hum;'
 showtables:
 #mysql -u root -p12345678 -e 'use testdb; show tables; select * from nfm_util;'
 	-mysql -u root -p12345678 -e 'use testdb; show tables;'
 	-mysql -u root -p12345678 -e 'use testdb; select * from nfm_util;'
 	-mysql -u root -p12345678 -e 'use testdb; select * from nfm_dropped;'
 	-mysql -u root -p12345678 -e 'use testdb; select * from rpm;'
-	-mysql -u root -p12345678 -e 'use testdb; select * from rpm_stat;'
 	-mysql -u root -p12345678 -e 'use testdb; select * from hum;'
 show:
 	-ps auxw |grep python |grep -v grep

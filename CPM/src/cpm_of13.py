@@ -158,7 +158,13 @@ class CPM(app_manager.RyuApp):
         #use self.shared_context.bootstrap_complete boolean var directly
         #self.bootstrap_complete = self.shared_context.bootstrap_complete #this doesnt make it a reference to self.shared_con..boostrap
         #Module set to True will have their metric data fetched using REST(GET) by the CPM
-        self.modules_enabled = {'RPM': True, 'HUM': True,'NFM': False }
+        self.modules_enabled = {'RPM': False, 'HUM': False,'NFM': False,'CPM_TESTER': True }
+
+
+        # Do not change below line. It means if CPM tester is enabled, NFM metrics are still fetched as CPM tester sends the metric in NFM format but when
+        # weight are computed then CPM_TESTER shall cause weight of the link to be equal to link_utilization specified in the CPM_Tester module
+        if self.modules_enabled['CPM_TESTER'] == True:
+            self.module_enabled['NFM'] = True
         self.install_openflow_rules = True
         self.defines_D = {'bcast_mac': 'ff:ff:ff:ff:ff:ff', 'bootstrap_in_progress': True,
                           'flow_table_strategy_semi_proactive': True, 'logdir': '/var/www/html/spacey',
@@ -1195,8 +1201,37 @@ class CPM(app_manager.RyuApp):
         rpm_total_weight = 0
         rpm_total_link_weight = 0
         hum_total_weight = 0
+        #If CPM_TESTER is enabled, below block will cause link_utilization specified in the cpm_tester module to become the weight of the link
+        #This will help us change weights of the link and see how traffic responds
         #nfm would be False if HTTP GET of nfm_metric_data returned blank or failed due to connection error
-        if self.modules_enabled['NFM'] and nfm:
+        # Below block could be summarized to just few lines but I kept as it is as it helps me compare to the NFM block in a way.
+        if self.modules_enabled['CPM_TESTER'] and nfm:
+            nfm_link_util_weight = 1  # just add link_utilization to weight
+            nfm_packet_dropped_weight = 0 # DO NOT add dropped packets to the weight
+
+            nfm_link_util = nfm[0][1]
+            nfm_packet_dropped = nfm[1][1]
+
+            nfm_dict_key = unicode(src_node) + '-' + unicode(dst_node)
+
+            if nfm_dict_key in nfm_link_util:
+                nfm_link_util_value = float(nfm_link_util[nfm_dict_key])
+            else:
+                nfm_link_util_value = 0
+            if nfm_dict_key in nfm_packet_dropped:
+                nfm_packet_dropped_link_value = float(nfm_packet_dropped[nfm_dict_key])
+            else:
+                nfm_packet_dropped_link_value = 0
+
+            #nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value + nfm_packet_dropped_weight* nfm_packet_dropped_link_value
+            nfm_total_link_weight = nfm_link_util_weight * nfm_link_util_value
+            nfm_total_link_weight = 1 * nfm_total_link_weight # keeping this 1 just to remind it is copy of the below block
+        self.cpmlogger.debug("CALC_CPMTESTER_WEIGHT, src_node = %r , dst_node = %r, nfm_total_link_weight =  %r", src_node,
+                             dst_node, nfm_total_link_weight)
+
+        #If CPM_TESTER module is not enabled, and NFM module is enabled, then this block will hit and NFM metrics shall be computed according to the metrics specificaiton document (Teacher's assigned weights)
+        #CPM_TESTER should not be enabled in the final test run of the code
+        if (not self.modules_enabled['CPM_TESTER']) and self.modules_enabled['NFM'] and nfm:
             nfm_link_util_weight = 0.5 #from CSD metrics description document
             nfm_packet_dropped_weight = 0.5 #from CSD metrics description document
 

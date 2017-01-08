@@ -56,7 +56,7 @@ class NFM(app_manager.RyuApp):
 
 		#self.logger.info("NFM init TOTAL SWITCHES: %d", self.totalSwitches)
 		#self.csdlogger.info("NFM init TOTAL SWITCHES: %d", self.totalSwitches)
-		self.DICT_TO_DB = {'module':'nfm', 'packet_dropped':{}}	#prepare a dictionary for updating and sending to Database
+		self.DICT_TO_DB = {'module':'nfm', 'packet_dropped':{}, 'link_utilization':{}}	#prepare a dictionary for updating and sending to Database
 		self.pathComponents = {}
 		self.updateTime = 3
 		#self.flow_request_semaphore = threading.Event()
@@ -249,7 +249,7 @@ class NFM(app_manager.RyuApp):
 	def calculate_link_utilization(self):
 		timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 		self.DICT_TO_DB['timestamp'] = timestamp
-		self.DICT_TO_DB['link_utilization'] = {}
+		#self.DICT_TO_DB['link_utilization'] = {}
 		for FROM, value in self.linkUtilizations.iteritems():
 			for TO, FROM_UTIL in value.iteritems():
 				try:

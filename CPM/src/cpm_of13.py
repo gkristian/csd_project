@@ -104,11 +104,13 @@ class Configuration(object):
         """
         Admission Control settings
         """
-        self.ac_enabled = True
-        self.ac_packet_drops_overload_threshold_enabled = True
+        self.ac_enabled = True # Set to True to enable admission control
+
         #a link with nfm reported link_utilization ABOVE this level shall be considered overloaded
         self.ac_link_utilization_overload_threshold = 90
         self.ac_link_utilization_restoration_threshold = 70 #if a disabled link achieves link utilization LESS than this threshold, it is enabled and traffic is sent
+
+        self.ac_packet_drops_overload_threshold_enabled = False
         #a link with nfm reported packet drops ABOVE this level shall be considered overloaded
         self.ac_packet_drops_overload_threshold = 95
         self.ac_packet_drops_restoration_threshold = 70 #if a disabled link achieves packet drops  LESS than this threshold, it is enabled and traffic is sent

@@ -121,6 +121,11 @@ class Configuration(object):
         self.ac_packet_drops_restoration_threshold = 70 #if a disabled link achieves packet drops  LESS than this threshold, it is enabled and traffic is sent
         self.ac_block_alltraffic = False
 
+
+        self.ac_switch_overload_threshold_enabled = False
+        self.ac_switch_overload_threshold = 90
+
+
         #LOGGER files
         self.logger_main_dir = "/var/www/html/spacey/"
         self.logger_ac_file = self.logger_main_dir + "cpm_ac.log"
@@ -273,7 +278,10 @@ class CPM(app_manager.RyuApp):
         #Network Bootstrapping Commands
 
         #self.mac_to_port = {}
+        #this is not to be configured by user. rather it is set when switch utilization crosses the threshold
+        self.ac_block_alltraffic = False
         self.l2_dpid_table = {}
+
         """
         #an example from log is: here 21 is the dpid, one can access using l2[21]['00:00:...']['ip']
         # l2_dpid_table: {21: {'00:00:00:00:01:02': {'ip': '10.1.0.2', 'in_port': 4}},
@@ -791,7 +799,7 @@ class CPM(app_manager.RyuApp):
         # dst mac  is in our topology graph
         # None of below exceptions should trigger since I already checked if a shortest path exists or not earlier. But I am going to put exceptions just to be on safe side.
         no_shortest_path_found = False
-        if self.config.ac_block_alltraffic:
+        if self.ac_block_alltraffic:
             return False
         if self.config.enable_weighted_routing:
             if self.config.weighted_routing_type == 'dijkrsta':
@@ -1351,11 +1359,21 @@ class CPM(app_manager.RyuApp):
             hum_total_weight = 0
             try:
                 #hum_total_weight = hum_core_weight * sum(hum_core_util_dict.itervalues()) + hum_memory_weight * float(hum_memory)
+                #ac_block_alltraffic
                 if self.config.uni_core_system:
-                    hum_total_weight = hum_core_weight * hum_core_util_dict['0'] + hum_memory_weight * float(hum_memory)
+                    ovs_util =  hum_core_util_dict['0']
                 else:
-                    #if its a multi-core system then core1 is pinned to ovs so
-                    hum_total_weight = hum_core_weight * hum_core_util_dict['1'] + hum_memory_weight * float(hum_memory)
+                    #if its a multi-core system then core1 is pinned to ovs as per the metric spec document
+                    ovs_util = hum_core_util_dict['1']
+                if self.config.ac_switch_overload_threshold_enabled:
+                    if ovs_util > self.config.ac_switch_overload_threshold:
+                        self.cpm_aclogger.debug("Enforcing total ovs switch utilization admission control check: DISABLING_NETWORK")
+                        self.ac_block_alltraffic = True
+                    else:
+                        #Keeping this check simple
+                        self.ac_block_alltraffic = False
+
+                hum_total_weight = hum_core_weight * ovs_util + hum_memory_weight * float(hum_memory)
 
             except Exception:
                 self.cpmlogger.debug("Hum metrics data empty or invalid - seting hum_total_weight to 0")

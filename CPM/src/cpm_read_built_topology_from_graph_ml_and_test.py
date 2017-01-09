@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 class GrapTest():
     def __init__(self):
         self.net = nx.read_graphml("./CPM_built_topology.graphml", node_type=type('int'))
+        self.net_copy = nx.DiGraph()
 
     def export_to_png(self):
         A = nx.nx_agraph.to_agraph(G)
@@ -60,8 +61,21 @@ class GrapTest():
             print s
             print d
             print data
-            self.drop_prompt()
-            #self.show_graph(self.net)
+
+        self.net_copy = self.net.copy()
+        del s,d,data
+        print("_____________________________________")
+
+        for s,d,data in self.net_copy.edges_iter(data=True):
+            print s
+            print d
+            print data
+
+
+        self.show_graph(self.net_copy)
+        self.drop_prompt()
+
+
 
     def drop_debugger(self):
         import pdb

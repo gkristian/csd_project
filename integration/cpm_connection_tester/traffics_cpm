@@ -1,0 +1,45 @@
+h1 iperf3 -s | tee h1results.txt &
+h2 iperf3 -s | tee h2results.txt &
+h3 iperf3 -s | tee h3results.txt &
+h4 iperf3 -s | tee h4results.txt &
+f1 iperf3 -s | tee f1results.txt &
+f2 iperf3 -s | tee f2results.txt &
+f3 iperf3 -s | tee f3results.txt &
+f4 iperf3 -s | tee f4results.txt &
+u5 iperf3 -s | tee u5results.txt &
+u9 iperf3 -s | tee u9results.txt &
+u10 iperf3 -s | tee u10results.txt &
+v5 iperf3 -s | tee v5results.txt &
+v9 iperf3 -s | tee v9results.txt &
+v10 iperf3 -s | tee v10results.txt &
+
+u1 /opt/cpm_conn_tester.sh 10.0.20.1 | tee u1results.txt &
+v8 /opt/cpm_conn_tester.sh 10.0.10.9 | tee v8results.txt &
+u8 /opt/cpm_conn_tester.sh 10.0.30.9 | tee u8results.txt &
+
+h1 sleep 60
+
+v3 /opt/cpm_conn_tester.sh 10.0.10.5 | tee v3results.txt &
+v2 /opt/cpm_conn_tester.sh 10.0.40.3 | tee v2results.txt &
+u3 /opt/cpm_conn_tester.sh 10.0.30.5 | tee u3results.txt &
+
+h1 sleep 60
+
+u4 /opt/cpm_conn_tester.sh 10.0.10.10 | tee u4results.txt &
+v4 /opt/cpm_conn_tester.sh 10.0.30.10 | tee v4results.txt &
+
+h1 sleep 60
+
+v1 /opt/cpm_conn_tester.sh 10.0.20.3 | tee v1results.txt &
+u2 /opt/cpm_conn_tester.sh 10.0.40.1 | tee u2results.txt &
+
+h1 sleep 60
+
+u6 /opt/cpm_conn_tester.sh 10.0.20.2 | tee u6results.txt &
+v6 /opt/cpm_conn_tester.sh 10.0.20.4 | tee v6results.txt &
+u7 /opt/cpm_conn_tester.sh 10.0.40.2 | tee u7results.txt &
+v7 /opt/cpm_conn_tester.sh 10.0.40.4 | tee v7results.txt &
+
+h1 sleep 360
+
+h1 killall iperf3
